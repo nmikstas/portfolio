@@ -185,7 +185,6 @@ class Target
         if(this.CurrentRadLen >= 8 * this.radLen)
         {
             this.stopAnimation();
-            this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
         }
     }
 
@@ -281,6 +280,7 @@ class Target
     {
         this.isRunning = false;
         clearInterval(this.intervalId);
+        this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     }
 }
 
@@ -289,16 +289,22 @@ $(document).ready(function()
 {
     $("#farmer-a").mouseleave(farmerLeave);
     $("#farmer-a").mouseenter(farmerEnter);
+    $("#farmer-a").on("click", farmerClick);
     $("#hangman-a").mouseleave(hangmanLeave);
     $("#hangman-a").mouseenter(hangmanEnter);
+    $("#hangman-a").on("click", hangmanClick);
     $("#crystal-a").mouseleave(crystalLeave);
     $("#crystal-a").mouseenter(crystalEnter);
+    $("#crystal-a").on("click", crystalClick);
     $("#quiz-a").mouseleave(quizLeave);
     $("#quiz-a").mouseenter(quizEnter);
+    $("#quiz-a").on("click", quizClick);
     $("#train-a").mouseleave(trainLeave);
     $("#train-a").mouseenter(trainEnter);
+    $("#train-a").on("click", trainClick);
     $("#weather-a").mouseleave(weatherLeave);
     $("#weather-a").mouseenter(weatherEnter);
+    $("#weather-a").on("click", weatherClick);
 });
 
 //Get references to the timer canvas and its parent container.
@@ -335,6 +341,12 @@ function farmerLeave()
     farmerTarget.initZoomOut();
 }
 
+function farmerClick()
+{
+    farmerTarget.resetAnimation();
+    farmerTarget.stopAnimation();
+}
+
 function hangmanEnter()
 {
     hangmanTarget.resetAnimation();
@@ -344,6 +356,12 @@ function hangmanEnter()
 function hangmanLeave()
 {
     hangmanTarget.initZoomOut();
+}
+
+function hangmanClick()
+{
+    hangmanTarget.resetAnimation();
+    hangmanTarget.stopAnimation();
 }
 
 function crystalEnter()
@@ -357,6 +375,12 @@ function crystalLeave()
     crystalTarget.initZoomOut();
 }
 
+function crystalClick()
+{
+    crystalTarget.resetAnimation();
+    crystalTarget.stopAnimation();
+}
+
 function quizEnter()
 {
     quizTarget.resetAnimation();
@@ -366,6 +390,12 @@ function quizEnter()
 function quizLeave()
 {
     quizTarget.initZoomOut();
+}
+
+function quizClick()
+{
+    quizTarget.resetAnimation();
+    quizTarget.stopAnimation();
 }
 
 function trainEnter()
@@ -379,6 +409,12 @@ function trainLeave()
     trainTarget.initZoomOut();
 }
 
+function trainClick()
+{
+    trainTarget.resetAnimation();
+    trainTarget.stopAnimation();
+}
+
 function weatherEnter()
 {
     weatherTarget.resetAnimation();
@@ -388,4 +424,10 @@ function weatherEnter()
 function weatherLeave()
 {
     weatherTarget.initZoomOut();
+}
+
+function weatherClick()
+{
+    weatherTarget.resetAnimation();
+    weatherTarget.stopAnimation();
 }
