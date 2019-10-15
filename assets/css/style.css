@@ -224,4 +224,12 @@ footer
     color: #1212e6;
 }
 
+.target-canv
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: .50;
+}
+
 
