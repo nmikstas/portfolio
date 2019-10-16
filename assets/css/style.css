@@ -98,6 +98,7 @@ footer
 #carousel-div
 {
     position: relative;
+    overflow: hidden;
 }
 
 #carousel-overlay

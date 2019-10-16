@@ -71,6 +71,38 @@ class Target
         //Clear the canvas.
         this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
+        //Draw outer three arcs.
+        for(let i = 0; i < 3; i++)
+        {
+            this.drawArc
+            (
+                this.outerOffset + i * 2 * Math.PI / 3 + this.outerGap, 
+                this.outerOffset + ((i + 1) % 3) * 2 * Math.PI / 3 - this.outerGap,
+                this.outerColor, this.outerWidth, this.outerRadius
+            );
+        }
+
+        //Draw inner three arcs.
+        for(let i = 0; i < 3; i++)
+        {
+            this.drawArc
+            (
+                this.innerOffset + i * 2 * Math.PI / 3 + this.innerGap, 
+                this.innerOffset + ((i + 1) % 3) * 2 * Math.PI / 3 - this.innerGap,
+                this.innerColor, this.innerWidth, this.innerRadius
+            );
+        }
+
+        //Draw three triangles.
+        for(let i = 0; i < 3; i++)
+        {
+            this.drawTriangle
+            (
+                this.outerOffset + i * 2 * Math.PI / 3,
+                this.TriColor, this.triTip, this.triBase
+            );
+        }
+
         //Choose the animation to perform.
         if(this.animStyle === ANIM_ZOOM_IN)
         {
@@ -102,38 +134,7 @@ class Target
     //Zoom in on target.
     doZoomIn()
     {
-        //Draw outer three arcs.
-        for(let i = 0; i < 3; i++)
-        {
-            this.drawArc
-            (
-                this.outerOffset + i * 2 * Math.PI / 3 + this.outerGap, 
-                this.outerOffset + ((i + 1) % 3) * 2 * Math.PI / 3 - this.outerGap,
-                this.outerColor, this.outerWidth, this.outerRadius
-            );
-        }
-
-        //Draw inner three arcs.
-        for(let i = 0; i < 3; i++)
-        {
-            this.drawArc
-            (
-                this.innerOffset + i * 2 * Math.PI / 3 + this.innerGap, 
-                this.innerOffset + ((i + 1) % 3) * 2 * Math.PI / 3 - this.innerGap,
-                this.innerColor, this.innerWidth, this.innerRadius
-            );
-        }
-
-        //Draw three triangles.
-        for(let i = 0; i < 3; i++)
-        {
-            this.drawTriangle
-            (
-                this.outerOffset + i * 2 * Math.PI / 3, this.TriColor, this.triTip, this.triBase
-            );
-        }
-
-        //------------------- Update the zoom variables -------------------
+        //Update the zoom variables
         this.CurrentRadLen -= this.zoomStep * this.radLen;
 
         //Check if zoom in is done.
@@ -147,38 +148,7 @@ class Target
     //Zoom out from target.
     doZoomOut()
     {
-        //Draw outer three arcs.
-        for(let i = 0; i < 3; i++)
-        {
-            this.drawArc
-            (
-                this.outerOffset + i * 2 * Math.PI / 3 + this.outerGap, 
-                this.outerOffset + ((i + 1) % 3) * 2 * Math.PI / 3 - this.outerGap,
-                this.outerColor, this.outerWidth, this.outerRadius
-            );
-        }
-
-        //Draw inner three arcs.
-        for(let i = 0; i < 3; i++)
-        {
-            this.drawArc
-            (
-                this.innerOffset + i * 2 * Math.PI / 3 + this.innerGap, 
-                this.innerOffset + ((i + 1) % 3) * 2 * Math.PI / 3 - this.innerGap,
-                this.innerColor, this.innerWidth, this.innerRadius
-            );
-        }
-
-        //Draw three triangles.
-        for(let i = 0; i < 3; i++)
-        {
-            this.drawTriangle
-            (
-                this.outerOffset + i * 2 * Math.PI / 3, this.TriColor, this.triTip, this.triBase
-            );
-        }
-
-        //------------------- Update the zoom variables -------------------
+        //Update the zoom variables
         this.CurrentRadLen += this.zoomStep * this.radLen;
 
         //Check if zoom in is done.
@@ -191,38 +161,7 @@ class Target
     //Animate the rotating target.
     doRotate()
     {
-        //Draw outer three arcs.
-        for(let i = 0; i < 3; i++)
-        {
-            this.drawArc
-            (
-                this.outerOffset + i * 2 * Math.PI / 3 + this.outerGap, 
-                this.outerOffset + ((i + 1) % 3) * 2 * Math.PI / 3 - this.outerGap,
-                this.outerColor, this.outerWidth, this.outerRadius
-            );
-        }
-
-        //Draw inner three arcs.
-        for(let i = 0; i < 3; i++)
-        {
-            this.drawArc
-            (
-                this.innerOffset + i * 2 * Math.PI / 3 + this.innerGap, 
-                this.innerOffset + ((i + 1) % 3) * 2 * Math.PI / 3 - this.innerGap,
-                this.innerColor, this.innerWidth, this.innerRadius
-            );
-        }
-
-        //Draw three triangles.
-        for(let i = 0; i < 3; i++)
-        {
-            this.drawTriangle
-            (
-                this.outerOffset + i * 2 * Math.PI / 3, this.TriColor, this.triTip, this.triBase
-            );
-        }
-
-        //------------------- Update the rotation variables -------------------
+        //Update the rotation variables
         this.outerOffset += this.dTheta;
 
         //outerOffset is 2 * pi periodic.
@@ -240,13 +179,14 @@ class Target
         }
     }
 
-    //Draw an arc. Draws border around outside of circle.
+    //Draw an arc.
     drawArc(startAngle, endAngle, color, width, radius)
     {
         this.ctx.beginPath();
         this.ctx.lineWidth = width * this.radius;
         this.ctx.strokeStyle = color;
-        this.ctx.arc(this.canvasMiddleX, this.canvasMiddleY, this.radius * radius, startAngle, endAngle);
+        this.ctx.arc(this.canvasMiddleX, this.canvasMiddleY, 
+                     this.radius * radius, startAngle, endAngle);
         this.ctx.stroke();
     }
 
