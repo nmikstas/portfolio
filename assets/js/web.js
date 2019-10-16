@@ -1,14 +1,15 @@
 /************************************** Target Overlay Class *************************************/
-const ANIM_ROTATE   = 0x00; //Do rotation animation.
-const ANIM_ZOOM_IN  = 0x01; //Zoom in on target animation.
-const ANIM_ZOOM_OUT = 0x02; //Zoout out from target animation.
-const ANIM_STATIC   = 0x00; //The target is in the center of the tag.
-const ANIM_MOVE     = 0x01; //The target follows the mouse.
-
 class Target
 {
+    static get ANIM_ROTATE()  {return 0x00} //Do rotation animation.
+    static get ANIM_ZOOM_IN() {return 0x01} //Zoom in on target animation.
+    static get ANIM_ZOOM_OUT(){return 0x02} //Zoom out out from target animation.
+    static get ANIM_STATIC()  {return 0x00} //The target is in the center of the tag.
+    static get ANIM_MOVE()    {return 0x01} //The target follows the mouse.
+    static get ANIM_TIME()    {return 50}   //50ms animation time (20 frames per second).
+
     constructor(canvas, canDiv, radLen, style)
-    {
+    {    
         this.canvas = canvas; //Canvas to draw timer on.
         this.canDiv = canDiv; //Parent container of the canvas.
         this.radLen = radLen; //The fraction of the canvas radius to use.
@@ -35,9 +36,6 @@ class Target
         this.innerWidth  = .04;
         this.triTip      = .25;
         this.zoomStep    = .75;
-        
-        //50 milliseconds between animations(20 frames per second).
-        this.ANIM_TIME = 50;
 
         //dTheta is the amount to update the angle every animation frame.
         this.dTheta = 2 * Math.PI / 200;
@@ -46,7 +44,7 @@ class Target
         this.outerOffset = 0;
         this.innerOffset = 0;
 
-        this.animStyle = ANIM_ROTATE;
+        this.animStyle = Target.ANIM_ROTATE;
 
         //Used for zooming in and out.
         this.CurrentRadLen = this.radLen;
@@ -87,9 +85,30 @@ class Target
             self.xpos -= obj_left;
             self.ypos -= obj_top;
             self.ypos += document.body.scrollTop;
+            self.xpos += document.body.scrollLeft;
         }
 
         this.canvas.onmousemove = findObjectCoords;
+
+        //Run these functions when the mouse enters the parent div.
+        canDiv.addEventListener("mouseenter", function()
+        {
+            self.resetAnimation();
+            self.startAnimation();
+        });
+
+        //Run these functions when the mouse leaves the parent div.
+        canDiv.addEventListener("mouseleave", function()
+        {
+            self.initZoomOut();
+        });
+
+        //Run these functions when the user clicks the parent div.
+        canDiv.addEventListener("click", function()
+        {
+            self.resetAnimation();
+            self.stopAnimation();
+        }); 
     }
 
     /******************************** GameTimer Class Functions **********************************/
@@ -102,7 +121,7 @@ class Target
         this.canvas.width = this.canvasWidth;
         this.canvas.height = this.canvasHeight;
                 
-        if(this.style === ANIM_STATIC)
+        if(this.style === Target.ANIM_STATIC)
         {
             //Calculate the center of the canvas.
             this.canvasMiddleX = this.canvasWidth / 2;
@@ -157,11 +176,11 @@ class Target
         }
 
         //Choose the animation to perform.
-        if(this.animStyle === ANIM_ZOOM_IN)
+        if(this.animStyle === Target.ANIM_ZOOM_IN)
         {
             this.doZoomIn();
         }
-        else if(this.animStyle === ANIM_ZOOM_OUT)
+        else if(this.animStyle === Target.ANIM_ZOOM_OUT)
         {
             this.doZoomOut();
         }
@@ -174,7 +193,7 @@ class Target
     //Reset the variables to a zoomed out state.
     resetAnimation()
     {
-        if(this.style === ANIM_STATIC)
+        if(this.style === Target.ANIM_STATIC)
         {
             this.CurrentRadLen = 8 * this.radLen;
         }
@@ -182,20 +201,20 @@ class Target
         {
             this.CurrentRadLen = this.radLen;
         }
-        this.animStyle = ANIM_ZOOM_IN;
+        this.animStyle = Target.ANIM_ZOOM_IN;
     }
 
     //Initializes the zoomOut function.
     initZoomOut()
     {
-        this.animStyle = ANIM_ZOOM_OUT;
+        this.animStyle = Target.ANIM_ZOOM_OUT;
     }
 
     //Zoom in on target.
     doZoomIn()
     {
         //Update the zoom variables
-        if(this.style === ANIM_STATIC)
+        if(this.style === Target.ANIM_STATIC)
         {
             this.CurrentRadLen -= this.zoomStep * this.radLen;
         }
@@ -208,7 +227,7 @@ class Target
         if(this.CurrentRadLen <= this.radLen)
         {
             this.CurrentRadLen = this.radLen;
-            this.animStyle = ANIM_ROTATE;
+            this.animStyle = Target.ANIM_ROTATE;
         }
     }
 
@@ -216,7 +235,7 @@ class Target
     doZoomOut()
     {
         //Update the zoom variables
-        if(this.style === ANIM_STATIC)
+        if(this.style === Target.ANIM_STATIC)
         {
             this.CurrentRadLen += this.zoomStep * this.radLen;
         }
@@ -286,7 +305,7 @@ class Target
 
         //This is necessary to use setInterval in the class scope.
         var self = this;
-        this.intervalId = setInterval(function() { self.draw() }, this.ANIM_TIME);
+        this.intervalId = setInterval(function() { self.draw() }, Target.ANIM_TIME);
     }
 
     //Stop the timer.
@@ -299,28 +318,6 @@ class Target
 }
 
 /******************************************* Top Level *******************************************/
-$(document).ready(function()
-{
-    $("#farmer-a").mouseleave(farmerLeave);
-    $("#farmer-a").mouseenter(farmerEnter);
-    $("#farmer-a").on("click", farmerClick);
-    $("#hangman-a").mouseleave(hangmanLeave);
-    $("#hangman-a").mouseenter(hangmanEnter);
-    $("#hangman-a").on("click", hangmanClick);
-    $("#crystal-a").mouseleave(crystalLeave);
-    $("#crystal-a").mouseenter(crystalEnter);
-    $("#crystal-a").on("click", crystalClick);
-    $("#quiz-a").mouseleave(quizLeave);
-    $("#quiz-a").mouseenter(quizEnter);
-    $("#quiz-a").on("click", quizClick);
-    $("#train-a").mouseleave(trainLeave);
-    $("#train-a").mouseenter(trainEnter);
-    $("#train-a").on("click", trainClick);
-    $("#weather-a").mouseleave(weatherLeave);
-    $("#weather-a").mouseenter(weatherEnter);
-    $("#weather-a").on("click", weatherClick);
-});
-
 //Get references to the timer canvas and its parent container.
 var farmerCanv  = document.getElementById("farmer-canv");
 var farmerA     = document.getElementById("farmer-a");
@@ -336,112 +333,9 @@ var weatherCanv = document.getElementById("weather-canv");
 var weatherA    = document.getElementById("weather-a");
 
 //Create object to paint target on a canvas.
-var farmerTarget  = new Target(farmerCanv,  farmerA,  .20, ANIM_MOVE);
-var hangmanTarget = new Target(hangmanCanv, hangmanA, .95, ANIM_STATIC);
-var crystalTarget = new Target(crystalCanv, crystalA, .20, ANIM_MOVE);
-var quizTarget    = new Target(quizCanv,    quizA,    .95, ANIM_STATIC);
-var trainTarget   = new Target(trainCanv,   trainA,   .20, ANIM_MOVE);
-var weatherTarget = new Target(weatherCanv, weatherA, .95, ANIM_STATIC);
-
-//Enter/exit functions for controlling the target animations.
-function farmerEnter()
-{
-    farmerTarget.resetAnimation();
-    farmerTarget.startAnimation();
-}
-
-function farmerLeave()
-{
-    farmerTarget.initZoomOut();
-}
-
-function farmerClick()
-{
-    farmerTarget.resetAnimation();
-    farmerTarget.stopAnimation();
-}
-
-function hangmanEnter()
-{
-    hangmanTarget.resetAnimation();
-    hangmanTarget.startAnimation();
-}
-
-function hangmanLeave()
-{
-    hangmanTarget.initZoomOut();
-}
-
-function hangmanClick()
-{
-    hangmanTarget.resetAnimation();
-    hangmanTarget.stopAnimation();
-}
-
-function crystalEnter()
-{
-    crystalTarget.resetAnimation();
-    crystalTarget.startAnimation();
-}
-
-function crystalLeave()
-{
-    crystalTarget.initZoomOut();
-}
-
-function crystalClick()
-{
-    crystalTarget.resetAnimation();
-    crystalTarget.stopAnimation();
-}
-
-function quizEnter()
-{
-    quizTarget.resetAnimation();
-    quizTarget.startAnimation();
-}
-
-function quizLeave()
-{
-    quizTarget.initZoomOut();
-}
-
-function quizClick()
-{
-    quizTarget.resetAnimation();
-    quizTarget.stopAnimation();
-}
-
-function trainEnter()
-{
-    trainTarget.resetAnimation();
-    trainTarget.startAnimation();
-}
-
-function trainLeave()
-{
-    trainTarget.initZoomOut();
-}
-
-function trainClick()
-{
-    trainTarget.resetAnimation();
-    trainTarget.stopAnimation();
-}
-
-function weatherEnter()
-{
-    weatherTarget.resetAnimation();
-    weatherTarget.startAnimation();
-}
-
-function weatherLeave()
-{
-    weatherTarget.initZoomOut();
-}
-
-function weatherClick()
-{
-    weatherTarget.resetAnimation();
-    weatherTarget.stopAnimation();
-}
+new Target(farmerCanv,  farmerA,  .20, Target.ANIM_MOVE);
+new Target(hangmanCanv, hangmanA, .95, Target.ANIM_STATIC);
+new Target(crystalCanv, crystalA, .20, Target.ANIM_MOVE);
+new Target(quizCanv,    quizA,    .95, Target.ANIM_STATIC);
+new Target(trainCanv,   trainA,   .20, Target.ANIM_MOVE);
+new Target(weatherCanv, weatherA, .95, Target.ANIM_STATIC);

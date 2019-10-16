@@ -1,6 +1,8 @@
 /*************************************** Slide Timer Class ***************************************/
 class STimer
 {
+    static get ANIM_TIME(){return 50} //50ms between animations(20 frames per second).
+
     constructor(canvas, canDiv, time, color, width, radLen, parentFrac)
     {
         this.canvas = canvas;         //Canvas to draw timer on.
@@ -22,11 +24,8 @@ class STimer
         this.startAng = -Math.PI / 2;
         this.endAng = this.startAng + 2 * Math.PI;
         
-        //50 milliseconds between animations(20 frames per second).
-        this.ANIM_TIME = 50;
-
         //dTheta is the amount to update the angle every animation frame.
-        this.dTheta = 2 * Math.PI / (1000 / this.ANIM_TIME * this.time);
+        this.dTheta = 2 * Math.PI / (1000 / STimer.ANIM_TIME * this.time);
 
         //Calculate the total number of animations needed.
         this.numAnimations = 2 * Math.PI / this.dTheta;
@@ -87,7 +86,7 @@ class STimer
         this.timeRemaining = this.timerSeconds;
         this.startAng = -Math.PI/2;
         this.endAng = this.startAng + 2 * Math.PI;
-        this.dTheta = 2*Math.PI / (1000 / this.ANIM_TIME * this.time);
+        this.dTheta = 2*Math.PI / (1000 / STimer.ANIM_TIME * this.time);
         this.numAnimations = 2 * Math.PI / this.dTheta;
     }
 
@@ -96,7 +95,7 @@ class STimer
     {
         this.startAng = -Math.PI/2;
         this.endAng = this.startAng + 2 * Math.PI;
-        this.dTheta = 2*Math.PI / (1000 / this.ANIM_TIME * this.time);
+        this.dTheta = 2*Math.PI / (1000 / STimer.ANIM_TIME * this.time);
         this.numAnimations = 2 * Math.PI / this.dTheta;
     }
 
@@ -108,7 +107,7 @@ class STimer
 
         //This is necessary to use setInterval in the class scope.
         var self = this;
-        this.intervalId = setInterval(function() { self.draw() }, this.ANIM_TIME);
+        this.intervalId = setInterval(function() { self.draw() }, STimer.ANIM_TIME);
     }
 
     //Stop the timer.
