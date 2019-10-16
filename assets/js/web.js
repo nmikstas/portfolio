@@ -2,14 +2,17 @@
 const ANIM_ROTATE   = 0x00; //Do rotation animation.
 const ANIM_ZOOM_IN  = 0x01; //Zoom in on target animation.
 const ANIM_ZOOM_OUT = 0x02; //Zoout out from target animation.
+const ANIM_STATIC   = 0x00; //The target is in the center of the tag.
+const ANIM_MOVE     = 0x01; //The target follows the mouse.
 
 class Target
 {
-    constructor(canvas, canDiv, radLen)
+    constructor(canvas, canDiv, radLen, style)
     {
         this.canvas = canvas; //Canvas to draw timer on.
         this.canDiv = canDiv; //Parent container of the canvas.
         this.radLen = radLen; //The fraction of the canvas radius to use.
+        this.style  = style;  //Target is static or follows the mouse.
         
         this.ctx = canvas.getContext("2d");
         this.intervalId;
@@ -47,6 +50,46 @@ class Target
 
         //Used for zooming in and out.
         this.CurrentRadLen = this.radLen;
+
+        //Tracks the x and y position of the mouse.
+        this.xpos;
+        this.ypos;
+
+        var self = this;
+
+        //This event listener tracks the coordinates of the mouse.
+        function findObjectCoords(mouseEvent)
+        {
+            var obj = self.canvas;
+            var obj_left = 0;
+            var obj_top = 0;
+           
+            while (obj.offsetParent)
+            {
+                obj_left += obj.offsetLeft;
+                obj_top += obj.offsetTop;
+                obj = obj.offsetParent;
+            }
+
+            if (mouseEvent)
+            {
+                //FireFox
+                self.xpos = mouseEvent.pageX;
+                self.ypos = mouseEvent.pageY;
+            }
+            else
+            {
+                //IE
+                self.xpos = window.event.x + document.body.scrollLeft - 2;
+                self.ypos = window.event.y + document.body.scrollTop - 2;
+            }
+
+            self.xpos -= obj_left;
+            self.ypos -= obj_top;
+            self.ypos += document.body.scrollTop;
+        }
+
+        this.canvas.onmousemove = findObjectCoords;
     }
 
     /******************************** GameTimer Class Functions **********************************/
@@ -59,13 +102,23 @@ class Target
         this.canvas.width = this.canvasWidth;
         this.canvas.height = this.canvasHeight;
                 
-        //Calculate the center of the canvas.
-        this.canvasMiddleX = this.canvasWidth / 2;
-        this.canvasMiddleY = this.canvasHeight / 2;
+        if(this.style === ANIM_STATIC)
+        {
+            //Calculate the center of the canvas.
+            this.canvasMiddleX = this.canvasWidth / 2;
+            this.canvasMiddleY = this.canvasHeight / 2;
 
-        //Calculate the drawing radius.
-        this.radius = (this.canvasWidth > this.canvasHeight) ? 
-                       this.canvasMiddleY : this.canvasMiddleX;
+            //Calculate the drawing radius.
+            this.radius = (this.canvasWidth > this.canvasHeight) ? 
+                           this.canvasMiddleY : this.canvasMiddleX;
+        }
+        else
+        {
+            this.canvasMiddleX = this.xpos;
+            this.canvasMiddleY = this.ypos;
+            this.radius = this.canvas.width;
+        }
+          
         this.radius *= this.CurrentRadLen;
 
         //Clear the canvas.
@@ -121,7 +174,14 @@ class Target
     //Reset the variables to a zoomed out state.
     resetAnimation()
     {
-        this.CurrentRadLen = 8 * this.radLen;
+        if(this.style === ANIM_STATIC)
+        {
+            this.CurrentRadLen = 8 * this.radLen;
+        }
+        else
+        {
+            this.CurrentRadLen = this.radLen;
+        }
         this.animStyle = ANIM_ZOOM_IN;
     }
 
@@ -135,8 +195,15 @@ class Target
     doZoomIn()
     {
         //Update the zoom variables
-        this.CurrentRadLen -= this.zoomStep * this.radLen;
-
+        if(this.style === ANIM_STATIC)
+        {
+            this.CurrentRadLen -= this.zoomStep * this.radLen;
+        }
+        else
+        {
+            this.CurrentRadLen = this.radLen;
+        }
+        
         //Check if zoom in is done.
         if(this.CurrentRadLen <= this.radLen)
         {
@@ -149,8 +216,15 @@ class Target
     doZoomOut()
     {
         //Update the zoom variables
-        this.CurrentRadLen += this.zoomStep * this.radLen;
-
+        if(this.style === ANIM_STATIC)
+        {
+            this.CurrentRadLen += this.zoomStep * this.radLen;
+        }
+        else
+        {
+            this.CurrentRadLen = 8 * this.radLen;
+        }
+        
         //Check if zoom in is done.
         if(this.CurrentRadLen >= 8 * this.radLen)
         {
@@ -262,12 +336,12 @@ var weatherCanv = document.getElementById("weather-canv");
 var weatherA    = document.getElementById("weather-a");
 
 //Create object to paint target on a canvas.
-var farmerTarget  = new Target(farmerCanv,  farmerA,  .95);
-var hangmanTarget = new Target(hangmanCanv, hangmanA, .95);
-var crystalTarget = new Target(crystalCanv, crystalA, .95);
-var quizTarget    = new Target(quizCanv,    quizA,    .95);
-var trainTarget   = new Target(trainCanv,   trainA,   .95);
-var weatherTarget = new Target(weatherCanv, weatherA, .95);
+var farmerTarget  = new Target(farmerCanv,  farmerA,  .20, ANIM_MOVE);
+var hangmanTarget = new Target(hangmanCanv, hangmanA, .95, ANIM_STATIC);
+var crystalTarget = new Target(crystalCanv, crystalA, .20, ANIM_MOVE);
+var quizTarget    = new Target(quizCanv,    quizA,    .95, ANIM_STATIC);
+var trainTarget   = new Target(trainCanv,   trainA,   .20, ANIM_MOVE);
+var weatherTarget = new Target(weatherCanv, weatherA, .95, ANIM_STATIC);
 
 //Enter/exit functions for controlling the target animations.
 function farmerEnter()
