@@ -479,7 +479,7 @@ var createScene = function ()
         }
 
         //Give the slides a surging glow.
-        alpha += .07;
+        alpha += .05;
         var color = .1 * Math.cos(alpha) + .05;
         webMat.emissiveColor =      new BABYLON.Color3(color * .5, color * .5, color);
         mastersMat.emissiveColor =  new BABYLON.Color3(color * .5, color * .5, color);
