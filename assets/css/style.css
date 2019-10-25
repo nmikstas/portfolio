@@ -2,6 +2,7 @@
 body, html
 {
     height: 100%;
+    width: 100%;
     background-image: url("../images/noisy_net.png");
     overflow-x: hidden;
     font-size: 16px;
@@ -90,29 +91,11 @@ footer
 }
 
 /************************************** Home Page Carousel ***************************************/
-.slide-img
+#renderCanvas
 {
     width: 100%;
-}
-
-#carousel-div
-{
-    position: relative;
-    overflow: hidden;
-}
-
-#carousel-overlay
-{
-    position: absolute;
-    bottom: 0px;
-    right: 0px;
-    z-index: 1;
-    opacity: .20;
-}
-
-#canvas-div
-{
-    width: 100%;
+    height: calc(100vh - 175px);
+    touch-action: none;
 }
 
 /******************************************** Resume *********************************************/
