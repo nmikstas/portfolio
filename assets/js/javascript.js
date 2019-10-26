@@ -18,9 +18,17 @@ var createScene = function ()
     camera.rotation.y = Math.PI;
     
 	/*************************************** Light Sources ***************************************/
-    var light1 = new BABYLON.PointLight("light2", camera.position, scene);
-    light1.diffuse = new BABYLON.Color3(1, 1, 1);
+    var light1 = new BABYLON.PointLight("light1", camera.position, scene);
+    light1.diffuse = new BABYLON.Color3(.7, .7, .7);
     light1.specular = new BABYLON.Color3(.2, .2, .2);
+
+    var light2 = new BABYLON.SpotLight("spotLight", new BABYLON.Vector3(8, 2.2, -1), new BABYLON.Vector3(0, -1, 0), Math.PI / 1.5, 1, scene);
+    light2.diffuse = new BABYLON.Color3(5, 0, 0);
+    light2.specular = new BABYLON.Color3(1, 0, 0);
+
+    var light3 = new BABYLON.SpotLight("spotLight", new BABYLON.Vector3(-8, 2.2, -1), new BABYLON.Vector3(0, -1, 0), Math.PI / 1.5, 1, scene);
+    light3.diffuse = new BABYLON.Color3(5, 0, 0);
+    light3.specular = new BABYLON.Color3(1, 0, 0);
 
     var gl = new BABYLON.GlowLayer("glow", scene);
 
@@ -33,6 +41,13 @@ var createScene = function ()
 
     var blueMat = new BABYLON.StandardMaterial("blueMat", scene);
     blueMat.diffuseColor = new BABYLON.Color3(0, 0, .5);
+
+    var blackMat = new BABYLON.StandardMaterial("blackMat", scene);
+    blackMat.diffuseColor = new BABYLON.Color3(.1, 0, 0);
+
+    var redSpecMat = new BABYLON.StandardMaterial("redSpecMat", scene);
+    redSpecMat.diffuseColor = new BABYLON.Color3(1, 0, 0);
+    redSpecMat.emissiveColor = new BABYLON.Color3(1, 0, 0);
 
     //-------------------- Walls, floor and ceiling --------------------
     var floorMat = new BABYLON.StandardMaterial("floorMat", scene);
@@ -267,9 +282,15 @@ var createScene = function ()
     owall18.rotation.y = Math.PI / 4;
     owall18.material = embeddedMat;
    
+    /************************************* Glowing Spheres ***************************************/
+    var sphere1 = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:.5}, scene);
+    sphere1.material = redSpecMat;
+    sphere1.position = light2.position;
 
-   
-    
+    var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:.5}, scene);
+    sphere2.material = redSpecMat;
+    sphere2.position = light3.position;
+
     /******************************* Gravity and Collision Checks ********************************/
     //Set gravity for the scene (G force like, on Y-axis)
     scene.gravity = new BABYLON.Vector3(0, -0.9, 0);
@@ -285,28 +306,26 @@ var createScene = function ()
     camera.ellipsoid = new BABYLON.Vector3(1.5, .5, 1.5);
 
     //finally, say which mesh will be collisionable
-    floor.checkCollisions = true;
-
-    iwall1.checkCollisions = true;
-    iwall2.checkCollisions = true;
-    iwall3.checkCollisions = true;
-    iwall4.checkCollisions = true;
-    iwall5.checkCollisions = true;
-    iwall6.checkCollisions = true;
-    iwall7.checkCollisions = true;
-    iwall8.checkCollisions = true;
-    iwall9.checkCollisions = true;
+    floor.checkCollisions   = true;
+    iwall1.checkCollisions  = true;
+    iwall2.checkCollisions  = true;
+    iwall3.checkCollisions  = true;
+    iwall4.checkCollisions  = true;
+    iwall5.checkCollisions  = true;
+    iwall6.checkCollisions  = true;
+    iwall7.checkCollisions  = true;
+    iwall8.checkCollisions  = true;
+    iwall9.checkCollisions  = true;
     iwall10.checkCollisions = true;
-
-    owall1.checkCollisions = true;
-    owall2.checkCollisions = true;
-    owall3.checkCollisions = true;
-    owall4.checkCollisions = true;
-    owall5.checkCollisions = true;
-    owall6.checkCollisions = true;
-    owall7.checkCollisions = true;
-    owall8.checkCollisions = true;
-    owall9.checkCollisions = true;
+    owall1.checkCollisions  = true;
+    owall2.checkCollisions  = true;
+    owall3.checkCollisions  = true;
+    owall4.checkCollisions  = true;
+    owall5.checkCollisions  = true;
+    owall6.checkCollisions  = true;
+    owall7.checkCollisions  = true;
+    owall8.checkCollisions  = true;
+    owall9.checkCollisions  = true;
     owall10.checkCollisions = true;
     owall11.checkCollisions = true;
     owall12.checkCollisions = true;
@@ -405,23 +424,95 @@ var createScene = function ()
     animationPosX.setKeys(keys);
     camera.animations.push(animationPosX);
 
-    //Run the animations.
+    //Run the camera animations.
     var cameraAnim = scene.beginAnimation(camera, 0, 1440, true);
 
+    //Animate the spotlight
+    light3.animations = [];
+
+    var spotAnimZ = new BABYLON.Animation("spotAnimZ", "position.z", 30,
+        BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+    var keys = []; 
+    keys.push({frame: 0,    value: -1});
+    keys.push({frame: 60,   value:  2});
+    keys.push({frame: 60,   value:  2});
+    keys.push({frame: 130,  value:  5});
+    keys.push({frame: 200,  value:  8});
+    keys.push({frame: 270,  value:  5});
+    keys.push({frame: 293,  value:  6});
+    keys.push({frame: 293,  value:  6});
+    keys.push({frame: 373,  value:  6});
+    keys.push({frame: 453,  value:  6});
+    keys.push({frame: 476,  value:  5});
+    keys.push({frame: 546,  value:  8});
+    keys.push({frame: 616,  value:  5});
+    keys.push({frame: 686,  value:  2});
+    keys.push({frame: 746,  value: -1});
+    keys.push({frame: 826,  value: -1});
+    keys.push({frame: 906,  value: -1});
+    keys.push({frame: 966,  value: -4});
+    keys.push({frame: 1059, value: -8});
+    keys.push({frame: 1139, value: -8});
+    keys.push({frame: 1219, value: -12});
+    keys.push({frame: 1299, value: -8});
+    keys.push({frame: 1379, value: -8});
+    keys.push({frame: 1472, value: -4});
+    keys.push({frame: 1532, value: -1});
+    keys.push({frame: 1612, value: -1});
+    keys.push({frame: 1692, value: -1});
+    spotAnimZ.setKeys(keys);
+    light3.animations.push(spotAnimZ);
+
+    var spotAnimX = new BABYLON.Animation("spotAnimX", "position.x", 30,
+        BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+    var keys = []; 
+    keys.push({frame: 0,    value: -8});
+    keys.push({frame: 60,   value: -8});
+    keys.push({frame: 130,  value: -5});
+    keys.push({frame: 200,  value: -8});
+    keys.push({frame: 270,  value: -5});
+    keys.push({frame: 293,  value: -4});
+    keys.push({frame: 373,  value:  0});
+    keys.push({frame: 453,  value: -4});
+    keys.push({frame: 476,  value: -5});
+    keys.push({frame: 546,  value: -8});
+    keys.push({frame: 616,  value: -5});
+    keys.push({frame: 686,  value: -8});
+    keys.push({frame: 746,  value: -8});
+    keys.push({frame: 826,  value: -4});
+    keys.push({frame: 906,  value: -8});
+    keys.push({frame: 966,  value: -8});
+    keys.push({frame: 1059, value: -4});
+    keys.push({frame: 1139, value:  0});
+    keys.push({frame: 1219, value:  0});
+    keys.push({frame: 1299, value:  0});
+    keys.push({frame: 1379, value: -4});
+    keys.push({frame: 1472, value: -8});
+    keys.push({frame: 1532, value: -8});
+    keys.push({frame: 1612, value: -4});
+    keys.push({frame: 1692, value: -8});
+    spotAnimX.setKeys(keys);
+    light3.animations.push(spotAnimX);
+
+    //Run the spotlight animations.
+    var spotAnim = scene.beginAnimation(light3, 0, 1692, true);
+
+    /******************************************** Fog ********************************************/
+    scene.fogMode = BABYLON.Scene.FOGMODE_EXP2;
+    scene.fogDensity = .10;
 
     /****************************************** Sprites ******************************************/
     // Create a sprite manager to optimize GPU ressources
-    // Parameters : name, imgUrl, capacity, cellSize, scene
-    var spriteManagerDust = new BABYLON.SpriteManager("dustManager", "https://nmikstas.github.io/resources/images/dust.png", 2000, 37, scene);
+    var spriteManagerDust = new BABYLON.SpriteManager("dustManager", "https://nmikstas.github.io/resources/images/dust.png", 8000, 37, scene);
     var spriteArray = [];
 
-    //Create 1000 dust particles at random positions in the back hallway.
-    for (let i = 0; i < 2000; i++)
+    //Create 2000 dust particles at random positions in the back hallway.
+    for (let i = 0; i < 8000; i++)
     {
         spriteArray.push(new BABYLON.Sprite("dust", spriteManagerDust));
-        spriteArray[i].position.x = Math.random() * 10 - 5;
+        spriteArray[i].position.x = Math.random() * 30 - 15;
         spriteArray[i].position.y = Math.random() * 2;
-        spriteArray[i].position.z = Math.random() * 4 + 4;
+        spriteArray[i].position.z = Math.random() * 30 - 15;
         spriteArray[i].height = .007;
         spriteArray[i].width = .007;
         spriteArray[i].vel = Math.random() * .003 + .0005;
@@ -454,9 +545,8 @@ var createScene = function ()
     
     /******************************** Advanced Animation Updates *********************************/
     var alpha = 0;
-    var counter1 = 0;
-    var cntr1Max = 5;
-    var cntr1Rand = .0015;
+    var isRedLightOn = false;
+    var blinkRand = 0;
     scene.registerBeforeRender(function ()
     {
         //Update dust particles.
@@ -469,13 +559,24 @@ var createScene = function ()
             }
         }
 
-        //counter1++;
-        if(counter1 === cntr1Max)
+        //Update flickering red light.
+        blinkRand--;
+        if(blinkRand <= 0)
         {
-            camera.rotation.x += Math.random() * cntr1Rand - cntr1Rand / 2;
-            camera.rotation.y += Math.random() * cntr1Rand - cntr1Rand / 2;
-            camera.rotation.z += Math.random() * cntr1Rand - cntr1Rand / 2;
-            counter1 = 0;
+            blinkRand = Math.round(Math.random() * 40);
+
+            if(!isRedLightOn)
+            {
+                sphere1.material = redSpecMat;
+                light2.intensity = 1;
+            }
+            else
+            {
+                sphere1.material = blackMat;
+                light2.intensity = 0;
+            }
+
+            isRedLightOn = !isRedLightOn;
         }
 
         //Give the slides a surging glow.
