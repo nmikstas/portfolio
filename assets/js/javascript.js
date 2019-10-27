@@ -760,9 +760,9 @@ var createScene = function ()
             particleSystem.dispose();
         }
 
-        particleSystem = new BABYLON.ParticleSystem("particles", 100 , scene);
+        particleSystem = new BABYLON.ParticleSystem("particles", 200 , scene);
         particleSystem.manualEmitCount = particleSystem.getCapacity();
-        particleSystem.minEmitBox = new BABYLON.Vector3(-15, 1, -15); // Starting all from
+        particleSystem.minEmitBox = new BABYLON.Vector3(-15, 0, -15); // Starting all from
         particleSystem.maxEmitBox = new BABYLON.Vector3(15, 1, 15); // To...
         
         particleSystem.particleTexture = fogTexture.clone();
