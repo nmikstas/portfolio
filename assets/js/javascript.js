@@ -751,10 +751,12 @@ var createScene = function ()
     // Create a particle system
     var particleSystem;
 
-    var fogTexture = new BABYLON.Texture("https://raw.githubusercontent.com/aWeirdo/Babylon.js/master/smoke_15.png", scene);
+    var fogTexture = new BABYLON.Texture("https://nmikstas.github.io/resources/images/fog.png", scene);
 
-    var createNewSystem = function() {
-        if (particleSystem) {
+    var createNewSystem = function()
+    {
+        if (particleSystem)
+        {
             particleSystem.dispose();
         }
 
@@ -772,7 +774,7 @@ var createScene = function ()
 	    particleSystem.minSize = 3.5;
         particleSystem.maxSize = 5.0;
         particleSystem.minLifeTime = Number.MAX_SAFE_INTEGER;
-        particleSystem.emitRate = 50000;
+        particleSystem.emitRate = 500;
         particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_STANDARD;
         particleSystem.gravity = new BABYLON.Vector3(0, 0, 0);
         particleSystem.direction1 = new BABYLON.Vector3(0, 0, 0);
@@ -781,7 +783,7 @@ var createScene = function ()
 	    particleSystem.maxAngularSpeed = 2;
         particleSystem.minEmitPower = .5;
         particleSystem.maxEmitPower = 1;
-        particleSystem.updateSpeed = 0.005;
+        particleSystem.updateSpeed = 0.0025;
     
         particleSystem.start();
     }
@@ -808,7 +810,8 @@ var createScene = function ()
         blinkRand--;
         if(blinkRand <= 0)
         {
-            blinkRand = Math.round(Math.random() * 40);
+            blinkRand = Math.round(Math.random() * 10);
+            blinkRand = 1.5 ** blinkRand;
 
             if(!isRedLightOn)
             {
