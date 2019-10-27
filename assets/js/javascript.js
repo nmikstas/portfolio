@@ -551,42 +551,6 @@ var createScene = function ()
     /********************************* Mouse and Pick Functions **********************************/
     var hl = new BABYLON.HighlightLayer("hl1", scene); //Add the highlight layer.
     
-    scene.onPointerMove = function ()
-    {
-        //Get the pick result and remove any stencils from the scene.
-        var pickResult = scene.pick(scene.pointerX, scene.pointerY);
-        hl.removeMesh(owall3);
-        hl.removeMesh(iwall6);
-        hl.removeMesh(owall18);
-        hl.removeMesh(owall17);
-        hl.removeMesh(iwall5);
-
-        console.log(pickResult.pickedMesh);
-        if (pickResult.hit)
-        {
-            switch(pickResult.pickedMesh.name)
-            {
-                case "owall3": //Web slide.
-                    hl.addMesh(owall3, BABYLON.Color3.Green());
-                    break;
-                case "iwall6": //Masters slide.
-                    hl.addMesh(iwall6, BABYLON.Color3.Green());
-                    break;
-                case "owall18": //Embedded slide.
-                    hl.addMesh(owall18, BABYLON.Color3.Green());
-                    break;
-                case "owall17": //DSP slide.
-                    hl.addMesh(owall17, BABYLON.Color3.Green());
-                    break;
-                case "iwall5": //Game slide.
-                    hl.addMesh(iwall5, BABYLON.Color3.Green());
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
-
     //Reset scene function.
     var resetScene = function()
     {
@@ -622,6 +586,18 @@ var createScene = function ()
 
     owall3.actionManager.registerAction
     (
+        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger,
+        function(event){hl.addMesh(owall3, BABYLON.Color3.Green());})
+    );
+
+    owall3.actionManager.registerAction
+    (
+        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger,
+        function(event){hl.removeMesh(owall3);})
+    );
+
+    owall3.actionManager.registerAction
+    (
         new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, 
         function(event)
         {
@@ -638,6 +614,18 @@ var createScene = function ()
 
             setTimeout(resetScene, 1500);
         })
+    );
+
+    iwall6.actionManager.registerAction
+    (
+        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger,
+        function(event){hl.addMesh(iwall6, BABYLON.Color3.Green());})
+    );
+
+    iwall6.actionManager.registerAction
+    (
+        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger,
+        function(event){hl.removeMesh(iwall6);})
     );
 
     iwall6.actionManager.registerAction
@@ -662,6 +650,18 @@ var createScene = function ()
 
     owall18.actionManager.registerAction
     (
+        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger,
+        function(event){hl.addMesh(owall18, BABYLON.Color3.Green());})
+    );
+
+    owall18.actionManager.registerAction
+    (
+        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger,
+        function(event){hl.removeMesh(owall18);})
+    );
+
+    owall18.actionManager.registerAction
+    (
         new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, 
         function(event)
         {
@@ -682,6 +682,18 @@ var createScene = function ()
 
     owall17.actionManager.registerAction
     (
+        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger,
+        function(event){hl.addMesh(owall17, BABYLON.Color3.Green());})
+    );
+
+    owall17.actionManager.registerAction
+    (
+        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger,
+        function(event){hl.removeMesh(owall17);})
+    );
+
+    owall17.actionManager.registerAction
+    (
         new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, 
         function(event)
         {
@@ -698,6 +710,18 @@ var createScene = function ()
 
             setTimeout(resetScene, 1500);
         })
+    );
+
+    iwall5.actionManager.registerAction
+    (
+        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger,
+        function(event){hl.addMesh(iwall5, BABYLON.Color3.Green());})
+    );
+
+    iwall5.actionManager.registerAction
+    (
+        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger,
+        function(event){hl.removeMesh(iwall5);})
     );
 
     iwall5.actionManager.registerAction
