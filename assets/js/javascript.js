@@ -1,5 +1,10 @@
 var canvas = document.getElementById("renderCanvas"); // Get the canvas element 
-var engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
+var engine = new BABYLON.Engine(canvas, true, { stencil: true }); // Generate the BABYLON 3D engine
+var fadeToLink = false; //Used for fade out 
+var fadeFirst  = false; //Initialize fadout when it first starts.
+var waitSlides = false; //Wait for slides to reanimate after fadeout.
+var spotAnim;
+var cameraAnim;
 
 /************************************* Main Babylon Function *************************************/
 var createScene = function ()
@@ -425,7 +430,7 @@ var createScene = function ()
     camera.animations.push(animationPosX);
 
     //Run the camera animations.
-    var cameraAnim = scene.beginAnimation(camera, 0, 1440, true);
+    cameraAnim = scene.beginAnimation(camera, 0, 1440, true);
 
     //Animate the spotlight
     light3.animations = [];
@@ -495,7 +500,7 @@ var createScene = function ()
     light3.animations.push(spotAnimX);
 
     //Run the spotlight animations.
-    var spotAnim = scene.beginAnimation(light3, 0, 1692, true);
+    spotAnim = scene.beginAnimation(light3, 0, 1692, true);
 
     /******************************************** Fog ********************************************/
     scene.fogMode = BABYLON.Scene.FOGMODE_EXP2;
@@ -542,7 +547,179 @@ var createScene = function ()
     });
     
     UiPanel.addControl(button);
+
+    /********************************* Mouse and Pick Functions **********************************/
+    var hl = new BABYLON.HighlightLayer("hl1", scene); //Add the highlight layer.
     
+    scene.onPointerMove = function ()
+    {
+        //Get the pick result and remove any stencils from the scene.
+        var pickResult = scene.pick(scene.pointerX, scene.pointerY);
+        hl.removeMesh(owall3);
+        hl.removeMesh(iwall6);
+        hl.removeMesh(owall18);
+        hl.removeMesh(owall17);
+        hl.removeMesh(iwall5);
+
+        console.log(pickResult.pickedMesh);
+        if (pickResult.hit)
+        {
+            switch(pickResult.pickedMesh.name)
+            {
+                case "owall3": //Web slide.
+                    hl.addMesh(owall3, BABYLON.Color3.Green());
+                    break;
+                case "iwall6": //Masters slide.
+                    hl.addMesh(iwall6, BABYLON.Color3.Green());
+                    break;
+                case "owall18": //Embedded slide.
+                    hl.addMesh(owall18, BABYLON.Color3.Green());
+                    break;
+                case "owall17": //DSP slide.
+                    hl.addMesh(owall17, BABYLON.Color3.Green());
+                    break;
+                case "iwall5": //Game slide.
+                    hl.addMesh(iwall5, BABYLON.Color3.Green());
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    //Reset scene function.
+    var resetScene = function()
+    {
+        ceilMat.emissiveColor = new BABYLON.Color3(0, 0, 0);
+        floorMat.emissiveColor = new BABYLON.Color3(0, 0, 0);
+        mat1.emissiveColor = new BABYLON.Color3(0, 0, 0);
+        mat2.emissiveColor = new BABYLON.Color3(0, 0, 0);
+        mat3.emissiveColor = new BABYLON.Color3(0, 0, 0);
+        mat4.emissiveColor = new BABYLON.Color3(0, 0, 0);
+        mat5.emissiveColor = new BABYLON.Color3(0, 0, 0);
+        mat6.emissiveColor = new BABYLON.Color3(0, 0, 0);
+        mat7.emissiveColor = new BABYLON.Color3(0, 0, 0);
+        mat8.emissiveColor = new BABYLON.Color3(0, 0, 0);
+        mat9.emissiveColor = new BABYLON.Color3(0, 0, 0);
+        spotAnim.reset();
+        cameraAnim.reset();
+        spotAnim.restart();
+        cameraAnim.restart();
+        UiPanel.addControl(button);
+        camera.detachControl(canvas, true);
+        camera.rotation.x = 0;
+        camera.rotation.y = 0;
+        camera.rotation.z = 0;
+        waitSlides = false;
+    }
+
+    //Add actionManager on each slide
+    owall3.actionManager  = new BABYLON.ActionManager(scene);
+    iwall6.actionManager  = new BABYLON.ActionManager(scene);
+    owall18.actionManager = new BABYLON.ActionManager(scene);
+    owall17.actionManager = new BABYLON.ActionManager(scene);
+    iwall5.actionManager  = new BABYLON.ActionManager(scene);
+
+    owall3.actionManager.registerAction
+    (
+        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, 
+        function(event)
+        {
+            hl.removeMesh(owall3);
+            fadeToLink = true;
+            fadeFirst  = true;
+            waitSlides = true;
+
+            setTimeout(function()
+            {
+                fadeToLink = false;
+                window.open("https://nmikstas.github.io/portfolio/web.html", "_self");
+            }, 1000);
+
+            setTimeout(resetScene, 1500);
+        })
+    );
+
+    iwall6.actionManager.registerAction
+    (
+        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, 
+        function(event)
+        {
+            hl.removeMesh(iwall6);
+            fadeToLink = true;
+            fadeFirst  = true;
+            waitSlides = true;
+
+            setTimeout(function()
+            {
+                fadeToLink = false;
+                window.open("https://nmikstas.github.io/portfolio/fpga.html", "_self");
+            }, 1000);
+
+            setTimeout(resetScene, 1500);
+        })
+    );
+
+    owall18.actionManager.registerAction
+    (
+        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, 
+        function(event)
+        {
+            hl.removeMesh(owall18);
+            fadeToLink = true;
+            fadeFirst  = true;
+            waitSlides = true;
+
+            setTimeout(function()
+            {
+                fadeToLink = false;
+                window.open("https://nmikstas.github.io/portfolio/embedded.html", "_self");
+            }, 1000);
+
+            setTimeout(resetScene, 1500);
+        })
+    );
+
+    owall17.actionManager.registerAction
+    (
+        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, 
+        function(event)
+        {
+            hl.removeMesh(owall17);
+            fadeToLink = true;
+            fadeFirst  = true;
+            waitSlides = true;
+
+            setTimeout(function()
+            {
+                fadeToLink = false;
+                window.open("https://nmikstas.github.io/portfolio/dsp.html", "_self");
+            }, 1000);
+
+            setTimeout(resetScene, 1500);
+        })
+    );
+
+    iwall5.actionManager.registerAction
+    (
+        new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, 
+        function(event)
+        {
+            hl.removeMesh(iwall5);
+            fadeToLink = true;
+            fadeFirst  = true;
+            waitSlides = true;
+
+            setTimeout(function()
+            {
+                fadeToLink = false;
+                window.open("https://nmikstas.github.io/portfolio/games.html", "_self");
+            }, 1000);
+
+            setTimeout(resetScene, 1500);
+        })
+    );
+
     /******************************** Advanced Animation Updates *********************************/
     var alpha = 0;
     var isRedLightOn = false;
@@ -579,14 +756,43 @@ var createScene = function ()
             isRedLightOn = !isRedLightOn;
         }
 
-        //Give the slides a surging glow.
-        alpha += .05;
-        var color = .1 * Math.cos(alpha) + .05;
-        webMat.emissiveColor =      new BABYLON.Color3(color * .5, color * .5, color);
-        mastersMat.emissiveColor =  new BABYLON.Color3(color * .5, color * .5, color);
-        embeddedMat.emissiveColor = new BABYLON.Color3(color * .5, color * .5, color);
-        dspMat.emissiveColor =      new BABYLON.Color3(color * .5, color * .5, color);
-        gameMat.emissiveColor =     new BABYLON.Color3(color * .5, color * .5, color);
+        if(fadeFirst)
+        {
+            fadeFirst = false;
+            alpha = 0;
+            webMat.emissiveColor =      new BABYLON.Color3(0, 0, 0);
+        }
+
+        if(!fadeToLink && !waitSlides) //Give the slides a surging glow.
+        {
+            alpha += .05;
+            var color = .1 * Math.cos(alpha) + .05;
+            webMat.emissiveColor      = new BABYLON.Color3(color * .5, color * .5, color);
+            mastersMat.emissiveColor  = new BABYLON.Color3(color * .5, color * .5, color);
+            embeddedMat.emissiveColor = new BABYLON.Color3(color * .5, color * .5, color);
+            dspMat.emissiveColor      = new BABYLON.Color3(color * .5, color * .5, color);
+            gameMat.emissiveColor     = new BABYLON.Color3(color * .5, color * .5, color);
+        }
+        else //Fade to white.
+        {
+            alpha += .015;
+            webMat.emissiveColor      = new BABYLON.Color3(alpha, alpha, alpha);
+            mastersMat.emissiveColor  = new BABYLON.Color3(alpha, alpha, alpha);
+            embeddedMat.emissiveColor = new BABYLON.Color3(alpha, alpha, alpha);
+            dspMat.emissiveColor      = new BABYLON.Color3(alpha, alpha, alpha);
+            gameMat.emissiveColor     = new BABYLON.Color3(alpha, alpha, alpha);
+            floorMat.emissiveColor    = new BABYLON.Color3(alpha, alpha, alpha);
+            ceilMat.emissiveColor     = new BABYLON.Color3(alpha, alpha, alpha);
+            mat1.emissiveColor        = new BABYLON.Color3(alpha, alpha, alpha);
+            mat2.emissiveColor        = new BABYLON.Color3(alpha, alpha, alpha);
+            mat3.emissiveColor        = new BABYLON.Color3(alpha, alpha, alpha);
+            mat4.emissiveColor        = new BABYLON.Color3(alpha, alpha, alpha);
+            mat5.emissiveColor        = new BABYLON.Color3(alpha, alpha, alpha);
+            mat6.emissiveColor        = new BABYLON.Color3(alpha, alpha, alpha);
+            mat7.emissiveColor        = new BABYLON.Color3(alpha, alpha, alpha);
+            mat8.emissiveColor        = new BABYLON.Color3(alpha, alpha, alpha);
+            mat9.emissiveColor        = new BABYLON.Color3(alpha, alpha, alpha);
+        }
 
         light1.position = camera.position;
     });
