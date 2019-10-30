@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Portable Potentiostat</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!--Reset Styling-->
+    <link rel="stylesheet" type="text/css" href="../assets/css/reset.css">
+    
+    <!--Bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    
+    <!--Personal Styling-->
+    <link rel="stylesheet" type="text/css" href="../assets/css/style.css">
+</head>
+    
+<body class="d-flex flex-column" id="main-body">
+    
+    <!--Header-->
+    <header class="header-class">
+        <nav class="navbar navbar-dark navbar-expand-lg">
+            <a class="navbar-brand nav-title px-2" href="../index.html">Nick Mikstas Portfolio</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../resume.html">Resume</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../web.html">Web</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../embedded.html">Embedded</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../fpga.html">FPGA</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../dsp.html">DSP</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../games.html">Games</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+        
+    <!--Main content body-->
+    <div id="page-body">
+        <div class="container bg-white px-4 py-4 my-4">
+            <div class="project-title mb-4">Portable Potentiostat</div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="indent">Potentiostat Overview</h4>
+                    <p>
+                        During my time at Santa Clara University, I worked on a portable potentiostat called Aquasift.
+                        Aquasift was designed to be low powered and linked to a cell phone with a USB cable for field
+                        use.  Also, desktop software was designed for more detailed tests and analysis.  Aquasift was
+                        designed to support both binary and ASCII data transfers.  Aquasift can be used not only with
+                        its custom software but can also be used with any terminal software as its output data stream
+                        can be formatted as a MATLAB script.  The aquasift has three methods for connecting to test
+                        cells.  First, there are banana connectors for standard test leads. Second, There are pads on
+                        the PCB for an optional screw terminal connector.  Third, there is a clamp on the bottom of
+                        the PCB designed for DropSens printed electrodes.
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/potentiostat">
+                        Potentiostat Repository
+                    </a>
+                    <br>
+
+                    <div class="divider"></div>
+                    <h4 class="indent">Potentiostat Pictures</h4>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Aquasift_PCB_Top.png" alt="Potentiostat Top View">
+                        <div class="overlay overlay-text">Potentiostat PCB Top View</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Aquasift_PCB_Bottom.png" alt="Potentiostat Bottom View">
+                        <div class="overlay overlay-text">Potentiostat PCB Bottom View</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Aquasift_Disassembled.png" alt="Potentiostat Disassembled">
+                        <div class="overlay overlay-text">Potentiostat Disassembled</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Aquasift_Electrode_Holder.png" alt="Potentiostat Electrode Holder">
+                        <div class="overlay overlay-text">Potentiostat Electrode Holder</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Aquasift_Assembled.png" alt="Assembled Potentiostat">
+                        <div class="overlay overlay-text">Assembled Potentiostat</div>
+                    </div>     
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Potentiostat Schematics</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        The Potentiostat PCBs were designed using Express PCB.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/potentiostat/tree/master/Schematics_And_PCBs">
+                        Potentiostat PCB Source
+                    </a>
+                    <br>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="hov border-2px">
+                        <img class="img-fluid img-item" src="images/Aquasift_Schematic_Page_1.png" alt="Potentiostat Schematic Page 1">
+                        <div class="overlay overlay-text">Potentiostat Schematic Page 1</div>
+                    </div> 
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="hov border-2px">
+                        <img class="img-fluid img-item" src="images/Aquasift_Schematic_Page_2.png" alt="Potentiostat Schematic Page 2">
+                        <div class="overlay overlay-text">Potentiostat Schematic Page 2</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="hov border-2px">
+                        <img class="img-fluid img-item" src="images/Aquasift_Schematic_Page_3.png" alt="Potentiostat Schematic Page 3">
+                        <div class="overlay overlay-text">Potentiostat Schematic Page 3</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="hov border-2px">
+                        <img class="img-fluid img-item" src="images/Aquasift_Schematic_Page_4.png" alt="Potentiostat Schematic Page 4">
+                        <div class="overlay overlay-text">Potentiostat Schematic Page 4</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Potentiostat PCB Design</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2"></div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Aquasift_PCB_Top_Layer.png" alt="Potentiostat PCB Top Layer">
+                        <div class="overlay overlay-text">Potentiostat PCB Top Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Aquasift_PCB_Bottom_Layer.png" alt="Potentiostat PCB Bottom Layer">
+                        <div class="overlay overlay-text">Potentiostat PCB Bottom Layer</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Aquasift_PCB_Power_Layer.png" alt="Potentiostat PCB Power Layer">
+                        <div class="overlay overlay-text">Potentiostat PCB Power Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Aquasift_PCB_Ground_Layer.png" alt="Potentiostat PCB Ground Layer">
+                        <div class="overlay overlay-text">Potentiostat PCB Ground Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Aquasift_PCB_All_Layers.png" alt="Potentiostat PCB Combined Layers">
+                        <div class="overlay overlay-text">Potentiostat Combined Layers</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Potentiostat Enclosure</h4>
+                </div>
+            </div>
+
+             <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        The Potentiostat enclosure was designed in Free CAD.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/potentiostat/tree/master/Enclosure/FreeCAD_Files">
+                        Potentiostat CAD Enclosure Source
+                    </a>
+                    <br>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2"></div>
+                
+                <div class="col-md-8">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/aquasift_cad_enclosure.png" alt="Potentiostat CAD Enclosure">
+                        <div class="overlay overlay-text">Potentiostat CAD Enclosure</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Potentiostat Desktop Software</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        The desktop software for the Aquasift was written in C# and developed using Visual Studios.
+                        The desktop software was designed to run on Windows computers.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/potentiostat/tree/master/Desktop_Software/AquaSift_V_00_01">
+                        Potentiostat Desktop Software Source
+                    </a>
+                    <br>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Aquasift_Software_1.png" alt="Aquasift Software Screenshot, Test Parameter Setup">
+                        <div class="overlay overlay-text">Aquasift Software Screenshot, Test Parameter Setup</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Aquasift_Software_2.png" alt="Aquasift Software Screenshot, Terminal Window">
+                        <div class="overlay overlay-text">Aquasift Software Screenshot, Terminal Window</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Aquasift_Software_3.png" alt="Aquasift Software Screenshot, Test Results Window">
+                        <div class="overlay overlay-text">Aquasift Software Screenshot, Test Results Window</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Aquasift_Software_4.png" alt="Aquasift Software Screenshot, Peak Measurements">
+                        <div class="overlay overlay-text">Aquasift Software Screenshot, Peak Measurements</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Potentiostat Documentation</h4>
+
+                    <p>
+                        I created some basic instructions for operating the potentiostat along with a technical overview.
+                        Also, I created documentation showing the binary data stream and how to interpret it.  This document
+                        was intended to help people interfacing with the device parse the incoming data.
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/potentiostat/tree/master/Documentation">
+                        Potentiostat Documentation Source
+                    </a>
+                    <br>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Potentiostat Firmware</h4>
+
+                    <p>
+                        The firmware for the Aquasift was written in C++ and developed using Atmel Studios.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/potentiostat/tree/master/Firmware/AquaSift_V0012">
+                        Potentiostat Firmware Source
+                    </a>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+    <!--Footer-->
+    <footer id="sticky-footer" class="pt-4 pb-1">
+        <div class="container text-center">
+            <small>&copy;Nick Mikstas - nmikstas@alumni.scu.edu</small>
+        </div>
+    </footer>
+        
+    <!--jQuery-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        
+    <!--Bootstrap-->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+        
+</html>

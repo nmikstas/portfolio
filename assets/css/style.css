@@ -19,6 +19,16 @@ h1
     opacity: .80;
 }
 
+h4
+{
+    font-family: sans-serif;
+    font-weight: bold;
+    font-size: 20px;
+    color: #070707;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
 h5
 {
     font-family: sans-serif;
@@ -35,6 +45,8 @@ p
     font-size: 1.2rem;
     font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif;
     color: #3f3f3f;
+    padding-left: 2.0rem;
+    padding-right: 2.0rem;
 }
 
 ul
@@ -230,6 +242,53 @@ footer
     font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif;
     border: 0;
     color: #4708f5;
+}
+
+.indent
+{
+    padding-left: 2.0rem;
+    padding-right: 2.0rem;
+}
+
+.divider
+{
+    border-bottom: 3px solid #666666;
+    margin-bottom: 1.0rem;
+}
+
+.hov
+{
+    width: 100%;
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.overlay
+{
+    position: absolute;
+    text-align: left;
+    transition: .5s ease;
+    width: 100%;
+    opacity: 0;
+    bottom: 0;
+}
+
+.hov:hover .overlay
+{
+    opacity: .7;
+}
+
+.overlay-text
+{
+    background-color: #000000;
+    color: white;
+    font-size: 16px;
+    padding: 16px 32px;
+}
+
+.border-2px
+{
+    border: 2px solid #666666;
 }
 
 

@@ -601,6 +601,7 @@ var createScene = function ()
         new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, 
         function(event)
         {
+            cameraAnim.pause();
             hl.removeMesh(owall3);
             fadeToLink = true;
             fadeFirst  = true;
@@ -633,6 +634,7 @@ var createScene = function ()
         new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, 
         function(event)
         {
+            cameraAnim.pause();
             hl.removeMesh(iwall6);
             fadeToLink = true;
             fadeFirst  = true;
@@ -665,6 +667,7 @@ var createScene = function ()
         new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, 
         function(event)
         {
+            cameraAnim.pause();
             hl.removeMesh(owall18);
             fadeToLink = true;
             fadeFirst  = true;
@@ -697,6 +700,7 @@ var createScene = function ()
         new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, 
         function(event)
         {
+            cameraAnim.pause();
             hl.removeMesh(owall17);
             fadeToLink = true;
             fadeFirst  = true;
@@ -729,6 +733,7 @@ var createScene = function ()
         new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, 
         function(event)
         {
+            cameraAnim.pause();
             hl.removeMesh(iwall5);
             fadeToLink = true;
             fadeFirst  = true;
