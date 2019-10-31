@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>OSR USB FX2 Linux Driver</title>
+    <title>LPC-10 Talking Clock</title>
     
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
@@ -29,7 +29,7 @@
             </button>
 
             <div class="container text-center">
-                <h1>OSR Linux Driver</h1>
+                <h1>LPC-10 Talking Clock</h1>
             </div>
 
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -63,54 +63,55 @@
     <!--Main content body-->
     <div id="page-body">
         <div class="container bg-white px-4 py-4 my-4">
-            <div class="project-title mb-4">OSR USB FX2 Linux Driver</div>
-
-            <div class="row">
-                <div class="col-md-8">
-                    <h4 class="indent">OSR USB FX2 Linux Driver Overview</h4>
-                    <p>
-                        One of the classes I took at UCSC Santa Cruz Extension was a Linux kernel class.
-                        I had to do a project for the class so I decided to to learn how to write a
-                        Linux USB driver.  I had an interest in learning about the USB protocol for
-                        other projects I wanted to do.  I found the OSR USB FX2 development board on the
-                        internet and bought one.  It is a board used for learning USB drivers for Windows.
-                        I searched the internet and found a driver that someone wrote for the board but
-                        it was based on an older version of Linux and did not compile.  I rebuilt my own
-                        driver from scratch based on the USB skeleton file found in the Linux kernel source
-                        code.  I was able to get the device working. I made a presentation for the class
-                        which is linked below.
-                    </p>
-
-                    <a class="page-link indent" href="https://github.com/nmikstas/osr-usb-fx2-linux-driver">
-                        OSR USB FX2 Linux Driver Repository
-                    </a>
-                    <br>                    
-                </div>
-
-                <div class="col-md-4">
-                    <div class="hov">
-                        <img class="img-fluid img-item" src="images/OSR_USB_FX2.jpg" alt="OSR USB FX2 Board">
-                        <div class="overlay overlay-text">OSR USB FX2 Board</div>
-                    </div>
-                </div>
-            </div>
+            <div class="project-title mb-4">LPC-10 Talking Clock</div>
 
             <div class="row">
                 <div class="col-md-12">
-                    <div class="divider"></div>
-                    <h4 class="indent">OSR USB FX2 Linux Driver Source Files</h4>
+                    <h4 class="indent">LPC-10 Talking Clock Overview</h4>
+                    <div class="hov w-50 ml-4 border-2px float-right">
+                        <img class="img-fluid img-item" src="images/LPC_10.png" alt="LPC-10 Block Diagram">
+                        <div class="overlay overlay-text">LPC-10 Block Diagram</div>
+                    </div>
                     <p>
-                        The following is the source code for the driver along with an application to
-                        demonstrate its use as well as other supporting files.
+                        This is a small project I created while taking a class on speech encoding.
+                        I had a Speak and Math when I was young and never knew how it worked...until
+                        I took that class.  I wanted to find out more so I was looking online and found
+                        an Arduino project by Peter Knight called Talkie.  He had written code that
+                        simulated the TI speech synthesis chip used in the late 70s and early 80s.
+                        I took his code and ported it over to MATLAB and used some of the voice data
+                        from his project to create a program that speaks the current time.
                     </p>
-                    <a class="page-link indent" href="https://github.com/nmikstas/osr-usb-fx2-linux-driver/tree/master/DriverSourceCode">
-                        OSR USB FX2 Linux Driver Source Files
+
+                    <div class="divider"></div>
+                    <h4 class="indent">Talking Clock Source File</h4>
+                    <p>
+                        The source code has been placed into a single MATLAB file.  The top
+                        portion is the speech data followed by the time parsing function.
+                        The speech functions and lattice filter are at the bottom.
+                    </p>
+
+                    <a class="page-link indent" href="talkingClockSource.html">
+                        LPC-10 Talking Clock Source
                     </a>
+                    <br>
+
+                    <div class="divider"></div>
+                    <h4 class="indent">Talking Clock Sampled Audio Output</h4>
+
+                    <audio controls class="d-block w-100 pb-3">
+                        <source src="audio/ClockSample1.mp3" type="audio/mpeg">
+                    </audio>
+                    <audio controls class="d-block w-100 pb-3">
+                        <source src="audio/ClockSample2.mp3" type="audio/mpeg">
+                    </audio>
+                    <audio controls class="d-block w-100 pb-3">
+                        <source src="audio/ClockSample3.mp3" type="audio/mpeg">
+                    </audio>
                 </div>
             </div>
         </div>
     </div>
-
+        
     <!--Footer-->
     <footer id="sticky-footer" class="pt-4 pb-1">
         <div class="container text-center">

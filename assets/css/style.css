@@ -15,8 +15,7 @@ h1
     font-weight: bold;
     color: #ffffff;
     text-align: center;
-    padding: 30px;
-    opacity: .80;
+    width: 100%;
 }
 
 h4
@@ -54,6 +53,16 @@ ul
     list-style-type: disc;
     margin-left: 10%;
 }
+
+pre
+{
+    overflow-x: auto;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
+ }
 
 /******************************************** Header *********************************************/
 .header-class
