@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Game Controller</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!--Reset Styling-->
+    <link rel="stylesheet" type="text/css" href="../assets/css/reset.css">
+    
+    <!--Bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    
+    <!--Personal Styling-->
+    <link rel="stylesheet" type="text/css" href="../assets/css/style.css">
+</head>
+    
+<body class="d-flex flex-column" id="main-body">
+    
+    <!--Header-->
+    <header class="header-class">
+        <nav class="navbar navbar-dark navbar-expand-lg">
+            <a class="navbar-brand nav-title px-2" href="../index.html">Nick Mikstas Portfolio</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../resume.html">Resume</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../web.html">Web</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../embedded.html">Embedded</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../fpga.html">FPGA</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../dsp.html">DSP</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../games.html">Games</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+        
+    <!--Main content body-->
+    <div id="page-body">
+        <div class="container bg-white px-4 py-4 my-4">
+            <div class="project-title mb-4">Game Controller</div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="indent">Game Controller Overview</h4>
+                    <p>
+                        After reverse engineering the OSR USB FX2 firmware, I wanted to build a USB based project.
+                        I decided to build a game controller.  The controller has two processors, one for the USB
+                        interface and one for the analog data captures.  The analog stick information is transferred
+                        to the USB controller through the I2C communication lines.  All the buttons on the controller
+                        use hardware debouncing circuits.  The firmware for the USB controller is stored in an I2C
+                        based EEPROM and was assembled using my custom made 8051 assembler.
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/controller">
+                        Game Controller Repository
+                    </a>
+                    <br>
+
+                    <div class="divider"></div>
+                    <h4 class="indent">Game Controller Pictures</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Game_Controller_PCBs_Top.png" alt="Game Controller PCBS Top View">
+                        <div class="overlay overlay-text">Game Controller PCBS Top View</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Game_Controller_PCBs_Bottom.png" alt="Game Controller PCBS Bottom View">
+                        <div class="overlay overlay-text">Game Controller PCBS Bottom View</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Game_Controller_Disassembled.png" alt="Game Controller Disassembled">
+                        <div class="overlay overlay-text">Game Controller Disassembled</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Controller_Top.png" alt="Game Controller Top View">
+                        <div class="overlay overlay-text">Game Controller Top View</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Controller_Bottom.png" alt="Game Controller Bottom View">
+                        <div class="overlay overlay-text">Game Controller Bottom View</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Controller_Front.png" alt="Game Controller Front View">
+                        <div class="overlay overlay-text">Game Controller Front View</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Game Controller Schematics</h4>
+                </div>
+            </div>
+
+           <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        The Game Controller PCBs were designed using Express PCB.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/controller/tree/master/PCB_Design_Files">
+                        Game Controller PCB Source
+                    </a>
+                    <br>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="hov border-2px">
+                        <img class="img-fluid img-item" src="images/Game_Controller_Schematic_Page_1.png" alt="Game Controller Schematic Page 1">
+                        <div class="overlay overlay-text">Game Controller Schematic Page 1</div>
+                    </div> 
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="hov border-2px">
+                        <img class="img-fluid img-item" src="images/Game_Controller_Schematic_Page_2.png" alt="Game Controller Schematic Page 2">
+                        <div class="overlay overlay-text">Game Controller Schematic Page 2</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Game Controller PCB Design</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2"></div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Controller_Top_Layer.png" alt="Game Controller PCB Top Layer">
+                        <div class="overlay overlay-text">Game Controller PCB Top Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Controller_Bottom_Layer.png" alt="Game Controller PCB Bottom Layer">
+                        <div class="overlay overlay-text">Game Controller PCB Bottom Layer</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Controller_Power_Layer.png" alt="Game Controller PCB Power Layer">
+                        <div class="overlay overlay-text">Game Controller PCB Power Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Controller_Ground_Layer.png" alt="Game Controller PCB Ground Layer">
+                        <div class="overlay overlay-text">Game Controller PCB Ground Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Controller_All_Layers.png" alt="Game Controller PCB Combined Layers">
+                        <div class="overlay overlay-text">Game Controller Combined Layers</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Game Controller CAD Design</h4>
+                </div>
+            </div>
+
+             <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        The game controller shell was designed in Free CAD.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/controller/tree/master/FreeCAD_Design_Files">
+                        Game Controller CAD Source
+                    </a>
+                    <br>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2"></div>
+                
+                <div class="col-md-8">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Game_Controller.png" alt="Game Controller CAD Image">
+                        <div class="overlay overlay-text">Game Controller CAD Image</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Game Controller Firmware</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        The Atmel microcontroller firmware was written in C using AVR Studio.  The Cyprus EZUSBFX2 firmware was
+                        written in assembly using my custom 8051 assembler.
+                    </p>
+                    <p>
+                        ATMega128 firmware source files:
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/controller/tree/master/AtMega168_Firmware">
+                        Game Controller Atmel Firmware
+                    </a>
+                    <br>
+                    <p>
+                        EZUSBFX2 firmware source files:
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/controller/tree/master/EZUSBFX2LP_Firmware">
+                        Game Controller Cyprus Firmware
+                    </a>
+                    <br>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Original Game Controller</h4>
+                    <p>
+                        Before I built the controller above, I built one with no printed parts.  The firmware is
+                        exactly the same and the schematic is nearly identical.  Below are pictures of the
+                        controller and its PCB design.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Old_Controller_Top.png" alt="Old Controller Top View">
+                        <div class="overlay overlay-text">Old Controller Top View</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Old_Controller_Bottom.png" alt="Old Controller Bottom View">
+                        <div class="overlay overlay-text">Old Controller Bottom View</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Original Game Controller PCB Design</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Old_Controller_PCB_Top_Layer.png" alt="Old Controller PCB Top Layer">
+                        <div class="overlay overlay-text">Old Controller PCB Top Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Old_Controller_PCB_Bottom_Layer.png" alt="Old Controller PCB Bottom Layer">
+                        <div class="overlay overlay-text">Old Controller PCB Bottom Layer</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3"></div>
+
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Old_Controller_PCB_All_Layers.png" alt="Old Controller PCB All Layers">
+                        <div class="overlay overlay-text">Old Controller PCB All Layers</div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+             
+                    
+        </div>
+    </div>
+        
+    <!--Footer-->
+    <footer id="sticky-footer" class="pt-4 pb-1">
+        <div class="container text-center">
+            <small>&copy;Nick Mikstas - nmikstas@alumni.scu.edu</small>
+        </div>
+    </footer>
+        
+    <!--jQuery-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        
+    <!--Bootstrap-->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+        
+</html>
