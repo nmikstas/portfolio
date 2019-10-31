@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>OSR USB FX2 Linux Driver</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!--Reset Styling-->
+    <link rel="stylesheet" type="text/css" href="../assets/css/reset.css">
+    
+    <!--Bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    
+    <!--Personal Styling-->
+    <link rel="stylesheet" type="text/css" href="../assets/css/style.css">
+</head>
+    
+<body class="d-flex flex-column" id="main-body">
+    
+    <!--Header-->
+    <header class="header-class">
+        <nav class="navbar navbar-dark navbar-expand-lg">
+            <a class="navbar-brand nav-title px-2" href="../index.html">Nick Mikstas Portfolio</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../resume.html">Resume</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../web.html">Web</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../embedded.html">Embedded</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../fpga.html">FPGA</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../dsp.html">DSP</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../games.html">Games</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+        
+    <!--Main content body-->
+    <div id="page-body">
+        <div class="container bg-white px-4 py-4 my-4">
+            <div class="project-title mb-4">OSR USB FX2 Linux Driver</div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <h4 class="indent">OSR USB FX2 Linux Driver Overview</h4>
+                    <p>
+                        One of the classes I took at UCSC Santa Cruz Extension was a Linux kernel class.
+                        I had to do a project for the class so I decided to to learn how to write a
+                        Linux USB driver.  I had an interest in learning about the USB protocol for
+                        other projects I wanted to do.  I found the OSR USB FX2 development board on the
+                        internet and bought one.  It is a board used for learning USB drivers for Windows.
+                        I searched the internet and found a driver that someone wrote for the board but
+                        it was based on an older version of Linux and did not compile.  I rebuilt my own
+                        driver from scratch based on the USB skeleton file found in the Linux kernel source
+                        code.  I was able to get the device working. I made a presentation for the class
+                        which is linked below.
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/osr-usb-fx2-linux-driver">
+                        OSR USB FX2 Linux Driver Repository
+                    </a>
+                    <br>                    
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/OSR_USB_FX2.jpg" alt="OSR USB FX2 Board">
+                        <div class="overlay overlay-text">OSR USB FX2 Board</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">OSR USB FX2 Linux Driver Source Files</h4>
+                    <p>
+                        The following is the source code for the driver along with an application to
+                        demonstrate its use as well as other supporting files.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/osr-usb-fx2-linux-driver/tree/master/DriverSourceCode">
+                        OSR USB FX2 Linux Driver Source Files
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Footer-->
+    <footer id="sticky-footer" class="pt-4 pb-1">
+        <div class="container text-center">
+            <small>&copy;Nick Mikstas - nmikstas@alumni.scu.edu</small>
+        </div>
+    </footer>
+        
+    <!--jQuery-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        
+    <!--Bootstrap-->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+        
+</html>
