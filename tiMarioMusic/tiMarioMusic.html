@@ -65,7 +65,272 @@
         <div class="container bg-white px-4 py-4 my-4">
             <div class="project-title mb-4">TI Super Mario Music</div>
 
-            
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="indent">Super Mario Music Overview</h4>
+                    <p>
+                        I took a class on DSP System Development and one subject learned I found interesting
+                        was digital resonators.  I made an expansion board for the DSP development kit we
+                        were using in class.  The board included a 128 X 64 graphical LCD.  I wrote a
+                        program that plays the outdoor music from the original Super Mario Brothers NES game
+                        and shows a simple graphic on the LCD.  I had disassembled the sound engine from
+                        Super Mario Brothers so I had the source code for the music as a starting point.  As
+                        part of the project, I had to also design a low pass filter to remove high frequency
+                        popping noises from the output audio stream.  The issue is that the digital resonators
+                        change their frequency abruptly and cause the output audio stream to create a
+                        significant popping noise during the note transitions.  The digital filter removes the
+                        popping noises.  Also, an optional echo effect was added to the project.
+                    </p>
+           
+                    <a class="page-link indent" href="https://github.com/nmikstas/ti-mario-music">
+                        TI Super Mario Music Repository
+                    </a>
+                    <br>
+
+                    <div class="divider"></div>
+                    <h4 class="indent">Super Mario Music PCB Pictures</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/SMB_PCB_Top.png" alt="Mario Music PCB Top">
+                        <div class="overlay overlay-text">Mario Music PCB Top</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/SMB_PCB_Bottom.png" alt="Mario Music PCB Bottom">
+                        <div class="overlay overlay-text">Mario Music PCB Bottom</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/SMB_Disassembled.png" alt="Mario Music PCB Sisassembled">
+                        <div class="overlay overlay-text">Mario Music PCB Disassembled</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/SMB_Assembled.png" alt="Mario Music PCB Assembled">
+                        <div class="overlay overlay-text">Mario Music PCB Assembled</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4"></div>
+
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/SMB_Display.png" alt="Mario Music PCB Display">
+                        <div class="overlay overlay-text">Mario Music Display</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Super Mario Music PCB Schematics</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        The TI Super Mario Music PCBs were designed using Express PCB.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/ti-mario-music/tree/master/PCB">
+                        TI Super Mario Music PCB Source
+                    </a>
+                    <br>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="hov border-2px">
+                        <img class="img-fluid img-item" src="images/SMB_Schematic_Page_1.png" alt="Super Mario Music Schematic Page 1">
+                        <div class="overlay overlay-text">Super Mario Music Schematic Page 1</div>
+                    </div> 
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="hov border-2px">
+                        <img class="img-fluid img-item" src="images/SMB_Schematic_Page_2.png" alt="Super Mario Music Schematic Page 2">
+                        <div class="overlay overlay-text">Super Mario Music Schematic Page 2</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Super Mario Music PCB Design</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2"></div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/SMB_Main_PCB_Top_Layer.png" alt="Main PCB Top Layer">
+                        <div class="overlay overlay-text">Main PCB Top Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/SMB_Main_PCB_Bottom_Layer.png" alt="Main PCB Bottom Layer">
+                        <div class="overlay overlay-text">Main PCB Bottom Layer</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/SMB_Main_PCB_Power_Layer.png" alt="Main PCB Power Layer">
+                        <div class="overlay overlay-text">Main PCB Power Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/SMB_Main_PCB_Ground_Layer.png" alt="Main PCB Ground Layer">
+                        <div class="overlay overlay-text">Main PCB Ground Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/SMB_Main_PCB_All_Layers.png" alt="Main PCB Combined Layers">
+                        <div class="overlay overlay-text">Main PCB Combined Layers</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2"></div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/SMB_Backplane_PCB_Top_Layer.png" alt="Backplane PCB Top Layer">
+                        <div class="overlay overlay-text">Backplane PCB Top Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/SMB_Backplane_PCB_Bottom_Layer.png" alt="Backplane PCB Bottom Layer">
+                        <div class="overlay overlay-text">Backplane PCB Bottom Layer</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/SMB_Backplane_PCB_Power_Layer.png" alt="Backplane PCB Power Layer">
+                        <div class="overlay overlay-text">Backplane PCB Power Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/SMB_Backplane_PCB_Ground_Layer.png" alt="Backplane PCB Ground Layer">
+                        <div class="overlay overlay-text">Backplane PCB Ground Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/SMB_Backplane_PCB_All_Layers.png" alt="Backplane PCB Combined Layers">
+                        <div class="overlay overlay-text">Backplane PCB Combined Layers</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">TI Super Mario Music Printed Parts</h4>
+                </div>
+            </div>
+
+             <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        The Super Mario Music Printed Parts were designed in Free CAD.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/ti-mario-music/tree/master/printedParts">
+                        Super Mario Music Printed Parts Source
+                    </a>
+                    <br>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2"></div>
+                
+                <div class="col-md-8">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/SMB_Printed_Parts.png" alt="Super Mario Music Printed Parts">
+                        <div class="overlay overlay-text">Super Mario Music Printed Parts</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Super Mario Music Firmware Source</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        The firmware was written in TI's Code Composer Studio.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/ti-mario-music/tree/master/marioMusicSource">
+                        Super Mario Music Firmware Source
+                    </a>
+                    <br>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">TI Super Mario Music Sampled Audio Output</h4>
+                    <p>
+                        Finally, Below are recordings of the output.  The first one is the audio after being passed
+                        through the low pass filter.  The second one has the filter disabled and popping noises during
+                        note transitions can be heard.  The third one has the echo feature active.
+                    </p>
+
+                    <audio controls class="d-block w-100 pb-3">
+                        <source src="audio/SMB_Filtered.mp3" type="audio/mpeg">
+                    </audio>
+                    <audio controls class="d-block w-100 pb-3">
+                        <source src="audio/SMB_Unfiltered.mp3" type="audio/mpeg">
+                    </audio>
+                    <audio controls class="d-block w-100 pb-3">
+                        <source src="audio/SMB_Echo.mp3" type="audio/mpeg">
+                    </audio>
+                </div>
+            </div>
         </div>
     </div>
         
