@@ -65,7 +65,139 @@
         <div class="container bg-white px-4 py-4 my-4">
             <div class="project-title mb-4">FPGA Filter Implementation</div>
 
-            
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="indent">FPGA Filter Implementation Overview</h4>
+                    <p>
+                        I assisted one of my fellow graduate students in some directed research she was doing
+                        on FPGA filter implementation.  She was tasked with understanding and realizing several
+                        types of filters on FPGA hardware.  All the filters designed were 15th order flters and
+                        used 16-bit fixed point math.  The performance and resource usage of the filters was
+                        then examined.  Her final presentation on her research can be viewed below:
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/fpga-filter-implementation/blob/master/Presentation/Filter%2BImplementation%2Bon%2Ba%2BFPGA%2BBoard_Xueyan%2BLu_06152017.pdf">
+                        FPGA Filter Implementation Presentation
+                    </a>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/fpga-filter-implementation">
+                        FPGA Filter Implementation Repository
+                    </a>
+                    <br>
+
+                    <div class="divider"></div>
+                    <h4 class="indent">FIR Filter</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <p>
+                        The FIR filter is the simplest and fastest of the four filters.  It takes advantage of
+                        symmetry with the use of pre-adders.  Also, an adder tree was used to minimize the
+                        combinational path delay.
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/fpga-filter-implementation/tree/master/FIR_Implementation">
+                        FIR Filter Source
+                    </a>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/FIR_Filter.png" alt="FIR Filter">
+                        <div class="overlay overlay-text">FIR Filter</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Least Mean Squared (LMS) Filter</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <p>
+                        The LMS adaptive filter completes its output calculations and weight updates in a
+                        single clock cycle.  Because of its single cycle operation, extensive combinational
+                        delays are present.  This filter can only run at a fraction of the speed of the
+                        FIR filter.
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/fpga-filter-implementation/tree/master/LMS_Implementation">
+                        LMS Filter Source
+                    </a>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/LMS_Adaptive_Filter.png" alt="LMS Filter">
+                        <div class="overlay overlay-text">LMS Filter</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Block FIR Filter</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <p>
+                        The block FIR filter was created as an initial test of the block concept as
+                        its compute blocks are much simpler than the LMS filter compute blocks. 
+                        The core of the filter is composed of four compute blocks and operates on
+                        four data samples per clock cycle.
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/fpga-filter-implementation/tree/master/Block_FIR_Implementation">
+                        Block FIR Filter Source
+                    </a>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Block_FIR_Filter.png" alt="Block FIR Filter">
+                        <div class="overlay overlay-text">Block FIR Filter</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Block LMS Filter</h4>
+                </div>
+            </div>
+    
+            <div class="row">
+                <div class="col-md-4">
+                    <p>
+                        The final and most complicated filter is the Block LMS filter.  It
+                        also has four compute blocks and can operate on four data samples at
+                        a time but it has a simple state machine that breaks its operations
+                        into two clock cycles.  One clock cycle computes the output value
+                        while the other clock cycle updates the weights.
+                    </p>
+    
+                    <a class="page-link indent" href="https://github.com/nmikstas/fpga-filter-implementation/tree/master/Block_LMS_Implementation">
+                        Block LMS Filter Source
+                    </a>
+                </div>
+    
+                <div class="col-md-8">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Block_LMS_Filter.png" alt="Block LMS Filter">
+                        <div class="overlay overlay-text">Block LMS Filter</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
         
