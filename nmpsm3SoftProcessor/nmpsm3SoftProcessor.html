@@ -65,7 +65,170 @@
         <div class="container bg-white px-4 py-4 my-4">
             <div class="project-title mb-4">NMPSM3 Soft Processor</div>
 
-            
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="indent">NMPSM3 Overview</h4>
+                    <p>
+                        After I took my first FPGA class at UCSC Extension, I was so amazed with the
+                        power these devices gave to the average person I decided to study them more
+                        in-depth.  I eventually realized I had enough logic design knowledge that I
+                        could build my own simple processor.  I started to build my own processor
+                        after learning about the KCPSM (nanoblaze) and I called it the NMPSM (Nick
+                        Mikstas Programmable State Machine).  It took three iterations before I was
+                        able to make a fully functional processor, hence the name NMPSM3.  Even though
+                        the NMPSM3 is inspired by the nanoblaze IO scheme, its internal structure is
+                        completely different.  The NMPSM3 is a 16-bit processor with four independent
+                        interrupts and a reset.  The NMPSM needs a minimum of four 18Kb BRAMS to be
+                        implemented: one for the registers, one for the stack, one for the decoder and
+                        at least 1 for the program ROM.  Once I got the processor working, I wrote an
+                        assembler for it and created a large project to show its capabilities.<br><br>
+                        When I first designed the NMPSM3, it was implemented on a Digilent Nexys 2
+                        board.  The Nexys 2 had a Xilinx Spartan 3 part on it.  After the successful
+                        implementation of the project, I did nothing with the NMPSM3 for several years.
+                        I eventually took a class at SCU that was basically the same class I took at UCSC
+                        Extension.  I decided to breath some life back into the NMPSM3 by updating the
+                        project to work on a Digilent Basys 3 FPGA board.  Since the new FPGA part (Artyx
+                        7) had so much more capability than the Spartan 3, I also added some upgrades to
+                        the project.  I wrote an extensive report on the project for the class.
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/nmpsm3/blob/master/documentation/Nick_Mikstas_ELEN_604_Final_Report.pdf">
+                        NMPSM3 Report
+                    </a>
+                    <a class="page-link indent" href="https://github.com/nmikstas/nmpsm3">
+                        NMPSM3 Repository
+                    </a>
+                    <br>
+
+                    <div class="divider"></div>
+                    <h4 class="indent">NMPSM3 Screen Captures</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/NMPSM3_Palette_Change.png" alt="Palette Change Demonstration">
+                        <div class="overlay overlay-text">Palette Change Demonstration</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/NMPSM3_Attribute_Table.png" alt="Attribute Table Demonstration">
+                        <div class="overlay overlay-text">Attribute Table Demonstration</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/NMPSM3_Base_Color.png" alt="Base Color Demonstration">
+                        <div class="overlay overlay-text">Base Color Demonstration</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/NMPSM3_Tiled_Clock.png" alt="Tiled Clock Demonstration">
+                        <div class="overlay overlay-text">Tiled Clock Demonstration</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/NMPSM3_Sprite_Mirroring.png" alt="Sprite Mirroring Demonstration">
+                        <div class="overlay overlay-text">Sprite Mirroring Demonstration</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/NMPSM3_Bouncing_Sprites.png" alt="Bouncing Sprites Demonstration">
+                        <div class="overlay overlay-text">Bouncing Sprites Demonstration</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/NMPSM3_Sprite_Audio.png" alt="Sprite Audio Demonstration">
+                        <div class="overlay overlay-text">Sprite Audio Demonstration</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/NMPSM3_Sprite_Priority.png" alt="Sprite Priority Demonstration">
+                        <div class="overlay overlay-text">Sprite Priority Demonstration</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">NMPSM3 Video Capture</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12" style="text-align:center">
+                    <iframe width="922" height="677" src="https://www.youtube.com/embed/5NPzkOcgw-o" 
+                        frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">NMPSM3 Hardware</h4>
+                    <p>
+                        Along with the processor, I built several other modules including a UART and picture
+                        processing unit (PPU) based on the 8-bit Nintendo.  Some of the Verilog code is rough
+                        because I was learning Verilog as I was creating this project.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/nmpsm3/tree/master/nmpsm3.srcs/sources_1/new">
+                        NMPSM3 Hardware
+                    </a>
+                    <br>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">NMPSM3 Assembler</h4>
+                    <p>
+                        An assembler was also written for the NMPSM3.  It is a basic assembler but it works
+                        quite well and has been used to write code for the NMPSM3 on several FPGA projects.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/nmpsm3/blob/master/Assembler/NMPSM3.java">
+                        NMPSM3 Assembler
+                    </a>
+                    <br>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">NMPSM3 Software</h4>
+                    <p>
+                        The first file below is the assembly language program that controls the project.
+                        The next file is a compiled version of the assembler.  The third file is a simple
+                        batch file that runs the assembler and assembles the NMPSM3 code into a .coe file.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/nmpsm3/tree/master/Software">
+                        NMPSM3 Software
+                    </a>
+                    <br>
+                </div>
+            </div>
         </div>
     </div>
         
