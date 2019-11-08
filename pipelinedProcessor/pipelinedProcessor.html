@@ -65,7 +65,94 @@
         <div class="container bg-white px-4 py-4 my-4">
             <div class="project-title mb-4">Simple Pipelined Processor</div>
 
-            
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="indent">Simple Pipelined Processor Overview</h4>
+                    <p>
+                        I took a computer architecture class as part of my graduate degree.  The final project
+                        for the class involved a pencil and paper project where we had to design a simple pipelined
+                        processor and describe its architecture.  The processor has five stages: fetch, decode,
+                        execute, memory and write back.  I decided to go all out and implement my processor in FPGA
+                        software. We were assigned two simple programs out of a total of five that we had to write
+                        to perform some simple task such as array value accumulation. I figured since I put in the
+                        time to design and simulate the processor, I would complete all five programming tasks.
+                        Below is the link to the original project guidelines:
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/simple-pipelined-processor/blob/master/documentation/project.pdf">
+                        Pipelined Processor Project Specification
+                    </a>
+                    <br>
+
+                    <p>
+                        The following link is the final report I turned in based on the processor I designed:
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/simple-pipelined-processor/blob/master/documentation/Nick_Mikstas_COEN_210_Final_Project.pdf">
+                        Pipelined Processor Final Report
+                    </a>
+                    <a class="page-link indent" href="https://github.com/nmikstas/potentiostat">
+                        Simple Pipelined Processor Repository
+                    </a>
+                    <br>
+
+                    <div class="divider"></div>
+                    <h4 class="indent">Simple Pipelined Processor Block Diagram</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="hov border-2px">
+                        <img class="img-fluid img-item" src="images/PP_Fetch_Decode_Stages.png" alt="Fetch and Decode Stages">
+                        <div class="overlay overlay-text">Fetch and Decode Stages</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="hov border-2px">
+                        <img class="img-fluid img-item" src="images/PP_Execute_Memory_Write_Back_Stages.png" alt="Memory and Writeback Stages">
+                        <div class="overlay overlay-text">Memory and Writeback Stages</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Simple Pipelined Processor Programs</h4>
+                    <p>
+                        Five different programs were written to test the functionality of the processor.  The programs
+                        are written in binary.  The equivalent assembly language command is written in the comments next
+                        to each binary command.  The commented section at the top of each file describes the operation
+                        of the program.
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/simple-pipelined-processor/tree/master/CPU_Programs">
+                        Simple Pipelined Processor Programs
+                    </a>
+                    <br>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Simple Pipelined Processor Source</h4>
+                    <p>
+                        Finally, Below are the Verilog source files for the processor.  Many of the files are very simple.
+                        Some of the files such as the register file and data memory are more complicated.  Each of the
+                        Verilog files corresponds to a block in the block diagram above.
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/simple-pipelined-processor/tree/master/Pipelined_CPU.srcs/sources_1/new">
+                        Simple Pipelined Processor Source
+                    </a>
+                    <br>
+                </div>
+            </div>
         </div>
     </div>
         
