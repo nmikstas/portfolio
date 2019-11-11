@@ -65,6 +65,113 @@
         <div class="container bg-white px-4 py-4 my-4">
             <div class="project-title mb-4">OSR Reverse Engineering</div>
 
+            <div class="row">
+                <div class="col-md-8">
+                    <h4 class="indent">OSR USB FX2 Firmware Reverse Engineering Overview</h4>
+                    <p>
+                        After writing a USB driver for the OSR USB FX2 learning board, I wanted to know how the
+                        firmware worked so I could build my own projects based on the Cypress EZUSBFX2 chip.
+                        I looked online but the firmware was not available from OSR.  I decided to reverse engineer
+                        the firmware and do everything from scratch.  I built an FPGA project to read and write I2C
+                        EEPROMS.  I then wrote my own 8051 disassembler and assembler.  I then went through the OSR
+                        firmware line by line and commented it thoroughly.  Finally, I realized the firmware could
+                        be optimized so I made a "slim" version of the firmware which I was then able to use as a
+                        skeleton framework for other projects.  Below are the various steps I took to complete this
+                        project.
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/osr-reverse-engineering">
+                        OSR Reverse Engineering Repository
+                    </a>
+                </div>
+            
+                <div class="col-md-4">      
+                    <img class="img-fluid img-item" src="images/OSR_USB_FX2.jpg" alt="OSR USB FX2 Board">
+                    <div class="overlay overlay-text">OSR USB FX2 Board</div>
+                </div>
+            </div>
+      
+            <br>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">STEP 1: Read the Firmware from the EEPROM</h4>
+            
+                    <p>
+                        The firmware in the OSR device is stored in an I2C based EEPROM.  The EEPROM is socketed so
+                        I was able to take it out easily.  I built an FPGA project that used my NMPSM3 processor and
+                        I2C controller that could read, write and copy I2C based EEPROMs.  Further detail on the
+                        NMPSM3 processor can be found under the FPGA Projects section of this website.  Below are
+                        the Verolog source files for the FPGA project:
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/osr-reverse-engineering/tree/master/HDL">
+                        OSR Reverse Engineering HDL
+                    </a>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Step 2: Create an 8051 Disassembler and Assembler</h4>
+            
+                    <p>
+                        Once I had the raw binary data from the EEPROM, I needed to disassemble it into assembly.
+                        The EZUSBFX2 chip has an 8051 processor core.  I wrote a basic assembler and disassembler
+                        for the 8051.  The source files for both are below:
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/osr-reverse-engineering/tree/master/Assembler_Disassembler">
+                        OSR Reverse Engineering Assembler/Disassembler
+                    </a>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Step 3: Thoroughly Comment the Disassembled Firmware</h4>
+            
+                    <p>
+                        Once I had the disassembled firmware, I began the long process of reverse engineering it.
+                        Below is the fully commented assembly code for the firmware.  Also, the raw hex data from
+                        the firmware dump is included:
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/osr-reverse-engineering/tree/master/OSR_Original_Firmware">
+                        OSR Reverse Engineering Original Firmware
+                    </a>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Step 4: Optimize the Firmware for Use in Future Projects</h4>
+            
+                    <p>
+                        Finally, the firmware was optimized and reduced in size.  The functionality of the smaller
+                        firmware is identical to the original.  Below is the "slim" firmware and the the assembled
+                        hex data file:
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/osr-reverse-engineering/tree/master/OSR_Slim_Firmware">
+                        OSR Reverse Engineering Optimized Firmware
+                    </a>
+                </div>
+            </div>
+
+            <br>
+
+
             
         </div>
     </div>
