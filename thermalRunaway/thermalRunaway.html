@@ -65,7 +65,276 @@
         <div class="container bg-white px-4 py-4 my-4">
             <div class="project-title mb-4">Thermal Runaway Detector</div>
 
-            
+             <div class="row">
+                <div class="col-md-12">
+                    <h4 class="indent">Thermal Runaway Overview</h4>
+                    <p>
+                        I created the following device after I saw a problem where expensive battery strings
+                        were being destroyed from thermal runaway.  Nothing came of the project but it was an
+                        interesting exercise in identifying a problem and creating a fix for it.  The device
+                        has four temperature sensor channels and four interrupt relays.  Temperature set
+                        points can be set through a serial interface with the device.  Alarms can be set for
+                        various temperature levels and a trip point can be set when a critical high
+                        temperature is reached.  When the trip point is reached, one or more of the relays
+                        will change state.  These relays are designed to interface with an under voltage
+                        release (UVR) breaker.  The relay interrupts the control signal to the breaker causing
+                        it to trip open and physically isolate the battery string from the charger.  There are
+                        two small signal relays to provide simple normally open (NO) dry contacts for alarm
+                        monitoring.  The following is a quick instruction manual I made for the device:
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/thermal-runaway/blob/master/Documentation/Thermal_Runaway_Rev_3.pdf">
+                        Thermal Runaway Documentation
+                    </a>
+                    <a class="page-link indent" href="https://github.com/nmikstas/thermal-runaway">
+                        Thermal Runaway Repository
+                    </a>
+                    <br>
+
+                    <div class="divider"></div>
+                    <h4 class="indent">Thermal Runaway Pictures</h4>
+                </div>  
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/PCBs_Top.png" alt="Thermal Runaway PCBS Top View">
+                        <div class="overlay overlay-text">Thermal Runaway PCBS Top View</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/PCBs_Bottom.png" alt="Thermal Runaway PCBS Bottom View">
+                        <div class="overlay overlay-text">Thermal Runaway PCBS Bottom View</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Printed_Parts.png" alt="Thermal Runaway Printed Parts">
+                        <div class="overlay overlay-text">Thermal Runaway Printed Parts</div>
+                    </div>
+                </div>
+
+                <div class="col-md-5">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Assembled_Top_Off.png" alt="Thermal Runaway Assembled - Top Off">
+                        <div class="overlay overlay-text">Thermal Runaway Assembled - Top Off</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3"></div>
+
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Assembled_Top_On.png" alt="Thermal Runaway Fully Assembled">
+                        <div class="overlay overlay-text">Thermal Runaway Fully Assembled</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Thermal Runaway Schematics</h4>
+                </div>
+            </div>
+
+           <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        The Thermal Runaway PCBs were designed using Express PCB.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/thermal-runaway/tree/master/PCB">
+                        Thermal Runaway PCB Source
+                    </a>
+                    <br>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="hov border-2px">
+                        <img class="img-fluid img-item" src="images/Schematic_Main_Board_And_Temp_Sensors.png" alt="Thermal Runaway Schematic - Main PCB">
+                        <div class="overlay overlay-text">Thermal Runaway Schematic - Main PCB</div>
+                    </div> 
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="hov border-2px">
+                        <img class="img-fluid img-item" src="images/Schematic_IO.png" alt="Thermal Runaway Schematic - IO">
+                        <div class="overlay overlay-text">Thermal Runaway Schematic - IO</div>
+                    </div> 
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="hov border-2px">
+                        <img class="img-fluid img-item" src="images/Schematic_HMI.png" alt="Thermal Runaway Schematic - HMI">
+                        <div class="overlay overlay-text">Thermal Runaway Schematic - HMI</div>
+                    </div> 
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Thermal Runaway PCB Design</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Main_PCB_Top_Layer.png" alt="Main PCB Top Layer">
+                        <div class="overlay overlay-text">Main PCB Top Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Main_PCB_Bottom_Layer.png" alt="Main PCB Bottom Layer">
+                        <div class="overlay overlay-text">Main PCB Bottom Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Main_PCB_All_Layers.png" alt="Main PCB Top, Bottom and Silkscreen Layer">
+                        <div class="overlay overlay-text">Main PCB Top, Bottom and Silkscreen Layer</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/IO_PCB_Top_Layer.png" alt="IO PCB Top Layer">
+                        <div class="overlay overlay-text">IO PCB Top Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/IO_PCB_Bottom_Layer.png" alt="IO PCB Bottom Layer">
+                        <div class="overlay overlay-text">IO PCB Bottom Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/IO_PCB_All_Layers.png" alt="IO PCB Top, Bottom and Silkscreen Layer">
+                        <div class="overlay overlay-text">IO PCB Top, Bottom and Silkscreen Layer</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/HMI_PCB_Top_Layer.png" alt="HMI PCB Top Layer">
+                        <div class="overlay overlay-text">HMI PCB Top Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/HMI_PCB_Bottom_Layer.png" alt="HMI PCB Bottom Layer">
+                        <div class="overlay overlay-text">HMI PCB Bottom Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/HMI_PCB_All_Layers.png" alt="HMI PCB Top, Bottom and Silkscreen Layer">
+                        <div class="overlay overlay-text">HMI PCB Top, Bottom and Silkscreen Layer</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Temp_Sensor_PCB_Top_Layer.png" alt="Temp Sensor PCB Top Layer">
+                        <div class="overlay overlay-text">Temp Sensor PCB Top Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-2"></div>
+                <div class="col-md-2">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Temp_Sensor_PCB_Bottom_Layer.png" alt="Temp Sensor PCB Bottom Layer">
+                        <div class="overlay overlay-text">Temp Sensor PCB Bottom Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-2"></div>
+                <div class="col-md-2">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Temp_Sensor_PCB_All_Layers.png" alt="Temp Sensor PCB Top, Bottom and Silkscreen Layer">
+                        <div class="overlay overlay-text">Temp Sensor PCB Top, Bottom and Silkscreen Layer</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Thermal Runaway CAD Design</h4>
+                </div>
+            </div>
+
+             <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        The Thermal Runaway Enclosure was designed in Free CAD.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/thermal-runaway/tree/master/Enclosure">
+                        Thermal Runaway CAD Source
+                    </a>
+                    <br>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2"></div>
+                
+                <div class="col-md-8">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Enclosure.png" alt="Thermal Runaway Enclosure">
+                        <div class="overlay overlay-text">Thermal Runaway Enclosure</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Thermal Runaway Firmware Source Code</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        The source code for this project was developed using Atmel Studios.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/thermal-runaway/tree/master/Firmware">
+                        Thermal Runaway Firmware Source
+                    </a>
+                    <br>
+                </div>
+            </div>
         </div>
     </div>
         
