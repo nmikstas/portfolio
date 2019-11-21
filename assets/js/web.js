@@ -318,7 +318,7 @@ class Target
 }
 
 /******************************************* Top Level *******************************************/
-//Get references to the timer canvas and its parent container.
+//Get references to the target canvas and its parent container.
 var farmerCanv  = document.getElementById("farmer-canv");
 var farmerA     = document.getElementById("farmer-a");
 var hangmanCanv = document.getElementById("hangman-canv");
