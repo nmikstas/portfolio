@@ -65,10 +65,179 @@
         <div class="container bg-white px-4 py-4 my-4">
             <div class="project-title mb-4">Digital Up-Converter</div>
 
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="indent">Digital Up-Converter Overview</h4>
+                    <p>
+                        The DUC is a halfband polyphase filter that both interpolates and filters the output
+                        of the channel filter.  This filter is the first in a series of filters that converts
+                        the baseband signal into a passband signal.  The filter has the property that the out
+                        of band attenuation is at least -60dB.
+                    </p>
 
+                    <a class="page-link indent" href="https://github.com/nmikstas/dsp-in-fpga/tree/master/DUC">
+                        Digital Up-Converter Source
+                    </a>
+                    <br>
 
+                    <div class="divider"></div>
+                    <h4 class="indent">Matlab Design Files</h4>
+                    <p>
+                            As with the channel filter, we were given MATLAB files as a starting point for the design.
+                            The files were then modified to suit our specific needs.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/dsp-in-fpga/tree/master/DUC/Matlab">
+                        Matlab Files
+                    </a>
+                    <br>
+                </div>  
+            </div>
 
-                
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Matlab Design Plots</h4>
+
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DUC/MATLAB_Halfband_Filter_Floating_Point.png" alt="Halfband Floating Point Filter">
+                        <div class="overlay overlay-text">Halfband Floating Point Filter</div>
+                    </div>
+
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DUC/MATLAB_Halfband_Filter_Quantized.png" alt="Halfband Quantized Filter">
+                        <div class="overlay overlay-text">Halfband Quantized Filter</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DUC/MATLAB_Halfband_Filter_Overlay.png" alt="Floating Point and Quantized Filters Overlaid">
+                        <div class="overlay overlay-text">Floating Point and Quantized Filters Overlaid</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DUC/MATLAB_Halfband_Composite.png" alt="Channel Filter and Halfband Filter Composite">
+                        <div class="overlay overlay-text">Channel Filter and Halfband Filter Composite</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">FPGA Implementation</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DUC/Interpolation.jpg" alt="Xilinx FIR Compiler Guide, Page 37">
+                        <div class="overlay overlay-text">Xilinx FIR Compiler Guide, Page 37</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Vivado HLS Design Files</h4>
+                    <p>
+                        After the filter was designed in MATLAB, it was then designed in Vivado HLS.  The link for the HLS source code is below:
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/dsp-in-fpga/tree/master/DUC/HLS">
+                        Vivado Design Files
+                    </a>
+                    <br>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Vivado Design Results</h4>
+                    <p>
+                        The following is the calculated RMS error from the HLS test bench:<br>
+                        <br>
+                        <span class="indent">number of input test vectors = 20000</span><br>
+                        <span class="indent">number of output test vectors = 40000</span><br>
+                        <span class="indent">Real rms error = 0.000191029</span><br>
+                        <span class="indent">% Real rms error = 0.0191029%</span><br>
+                        <span class="indent">Imaginary rms error = 0.000186151</span><br>
+                        <span class="indent">% Imaginary rms error = 0.0186151%</span><br>
+                        <br>
+                        Next are the resource utilization and timing results for the solution:<br>
+                    </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DUC/Halfband_Filter_Directives.png" alt="Halfband Filter Directives">
+                        <div class="overlay overlay-text">Halfband Filter Directives</div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DUC/Halfband_Metrics.png" alt="Halfband Filter Metrics">
+                        <div class="overlay overlay-text">Halfband Filter Metrics</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Matlab Error Calculations</h4>
+                    <p>
+                        Finally, the MATLAB error calculations were performed against the HLS filter output and the
+                        golden reference data. The MATLAB RMS error calculations are below and match the HLS calculations:<br>
+                        <br>    
+                        <span class="indent">Number of output samples = 40000</span><br>
+                        <span class="indent">RMS error, real = 0.000191</span><br>
+                        <span class="indent">%RMS error, real = 0.019103%</span><br>
+                        <span class="indent">RMS error, imaginary = 0.000186</span><br>
+                        <span class="indent">%RMS error, imaginary = 0.018615%</span><br>
+                    </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Matlab Output Plots</h4>
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DUC/MATLAB_Halfband_Filter_PSD.png" alt="Power Spectral Density Before and After Filtering">
+                        <div class="overlay overlay-text">Power Spectral Density Before and After Filtering</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Second Stage DUC</h4>
+                    <p>
+                        The second halfband filter was created in MATLAB only. The composite frequency response of
+                        the channel filter and two halfband filters is below:
+                    </p>
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DUC/Second_Halfband.png"
+                            alt="Composite Response of the Channel Filter and Two Halfband Filters">
+                        <div class="overlay overlay-text">Composite Response of the Channel Filter and Two Halfband Filters</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
         

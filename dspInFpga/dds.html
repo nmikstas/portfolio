@@ -65,10 +65,106 @@
         <div class="container bg-white px-4 py-4 my-4">
             <div class="project-title mb-4">Direct Digital Synthesizer</div>
 
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="indent">Direct Digital Synthesizer Overview</h4>
+                    <p>
+                            The DDS was to be designed with the following parameters:<br>
+                            <span class="indent">1. The DDS is to generate samples at a sample rate of 245.76MHz</span><br>
+                            <span class="indent">2. The FPGA clock frequency is 245.76MHz</span><br>
+                            <span class="indent">3. A phase truncation architecture is to be employed</span><br>
+                            <span class="indent">4. The DDS trig look-up table is to be realized in FPGA block memory (BRAM)</span><br>
+                            <span class="indent">5. 4-fold symmetry will be used (only store 1/4 of a cycle) to
+                            minimize the number of BRAMs used in the design</span><br>
+                            <span class="indent">6. The DDS will be tuned to 2 different frequencies: 10:457MHz and 80:957MHz</span><br>
+                            <br>
+                            Two solutions were tested:</span><br>
+                            <span class="indent">1. Spurious free dynamic range (SFDR) of at least -70dBc</span><br>
+                            <span class="indent">2. SFDR of at least -94dBc</span><br>
+                    </p>
 
+                    <a class="page-link indent" href="https://github.com/nmikstas/dsp-in-fpga/tree/master/DDS">
+                        Direct Digital Synthesizer Source
+                    </a>
+                    <br>
 
+                    <div class="divider"></div>
+                    <h4 class="indent">Vivado Design Files</h4>
+                    <p>
+                        The DDS was designed in HLS. The following is the HLS source code:
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/dsp-in-fpga/tree/master/DDS/HLS">
+                        Vivado Design Files
+                    </a>
+                    <br>
+                </div>  
+            </div>
 
-                
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Vivado Design Results</h4>
+                    <p>
+                        Next are the resource utilization and timing results for the solution:
+                    </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DDS/DDS_Directives.png" alt="DDS Directives">
+                        <div class="overlay overlay-text">DDS Directives</div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DDS/DDS_Metrics.png" alt="DDS Metrics">
+                        <div class="overlay overlay-text">DDS Metrics</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Matlab Analysis Plots</h4><br>
+                    <p><b>Solution 1 (SFDR of at least -70dBc)</b></p>
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DDS/DDS_Sol_1_10_A.png" alt="Output waveform for Solution 1 at 10.457 MHz">
+                        <div class="overlay overlay-text">Output waveform for Solution 1 at 10.457 MHz</div>
+                    </div>
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DDS/DDS_Sol_1_10_B.png" alt="Output spectrum for Solution 1 at 10.457 MHz">
+                        <div class="overlay overlay-text">Output spectrum for Solution 1 at 10.457 MHz</div>
+                    </div>
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DDS/DDS_Sol_1_80_A.png" alt="Output waveform for Solution 1 at 80.957 MHz">
+                        <div class="overlay overlay-text">Output waveform for Solution 1 at 80.957 MHz</div>
+                    </div>
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DDS/DDS_Sol_1_80_B.png" alt="Output spectrum for Solution 1 at 80.957 MHz">
+                        <div class="overlay overlay-text">Output spectrum for Solution 1 at 80.957 MHz</div>
+                    </div>
+                    <p><b>Solution 2 (SFDR of at least -94dBc)</b></p>
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DDS/DDS_Sol_2_10_A.png" alt="Output waveform for Solution 2 at 10.457 MHz">
+                        <div class="overlay overlay-text">Output waveform for Solution 2 at 10.457 MHz</div>
+                    </div>
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DDS/DDS_Sol_2_10_B.png" alt="Output spectrum for Solution 2 at 10.457 MHz">
+                        <div class="overlay overlay-text">Output spectrum for Solution 2 at 10.457 MHz</div>
+                    </div>
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DDS/DDS_Sol_2_80_A.png" alt="Output waveform for Solution 2 at 80.957 MHz">
+                        <div class="overlay overlay-text">Output waveform for Solution 2 at 80.957 MHz</div>
+                    </div>
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DDS/DDS_Sol_2_80_B.png" alt="Output spectrum for Solution 2 at 80.957 MHz">
+                        <div class="overlay overlay-text">Output spectrum for Solution 2 at 80.957 MHz</div>
+                    </div>
+                </div>
+            </div>  
         </div>
     </div>
         
