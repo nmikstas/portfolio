@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Farmer Source</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!--Reset Styling-->
+    <link rel="stylesheet" type="text/css" href="../assets/css/reset.css">
+    
+    <!--Bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    
+    <!--Personal Styling-->
+    <link rel="stylesheet" type="text/css" href="../assets/css/style.css">
+</head>
+    
+<body class="d-flex flex-column" id="main-body">
+    
+    <!--Header-->
+    <header class="header-class">
+        <nav class="navbar navbar-dark navbar-expand-lg">
+            <a class="navbar-brand nav-title px-2" href="../index.html">Nick Mikstas Portfolio</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="container text-center">
+                <h1>Farmer Source</h1>
+            </div>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../resume.html">Resume</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../web.html">Web</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../embedded.html">Embedded</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../fpga.html">FPGA</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../dsp.html">DSP</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../games.html">Games</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+        
+    <!--Main content body-->
+    <div id="page-body">
+        <div class="container bg-white px-4 py-4 my-4">
+            <div class="project-title mb-4">Farmer Source</div>
+            <pre>
+                <code>
+//Main module used to tie the state machine to the FPGA board.
+module State_Machine_Lab(clk, btnC, sw, led, RGB1_Red, RGB1_Green, RGB1_Blue);
+    input  clk;
+    input  btnC;
+    input  [15:0]sw;
+    output [15:0]led;
+    output RGB1_Red;
+    output RGB1_Green;
+    output RGB1_Blue;
+    
+    //Output of debounce circuit.
+    wire Db_Key;
+    
+    //Debounce button.
+    debounce(clk, btnC, Db_Key);
+    
+    //Instantiate state machine.
+    Farmer_State_Machine FSM(Db_Key, sw[1:0], led[15:12], led[3:0], RGB1_Green, RGB1_Red, RGB1_Blue);
+endmodule
+
+//This is the module used to debounce the enter button. Nothing to do here.
+module debounce(clk, in_button, out_button);
+    input clk;
+    input in_button;
+    output reg out_button = 1'b0;
+
+    //16ms button bebounce counter.
+    reg [3:0]debouncecounter = 4'b0;
+     
+    //keep track of whether or not the button is pressed or released.
+    reg buttonstate = 1'b0;
+     
+    //1 KHz clock.
+    reg ce1k = 1'b0;     
+     
+    //Clock divider counter.
+    reg [15:0]counter = 16'b0;
+     
+    //Divide by 50K circuit.
+    always @(posedge clk) begin
+        counter <= counter + 1'b1;
+        ce1k <= 0;
+        if(counter == 16'd50000) begin
+            counter <= 16'b0;  
+            ce1k <= 1'b1;
+        end                                     
+    end
+     
+    always@(posedge ce1k) begin          
+        //Initiate counter.
+        if(buttonstate != in_button && !debouncecounter)
+            debouncecounter <= debouncecounter + 1'b1;
+                
+        //Keep counting.
+        if(debouncecounter)
+            debouncecounter <= debouncecounter + 1'b1;
+                
+        //Button pressed confirmed.  Change state.
+        if(debouncecounter == 4'hf && buttonstate != in_button) begin
+            debouncecounter <= 4'b0;
+            buttonstate <= ~buttonstate;
+            out_button <= ~buttonstate;
+        end                 
+    end
+endmodule
+
+//The guts of the state machine are here.
+module Farmer_State_Machine(Ent, Inp, RL, RR, W, L, I);
+    input Ent;                 //Enter button used to move to next state.
+    input [1:0]Inp;            //User inputs.
+    output reg [3:0]RL = 4'b0; //Represents items on left side of river.
+    output reg [3:0]RR = 4'b0; //Represents items on right side of river.
+    output reg W = 1'b0;       //Win indicator.
+    output reg L = 1'b0;       //Lose indicator.
+    output reg I = 1'b0;       //Invalid move indicator.
+    
+    reg Fa = 0, Fo = 0, Ch = 0, Se = 0;     //Current states.
+    reg Fan = 0, Fon = 0, Chn = 0, Sen = 0; //Next states.
+    
+    //Change state when button pressed.
+    always @(posedge Ent) begin
+        Fa <= Fan;
+        Fo <= Fon;
+        Ch <= Chn;
+        Se <= Sen;
+    end             
+    
+    //Main logic.
+    always @(*) begin
+        RL = {~Fa, ~Fo, ~Ch, ~Se}; //Set left river bank indicators.
+        RR = {Fa, Fo, Ch, Se};     //Set right river bank indicators.
+        W = Fa & Fo & Ch & Se;     //Assign WIN indicator.
+        
+        //Assign LOSE indicator.
+        case({Fa, Fo, Ch, Se})
+            4'b1000: L = 1'b1;
+            4'b1100: L = 1'b1;
+            4'b1001: L = 1'b1;
+            4'b0011: L = 1'b1;
+            4'b0110: L = 1'b1;
+            default: L = 1'b0;
+        endcase
+        
+        //Assign INVALID MOVE indicator.
+        case({Fa, Fo, Ch, Se, Inp[1:0]})
+            6'b000111: I = 1'b1;
+            6'b001010: I = 1'b1;
+            6'b010001: I = 1'b1;
+            6'b010101: I = 1'b1;
+            6'b010111: I = 1'b1;
+            6'b101001: I = 1'b1;
+            6'b101011: I = 1'b1;
+            6'b101101: I = 1'b1;
+            6'b110110: I = 1'b1;
+            6'b111011: I = 1'b1;
+            default:   I = 1'b0;
+        endcase
+        
+        //Next state logic.
+        case({Fa, Fo, Ch, Se, Inp[1:0]})
+            6'b000000: {Fan, Fon, Chn, Sen} = 4'b1000;
+            6'b000001: {Fan, Fon, Chn, Sen} = 4'b1100;
+            6'b000010: {Fan, Fon, Chn, Sen} = 4'b1010;
+            6'b000011: {Fan, Fon, Chn, Sen} = 4'b1001;
+            6'b000100: {Fan, Fon, Chn, Sen} = 4'b1001;
+            6'b000101: {Fan, Fon, Chn, Sen} = 4'b1101;
+            6'b000110: {Fan, Fon, Chn, Sen} = 4'b1011;
+            6'b000111: {Fan, Fon, Chn, Sen} = 4'b0001;
+            6'b001000: {Fan, Fon, Chn, Sen} = 4'b1010;
+            6'b001001: {Fan, Fon, Chn, Sen} = 4'b1110;
+            6'b001010: {Fan, Fon, Chn, Sen} = 4'b0010;
+            6'b001011: {Fan, Fon, Chn, Sen} = 4'b1011;
+            6'b010000: {Fan, Fon, Chn, Sen} = 4'b1100;
+            6'b010001: {Fan, Fon, Chn, Sen} = 4'b0100;
+            6'b010010: {Fan, Fon, Chn, Sen} = 4'b1110;
+            6'b010011: {Fan, Fon, Chn, Sen} = 4'b1101;
+            6'b010100: {Fan, Fon, Chn, Sen} = 4'b1101;
+            6'b010101: {Fan, Fon, Chn, Sen} = 4'b0101;
+            6'b010110: {Fan, Fon, Chn, Sen} = 4'b1111;
+            6'b010111: {Fan, Fon, Chn, Sen} = 4'b0101;
+            6'b101000: {Fan, Fon, Chn, Sen} = 4'b0010;
+            6'b101001: {Fan, Fon, Chn, Sen} = 4'b1010;
+            6'b101011: {Fan, Fon, Chn, Sen} = 4'b1010;
+            6'b101100: {Fan, Fon, Chn, Sen} = 4'b0011;
+            6'b101101: {Fan, Fon, Chn, Sen} = 4'b1011;
+            6'b101110: {Fan, Fon, Chn, Sen} = 4'b0001;
+            6'b101111: {Fan, Fon, Chn, Sen} = 4'b0010;
+            6'b110100: {Fan, Fon, Chn, Sen} = 4'b0101;
+            6'b110101: {Fan, Fon, Chn, Sen} = 4'b0001;
+            6'b110110: {Fan, Fon, Chn, Sen} = 4'b1101;
+            6'b110111: {Fan, Fon, Chn, Sen} = 4'b0100;
+            6'b111000: {Fan, Fon, Chn, Sen} = 4'b0110;
+            6'b111001: {Fan, Fon, Chn, Sen} = 4'b0010;
+            6'b111010: {Fan, Fon, Chn, Sen} = 4'b0100;
+            6'b111011: {Fan, Fon, Chn, Sen} = 4'b1110;
+            default:   {Fan, Fon, Chn, Sen} = 4'b0000;
+        endcase     
+    end                 
+endmodule
+                </code>
+            </pre>
+        </div>
+    </div>
+        
+    <!--Footer-->
+    <footer id="sticky-footer" class="pt-4 pb-1">
+        <div class="container text-center">
+            <small>&copy;Nick Mikstas - nmikstas@alumni.scu.edu</small>
+        </div>
+    </footer>
+        
+    <!--jQuery-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        
+    <!--Bootstrap-->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+        
+</html>
