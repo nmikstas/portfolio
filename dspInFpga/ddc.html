@@ -65,10 +65,142 @@
         <div class="container bg-white px-4 py-4 my-4">
             <div class="project-title mb-4">Digital Down-Converter</div>
 
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="indent">Digital Down-Converter Overview</h4>
+                    <p>
+                        The DDC was to be designed with the following parameters:<br>
+                        <span class="indent">1. The decimator input sample rate is 30.72MHz</span><br>
+                        <span class="indent">2. The input signal is complex</span><br>
+                        <span class="indent">3. The FPGA clock frequency is 245.76MHz</span><br>
+                        <span class="indent">4. The peak filter sidelobe is to be -60dB with respect to the passband</span><br>
+                    </p>
 
+                    <a class="page-link indent" href="https://github.com/nmikstas/dsp-in-fpga/tree/master/DDC">
+                        Digital Down-Converter Source
+                    </a>
+                    <br>
 
+                    <div class="divider"></div>
+                    <h4 class="indent">Matlab Design Files</h4>
+                    <p>
+                        MATLAB files were given as a starting point for the design and were modified for this project's specifications.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/dsp-in-fpga/tree/master/DDC/Matlab">
+                        Matlab Files
+                    </a>
+                    <br>
+                </div>  
+            </div>
 
-                
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Matlab Design Plots</h4>
+
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DDC/MATLAB_DDC_Floating_Point.png" alt="DDC Floating Point Filter">
+                        <div class="overlay overlay-text">DDC Floating Point Filter</div>
+                    </div>
+
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DDC/MATLAB_DDC_Quantized.png" alt="DDC Quantized Filter">
+                        <div class="overlay overlay-text">DDC Quantized Filter</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DDC/MATLAB_DDC_Overlay.png" alt="Floating Point and Quantized Filters Overlaid">
+                        <div class="overlay overlay-text">Floating Point and Quantized Filters Overlaid</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">FPGA Implementation</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DDC/Decimation.jpg" alt="Xilinx FIR Compiler Guide, Page 36">
+                        <div class="overlay overlay-text">Xilinx FIR Compiler Guide, Page 36</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Vivado HLS Design Files</h4>
+                    <p>
+                        Next, the DDC was designed in HLS.  The following is the HLS source code:
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/dsp-in-fpga/tree/master/DDC/HLS">
+                        Vivado Design Files
+                    </a>
+                    <br>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Vivado Design Results</h4>
+                    <p>
+                        The following is the calculated RMS error from the HLS test bench:<br>
+                        <br>
+                        <span class="indent">number of input test vectors = 50000</span><br>
+                        <span class="indent">number of output test vectors = 25000</span><br>
+                        <span class="indent">Real rms error = 5.83117e-005</span><br>
+                        <span class="indent">% Real rms error = 0.00583117%</span><br>
+                        <span class="indent">Imaginary rms error = 5.84182e-005</span><br>
+                        <span class="indent">% Imaginary rms error = 0.00584182%</span><br>
+                        <br>
+                        Next are the resource utilization and timing results for the solution:<br>
+                    </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DDC/Halfband_Filter_Directives.png" alt="DDC Directives (Same as the DUC)">
+                        <div class="overlay overlay-text">DDC Directives (Same as the DUC)</div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DDC/DDC_Metrics.png" alt="DDC Metrics">
+                        <div class="overlay overlay-text">DDC Metrics</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Matlab Error Calculations</h4>
+                    <p>
+                        The MATLAB RMS error calculations are below and match the HLS calculations:<br>
+                        <br>
+                        <span class="indent">Number of output samples = 25000</span><br>
+                        <span class="indent">RMS error, real = 0.000058</span><br>
+                        <span class="indent">%RMS error, real = 0.005831%</span><br>
+                        <span class="indent">RMS error, imaginary = 0.000058</span><br>
+                        <span class="indent">%RMS error, imaginary = 0.005842%</span><br>
+                    </p>
+                </div>
+            </div>            
         </div>
     </div>
         
