@@ -65,10 +65,197 @@
         <div class="container bg-white px-4 py-4 my-4">
             <div class="project-title mb-4">FIR Channel Filter</div>
 
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="indent">FIR Channel Filter Overview</h4>
+                    <p>
+                        The FIR channel filter was to be designed with the following parameters:<br>
+                        <span class="indent">1. The length of the filter is to be N = 97</span><br>
+                        <span class="indent">2. The pass-band frequency edge is fp = .9 X 20E6</span><br>
+                        <span class="indent">3. Signal sample rate fs = 30.72E6</span><br>
+                        <span class="indent">4. The highest side lobe is to be -60 dB with respect to the carrier</span><br>
+                        <span class="indent">5. The filter is to process complex input data</span><br>
+                        Two Solutions were to be tested:<br>
+                        <span class="indent">1. fclk = 307.2MHz. Include a 10% margin for the FPGA timing specification</span><br>
+                        <span class="indent">2. fclk = 245.76MHz. Include a 10% margin for the FPGA timing specification.</span><br>
+                    </p>
 
+                    <a class="page-link indent" href="https://github.com/nmikstas/dsp-in-fpga/tree/master/FIR">
+                        FIR Channel Filter Source
+                    </a>
+                    <br>
 
+                    <div class="divider"></div>
+                    <h4 class="indent">Matlab Design Files</h4>
+                    <p>
+                        MATLAB files were given as a starting point for the design and were modified for this project's specifications.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/dsp-in-fpga/tree/master/FIR/Matlab">
+                        Matlab Files
+                    </a>
+                    <br>
+                </div>  
+            </div>
 
-                
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Matlab Design Plots</h4>
+
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/FIR/MATLAB_FIR_Filter_Floating_Point.png" alt="Floating Point FIR Filter">
+                        <div class="overlay overlay-text">Floating Point FIR Filter</div>
+                    </div>
+
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/FIR/MATLAB_FIR_Filter_Quantized.png" alt="Quantized FIR Filter">
+                        <div class="overlay overlay-text">Quantized FIR Filter</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/FIR/MATLAB_FIR_Filter_Overlay.png" alt="Quantized and Floating Point Overlaid">
+                        <div class="overlay overlay-text">Quantized and Floating Point Overlaid</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">FPGA Implementation</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/FIR/FIR_Odd_Taps.jpg" alt="Xilinx FIR Compiler Guide, Page 25">
+                        <div class="overlay overlay-text">Xilinx FIR Compiler Guide, Page 25</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Vivado HLS Design Files</h4>
+                    <p>
+                        After the filter was designed in MATLAB, it was then designed in Vivado HLS.  The links for the HLS source code are below:
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/dsp-in-fpga/tree/master/FIR/HLS">
+                        Vivado Design Files
+                    </a>
+                    <br>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Vivado Design Results</h4>
+                    <p>
+                        The following are the calculated RMS errors from the HLS test bench:<br>
+                        <br>
+                        <span class="indent">number of test vectors = 50000</span><br>
+                        <span class="indent">Real rms error = 0.000167639</span><br>
+                        <span class="indent">% Real rms error = 0.0167639%</span><br>
+                        <span class="indent">Imaginary rms error = 0.000167653</span><br>
+                        <span class="indent">% Imaginary rms error = 0.0167653%</span><br><br>
+                        Next are the resource utilization and timing results for the 2 solutions listed above:<br><br>
+                        <b>Solution 1(307.2MHz with 10% margin)</b>
+                    </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/FIR/FIR_Filter_Directives_Solution_1.png" alt="Solution 1 Directives">
+                        <div class="overlay overlay-text">Solution 1 Directives</div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/FIR/FIR_Metrics_Solution_1.png" alt="Solution 1 Metrics">
+                        <div class="overlay overlay-text">Solution 1 Metrics</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        Notice the total multipliers (DSP blocks) used was 10.  The total length of the filter is 97 but the middle
+                        coefficient is 1 so only 96 multiplications are necessary.  There are 2 filters, one for the real numbers
+                        and one for the imaginary numbers.  This brings the total number of multiplications up to 192.  Since the
+                        iteration interval is 10, the number of multipliers can be divided by 10: 192/10 = 19.2.  The number of
+                        multipliers is then rounded up to 20.  The filters use pre-adders to take advantage of symmetry so the total
+                        number of multipliers can be divided by 2: 20/2 = 10.<br><br>
+                        <b>Solution 2(245.76MHz with 10% margin)</b>
+                    </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/FIR/FIR_Filter_Directives_Solution_2.png" alt="Solution 2 Directives">
+                        <div class="overlay overlay-text">Solution 2 Directives</div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/FIR/FIR_Metrics_Solution_2.png" alt="Solution 2 Metrics">
+                        <div class="overlay overlay-text">Solution 2 Metrics</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        Notice the total multipliers (DSP blocks) used was 12.  The total length of the filter is 97
+                        but the middle coefficient is 1 so only 96 multiplications are necessary.  There are 2 filters,
+                        one for the real numbers and one for the imaginary numbers.  This brings the total number of
+                        multiplications up to 192.  Since the iteration interval is 8, the number of multipliers can be
+                        divided by 8: 192/8 = 24.  The filters use pre-adders to take advantage of symmetry so the total
+                        number of multipliers can be divided by 2: 24/2 = 12.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Matlab Error Calculations</h4>
+                    <p>
+                        Finally, the MATLAB error calculations were performed against the HLS filter output and the
+                        golden reference data. The MATLAB RMS error calculations are below and match the HLS calculations:<br><br>
+                        <span class="indent">RMS error, real = 0.000168</span><br>
+                        <span class="indent">%RMS error, real = 0.016764%</span><br>
+                        <span class="indent">RMS error, imaginary = 0.000168</span><br>
+                        <span class="indent">%RMS error, imaginary = 0.016765%</span><br>
+                    </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Matlab Output Plots</h4>
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/FIR/MATLAB_FIR_FILTER_ERROR.png" alt="Power Spectral Density Before and After Filtering">
+                        <div class="overlay overlay-text">Power Spectral Density Before and After Filtering</div>
+                    </div>
+                </div>
+            </div>   
         </div>
     </div>
         
