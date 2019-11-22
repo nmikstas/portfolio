@@ -65,7 +65,197 @@
         <div class="container bg-white px-4 py-4 my-4">
             <div class="project-title mb-4">CMOS Camera</div>
 
-            
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="indent">CMOS Camera Overview</h4>
+                    <p>
+                        In one of my personal pursuits, I wanted to experiment with CMOS cameras.
+                        I interfaced with a few different cameras and the project below is for the
+                        camera that gave the best result.  The camera was interfaced with a Spartan
+                        3 FPGA and streamed its output to a VGA port.  The camera resolution is
+                        640 X 480 and runs at 60 frames per second. The camera is an Omni-Vision 
+                        OV7725.<br>
+                        <br>
+                        The core of the project is controlled by the NMPSM3 soft processor that is
+                        discussed in its own project section.  An I2C controller was created to
+                        configure the camera.  Another control module was created to capture and
+                        buffer video data from the camera.  It sends an interrupt to the processor
+                        when data is ready to be read.  The video data is then stored in cellular
+                        RAM located on the FPGA development board.  The cellular RAM is operated in
+                        burst mode and controlled by a dedicated control module developed for this
+                        project.  There is also a VGA module that sends an interrupt to the processor
+                        when it is ready for data.
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/cmos-camera">
+                        CMOS Camera Repository
+                    </a>
+                    <br>
+
+                    <div class="divider"></div>
+                    <h4 class="indent">CMOS Camera Pictures</h4>
+                </div>  
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Camera_PCB_Top.png" alt="CMOS Camera PCB, Top">
+                        <div class="overlay overlay-text">CMOS Camera PCB, Top</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Camera_PCB_Bottom.png" alt="CMOS Camera PCB, Bottom">
+                        <div class="overlay overlay-text">CMOS Camera PCB, Bottom</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Camera_Project_Complete.png" alt="CMOS Camera PCB Attached to FPGA Board">
+                        <div class="overlay overlay-text">CMOS Camera PCB Attached to FPGA Board</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">CMOS Camera Image Captures</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/20171230_213837_0.png" alt="CMOS Image capture 1">
+                        <div class="overlay overlay-text">CMOS Image capture 1</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/20171230_213918_0.png" alt="CMOS Image capture 2">
+                        <div class="overlay overlay-text">CMOS Image capture 2</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/20171230_213946_0.png" alt="CMOS Image capture 3">
+                        <div class="overlay overlay-text">CMOS Image capture 3</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">CMOS Camera Video Capture</h4>
+
+                    <div class="col-md-12" style="text-align:center">
+                        <iframe width="1000" height="675" src="https://www.youtube.com/embed/bW4tSb8yNM4" frameborder="0"
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">CMOS Camera Schematics</h4>
+                </div>
+            </div>
+
+           <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        The CMOS camera PCB was designed using Express PCB.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/cmos-camera/tree/master/PCB">
+                        CMOS Camera PCB Source
+                    </a>
+                    <br>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="hov border-2px">
+                        <img class="img-fluid img-item" src="images/Camera_Schematic.png" alt="CMOS Camera PCB Schematic">
+                        <div class="overlay overlay-text">CMOS Camera PCB Schematic</div>
+                    </div> 
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">CMOS Camera PCB Design</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Camera_PCB_Top_Layer.png" alt="CMOS Camera PCB Top Layer">
+                        <div class="overlay overlay-text">CMOS Camera PCB Top Layer</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Camera_PCB_Bottom_Layer.png" alt="CMOS Camera PCB Bottom Layer">
+                        <div class="overlay overlay-text">CMOS Camera PCB Bottom Layer</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Camera_PCB_All_Layers.png" alt="CMOS Camera PCB Top, Bottom and Silkscreen Layers">
+                        <div class="overlay overlay-text">CMOS Camera PCB Top, Bottom and Silkscreen Layers</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">CMOS Camera HDL</h4>
+
+                    <p>
+                        The CMOS camera was based on a Digilent Nexys 2 FPGA development board.  One of the unique parts of the project is the use
+                        of the on-board cellular RAM in synchronous (burst) mode.  I could find no sample projects on the internet that used the
+                        RAM in its burst mode.  A large portion of the project was dedicated to making the cellular RAM burst mode controller.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/cmos-camera/tree/master/HDL_Source">
+                        CMOS Camera HDL Source
+                    </a>
+                    <br>
+                    <p>
+                        The project was designed in Xilinx ISE.  The project can be found here:
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/cmos-camera/tree/master/ISE_project">
+                        CMOS Camera FPGA Project
+                    </a>
+
+                    <div class="divider"></div>
+                    <h4 class="indent">CMOS Camera Software</h4>
+                    <p>
+                        As with my other projects that use the NMPSM processor, assembly language had to be written to control the project.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/cmos-camera/tree/master/NMPSM3">
+                        CMOS Camera Software Source
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
         
