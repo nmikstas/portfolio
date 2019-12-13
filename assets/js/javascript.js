@@ -37,8 +37,8 @@ var createScene = function ()
     light2.specular = new BABYLON.Color3(1, 0, 0);
 
     var light3 = new BABYLON.SpotLight("spotLight2", new BABYLON.Vector3(-8, 2.2, -1), new BABYLON.Vector3(0, -1, 0), Math.PI / 1.5, 1, scene);
-    light3.diffuse = new BABYLON.Color3(5, 0, 0);
-    light3.specular = new BABYLON.Color3(1, 0, 0);
+    light3.diffuse = new BABYLON.Color3(.5, .5, 5);
+    light3.specular = new BABYLON.Color3(.5, .5, 1);
 
     var gl = new BABYLON.GlowLayer("glow", scene);
 
@@ -59,6 +59,10 @@ var createScene = function ()
     var redSpecMat = new BABYLON.StandardMaterial("redSpecMat", scene);
     redSpecMat.diffuseColor = new BABYLON.Color3(1, 0, 0);
     redSpecMat.emissiveColor = new BABYLON.Color3(1, 0, 0);
+
+    var blueSpecMat = new BABYLON.StandardMaterial("blueSpecMat", scene);
+    blueSpecMat.diffuseColor = new BABYLON.Color3(.5, .5, 1);
+    blueSpecMat.emissiveColor = new BABYLON.Color3(.5, .5, 1);
 
     //-------------------- Walls, floor and ceiling --------------------
     var floorMat = new BABYLON.StandardMaterial("floorMat", scene);
@@ -296,12 +300,12 @@ var createScene = function ()
    
     /************************************* Glowing Spheres ***************************************/
 
-    var sphere1 = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:.5}, scene);
+    var sphere1 = BABYLON.MeshBuilder.CreateSphere("sphere1", {diameter:.5}, scene);
     sphere1.material = redSpecMat;
     sphere1.position = light2.position;
 
-    var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:.5}, scene);
-    sphere2.material = redSpecMat;
+    var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere2", {diameter:.5}, scene);
+    sphere2.material = blueSpecMat;
     sphere2.position = light3.position;
 
 
@@ -320,7 +324,7 @@ var createScene = function ()
         scene, null,
         {
             distanceModel: "exponential",
-            rolloffFactor: 1.0
+            rolloffFactor: 1.5
         }
     );
 
@@ -381,6 +385,18 @@ var createScene = function ()
     surge3SFX.attachToMesh(owall18);
     surge4SFX.attachToMesh(owall17);
     surge5SFX.attachToMesh(iwall5);
+
+    //Searching sound effect for working ceiling light.
+    var searchSFX = new BABYLON.Sound("surgeSFX", "https://nmikstas.github.io/resources/audio/search.ogg",
+        scene, null,
+        {
+            loop: true,
+            distanceModel: "exponential",
+            rolloffFactor: 1.5
+        }
+    );
+
+    searchSFX.attachToMesh(sphere2);
 
 
 
@@ -665,6 +681,7 @@ var createScene = function ()
             surge3SFX.play();
             surge4SFX.play();
             surge5SFX.play();
+            searchSFX.play();
             isMuted = false;
             button2.isVisible = false;
             button3.isVisible = true;
@@ -680,6 +697,7 @@ var createScene = function ()
             surge3SFX.pause();
             surge4SFX.pause();
             surge5SFX.pause();
+            searchSFX.pause();
             isMuted = true;
             button3.isVisible = false;
             button2.isVisible = true;
@@ -696,7 +714,6 @@ var createScene = function ()
     //Reset scene function.
     var resetScene = function()
     {
-        console.log("Reset!");
         ceilMat.emissiveColor = new BABYLON.Color3(0, 0, 0);
         floorMat.emissiveColor = new BABYLON.Color3(0, 0, 0);
         mat1.emissiveColor = new BABYLON.Color3(0, 0, 0);
