@@ -327,16 +327,60 @@ var createScene = function ()
     flickerSFX.attachToMesh(sphere1);
 
     //Surging sound effect for slide walls.
-    var surgeSFX = new BABYLON.Sound("surgeSFX", "https://nmikstas.github.io/resources/audio/surge.ogg",
+    var surge1SFX = new BABYLON.Sound("surgeSFX", "https://nmikstas.github.io/resources/audio/surge.ogg",
         scene, null,
         {
             loop: true,
             distanceModel: "exponential",
-            rolloffFactor: 1.0
+            rolloffFactor: 1.5
         }
     );
 
-    surgeSFX.attachToMesh(owall3);
+    //Surging sound effect for slide walls.
+    var surge2SFX = new BABYLON.Sound("surgeSFX", "https://nmikstas.github.io/resources/audio/surge.ogg",
+        scene, null,
+        {
+            loop: true,
+            distanceModel: "exponential",
+            rolloffFactor: 1.5
+        }
+    );
+
+    //Surging sound effect for slide walls.
+    var surge3SFX = new BABYLON.Sound("surgeSFX", "https://nmikstas.github.io/resources/audio/surge.ogg",
+        scene, null,
+        {
+            loop: true,
+            distanceModel: "exponential",
+            rolloffFactor: 1.5
+        }
+    );
+
+    //Surging sound effect for slide walls.
+    var surge4SFX = new BABYLON.Sound("surgeSFX", "https://nmikstas.github.io/resources/audio/surge.ogg",
+        scene, null,
+        {
+            loop: true,
+            distanceModel: "exponential",
+            rolloffFactor: 1.5
+        }
+    );
+
+    //Surging sound effect for slide walls.
+    var surge5SFX = new BABYLON.Sound("surgeSFX", "https://nmikstas.github.io/resources/audio/surge.ogg",
+        scene, null,
+        {
+            loop: true,
+            distanceModel: "exponential",
+            rolloffFactor: 1.5
+        }
+    );
+
+    surge1SFX.attachToMesh(owall3);
+    surge2SFX.attachToMesh(iwall6);
+    surge3SFX.attachToMesh(owall18);
+    surge4SFX.attachToMesh(owall17);
+    surge5SFX.attachToMesh(iwall5);
 
 
 
@@ -616,7 +660,11 @@ var createScene = function ()
     button2.onPointerDownObservable.add(function()
     {
             ambientMusic.play();
-            surgeSFX.play();
+            surge1SFX.play();
+            surge2SFX.play();
+            surge3SFX.play();
+            surge4SFX.play();
+            surge5SFX.play();
             isMuted = false;
             button2.isVisible = false;
             button3.isVisible = true;
@@ -627,7 +675,11 @@ var createScene = function ()
     {
             flickerSFX.stop();
             ambientMusic.pause();
-            surgeSFX.pause();
+            surge1SFX.pause();
+            surge2SFX.pause();
+            surge3SFX.pause();
+            surge4SFX.pause();
+            surge5SFX.pause();
             isMuted = true;
             button3.isVisible = false;
             button2.isVisible = true;
@@ -644,6 +696,7 @@ var createScene = function ()
     //Reset scene function.
     var resetScene = function()
     {
+        console.log("Reset!");
         ceilMat.emissiveColor = new BABYLON.Color3(0, 0, 0);
         floorMat.emissiveColor = new BABYLON.Color3(0, 0, 0);
         mat1.emissiveColor = new BABYLON.Color3(0, 0, 0);
@@ -659,7 +712,7 @@ var createScene = function ()
         cameraAnim.reset();
         spotAnim.restart();
         cameraAnim.restart();
-        UiPanel.addControl(button);
+        UiPanel.addControl(button1);
         camera.detachControl(canvas, true);
         camera.rotation.x = 0;
         camera.rotation.y = 0;
