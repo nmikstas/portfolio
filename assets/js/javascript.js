@@ -3,16 +3,20 @@ var engine = new BABYLON.Engine(canvas, true, { stencil: true }); // Generate th
 var fadeToLink = false; //Used for fade out 
 var fadeFirst  = false; //Initialize fadout when it first starts.
 var waitSlides = false; //Wait for slides to reanimate after fadeout.
+var isMuted    = true;  //Indicates if audio is muted.
 var spotAnim;
 var cameraAnim;
 
+
 /************************************* Main Babylon Function *************************************/
+
 var createScene = function ()
 {
     // Create the scene space
     var scene = new BABYLON.Scene(engine);
 
     /****************************************** Camera *******************************************/
+
     var camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 1, -11), scene);
     camera.angularSensibility = 5000;
     camera.speed     = .4;
@@ -22,22 +26,24 @@ var createScene = function ()
     camera.keysRight = [39, 68];
     camera.rotation.y = Math.PI;
     
-	/*************************************** Light Sources ***************************************/
+    /*************************************** Light Sources ***************************************/
+    
     var light1 = new BABYLON.PointLight("light1", camera.position, scene);
     light1.diffuse = new BABYLON.Color3(.7, .7, .7);
     light1.specular = new BABYLON.Color3(.2, .2, .2);
 
-    var light2 = new BABYLON.SpotLight("spotLight", new BABYLON.Vector3(8, 2.2, -1), new BABYLON.Vector3(0, -1, 0), Math.PI / 1.5, 1, scene);
+    var light2 = new BABYLON.SpotLight("spotLight1", new BABYLON.Vector3(8, 2.2, -1), new BABYLON.Vector3(0, -1, 0), Math.PI / 1.5, 1, scene);
     light2.diffuse = new BABYLON.Color3(5, 0, 0);
     light2.specular = new BABYLON.Color3(1, 0, 0);
 
-    var light3 = new BABYLON.SpotLight("spotLight", new BABYLON.Vector3(-8, 2.2, -1), new BABYLON.Vector3(0, -1, 0), Math.PI / 1.5, 1, scene);
+    var light3 = new BABYLON.SpotLight("spotLight2", new BABYLON.Vector3(-8, 2.2, -1), new BABYLON.Vector3(0, -1, 0), Math.PI / 1.5, 1, scene);
     light3.diffuse = new BABYLON.Color3(5, 0, 0);
     light3.specular = new BABYLON.Color3(1, 0, 0);
 
     var gl = new BABYLON.GlowLayer("glow", scene);
 
     /***************************************** Materials *****************************************/
+
     var redMat = new BABYLON.StandardMaterial("redMat", scene);
     redMat.diffuseColor = new BABYLON.Color3(.5, 0, 0);
        
@@ -121,7 +127,8 @@ var createScene = function ()
     gameMat.diffuseTexture = new BABYLON.Texture("https://nmikstas.github.io/resources/images/game.png", scene);
     gameMat.emissiveColor = new BABYLON.Color3(.1, .1, .1);  
     
-    /************************************* Walls and Floors **************************************/   
+    /************************************* Walls and Floors **************************************/
+
     var floorOptions =
     {
         width:     30,
@@ -288,6 +295,7 @@ var createScene = function ()
     owall18.material = embeddedMat;
    
     /************************************* Glowing Spheres ***************************************/
+
     var sphere1 = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter:.5}, scene);
     sphere1.material = redSpecMat;
     sphere1.position = light2.position;
@@ -296,7 +304,45 @@ var createScene = function ()
     sphere2.material = redSpecMat;
     sphere2.position = light3.position;
 
+
+    /******************************************* Audio *******************************************/
+
+    //Creepy ambient music.
+    var ambientMusic = new BABYLON.Sound("ambientMusic", "https://nmikstas.github.io/resources/audio/ambient.ogg",
+        scene, null,
+        {
+            loop: true
+        }
+    );
+
+    //Flickering sound effect for damaged light.
+    var flickerSFX = new BABYLON.Sound("flickerSFX", "https://nmikstas.github.io/resources/audio/flicker.ogg",
+        scene, null,
+        {
+            distanceModel: "exponential",
+            rolloffFactor: 1.0
+        }
+    );
+
+    flickerSFX.attachToMesh(sphere1);
+
+    //Surging sound effect for slide walls.
+    var surgeSFX = new BABYLON.Sound("surgeSFX", "https://nmikstas.github.io/resources/audio/surge.ogg",
+        scene, null,
+        {
+            loop: true,
+            distanceModel: "exponential",
+            rolloffFactor: 1.0
+        }
+    );
+
+    surgeSFX.attachToMesh(owall3);
+
+
+
+
     /******************************* Gravity and Collision Checks ********************************/
+
     //Set gravity for the scene (G force like, on Y-axis)
     scene.gravity = new BABYLON.Vector3(0, -0.9, 0);
 
@@ -342,6 +388,7 @@ var createScene = function ()
     owall18.checkCollisions = true;
     
     /********************************** Basic Animation Updates **********************************/
+
     //Animate the camera.
     camera.animations = [];
 
@@ -503,10 +550,12 @@ var createScene = function ()
     spotAnim = scene.beginAnimation(light3, 0, 1692, true);
 
     /******************************************** Fog ********************************************/
+
     scene.fogMode = BABYLON.Scene.FOGMODE_EXP2;
     scene.fogDensity = .10;
 
     /****************************************** Sprites ******************************************/
+
     // Create a sprite manager to optimize GPU ressources
     var spriteManagerDust = new BABYLON.SpriteManager("dustManager", "https://nmikstas.github.io/resources/images/dust.png", 8000, 37, scene);
     var spriteArray = [];
@@ -524,6 +573,7 @@ var createScene = function ()
     }
 
     /************************************** User Interface ***************************************/
+
     var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
     var UiPanel = new BABYLON.GUI.StackPanel();
     UiPanel.width = "220px";
@@ -532,23 +582,63 @@ var createScene = function ()
     UiPanel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
     advancedTexture.addControl(UiPanel);
 
-    var button = BABYLON.GUI.Button.CreateSimpleButton("but0", "Take Control");
-    button.paddingBottom = "10px";
-    button.width = "100px";
-    button.height = "50px";
-    button.color = "white";
-    button.background = "green";
+    var button1 = BABYLON.GUI.Button.CreateSimpleButton("button1", "Take Control");
+    button1.paddingBottom = "10px";
+    button1.width = "100px";
+    button1.height = "50px";
+    button1.color = "white";
+    button1.background = "green";
+
+    var button2 = BABYLON.GUI.Button.CreateSimpleButton("button2", "Unmute");
+    button2.paddingBottom = "10px";
+    button2.width = "100px";
+    button2.height = "50px";
+    button2.color = "white";
+    button2.background = "green";
+
+    var button3 = BABYLON.GUI.Button.CreateSimpleButton("button3", "Mute");
+    button3.paddingBottom = "10px";
+    button3.width = "100px";
+    button3.height = "50px";
+    button3.color = "white";
+    button3.background = "green";
+    button3.isVisible = false;
     
-    button.onPointerDownObservable.add(function()
+    //Allow user to control the camera.
+    button1.onPointerDownObservable.add(function()
     {
-        UiPanel.removeControl(button);
+        UiPanel.removeControl(button1);
         camera.attachControl(canvas, true);
         cameraAnim.pause();
     });
+
+    //Unmute the audio.
+    button2.onPointerDownObservable.add(function()
+    {
+            ambientMusic.play();
+            surgeSFX.play();
+            isMuted = false;
+            button2.isVisible = false;
+            button3.isVisible = true;
+    });
+
+    //Mute the audio.
+    button3.onPointerDownObservable.add(function()
+    {
+            flickerSFX.stop();
+            ambientMusic.pause();
+            surgeSFX.pause();
+            isMuted = true;
+            button3.isVisible = false;
+            button2.isVisible = true;
+    });
     
-    UiPanel.addControl(button);
+    UiPanel.addControl(button1);
+    UiPanel.addControl(button2);
+    UiPanel.addControl(button3);
 
     /********************************* Mouse and Pick Functions **********************************/
+
     var hl = new BABYLON.HighlightLayer("hl1", scene); //Add the highlight layer.
     
     //Reset scene function.
@@ -822,11 +912,17 @@ var createScene = function ()
             {
                 sphere1.material = redSpecMat;
                 light2.intensity = 1;
+
+                if(!isMuted)
+                {
+                    flickerSFX.play();
+                }
             }
             else
             {
                 sphere1.material = blackMat;
                 light2.intensity = 0;
+                flickerSFX.stop();
             }
 
             isRedLightOn = !isRedLightOn;
