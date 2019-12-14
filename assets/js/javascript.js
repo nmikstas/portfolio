@@ -330,7 +330,7 @@ var createScene = function ()
     );
 
     flickerSFX.attachToMesh(sphere1);
-    flickerSFX.setVolume(10);
+    flickerSFX.setVolume(3);
 
     //Surging sound effect for slide walls.
     var surge1SFX = new BABYLON.Sound("surgeSFX", "https://nmikstas.github.io/resources/audio/surge.ogg",
