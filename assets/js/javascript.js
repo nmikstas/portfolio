@@ -4,6 +4,7 @@ var fadeToLink = false; //Used for fade out
 var fadeFirst  = false; //Initialize fadout when it first starts.
 var waitSlides = false; //Wait for slides to reanimate after fadeout.
 var isMuted    = true;  //Indicates if audio is muted.
+var isFound    = false; //Indicates the spotlight has found the camera.
 var spotAnim;
 var cameraAnim;
 
@@ -329,6 +330,7 @@ var createScene = function ()
     );
 
     flickerSFX.attachToMesh(sphere1);
+    flickerSFX.setVolume(10);
 
     //Surging sound effect for slide walls.
     var surge1SFX = new BABYLON.Sound("surgeSFX", "https://nmikstas.github.io/resources/audio/surge.ogg",
@@ -397,6 +399,32 @@ var createScene = function ()
     );
 
     searchSFX.attachToMesh(sphere2);
+    searchSFX.setVolume(3);
+
+    //Alarm sound effect for working ceiling light.
+    var alarmSFX = new BABYLON.Sound("alarmSFX", "https://nmikstas.github.io/resources/audio/alarm.ogg",
+        scene, null,
+        {
+            loop: true,
+            distanceModel: "exponential",
+            rolloffFactor: 1.5
+        }
+    );
+
+    alarmSFX.attachToMesh(sphere2);
+    alarmSFX.setVolume(0);
+
+    //Sparking sound effect for damages ceiling light.
+    var sparkSFX = new BABYLON.Sound("surgeSFX", "https://nmikstas.github.io/resources/audio/sparks.ogg",
+        scene, null,
+        {
+            distanceModel: "exponential",
+            rolloffFactor: 1.5
+        }
+    );
+
+    sparkSFX.attachToMesh(sphere1);
+    sparkSFX.setVolume(.5);
 
 
 
@@ -632,6 +660,20 @@ var createScene = function ()
         spriteArray[i].vel = Math.random() * .003 + .0005;
     }
 
+    //Create sparks around the broken light.
+    var spriteManagerSparks = new BABYLON.SpriteManager("sparksManager","https://nmikstas.github.io/resources/images/sparks.png",
+        1000, {width: 30, height: 100}, scene);
+
+    let sparkSprite = new BABYLON.Sprite("spark", spriteManagerSparks);
+    sparkSprite.position.x = 8
+    sparkSprite.position.y = 1.55;
+    sparkSprite.position.z = -1;
+    sparkSprite.height = 1;
+    sparkSprite.width = .5;
+    sparkSprite.playAnimation(0, 10, false, 10);
+    
+
+
     /************************************** User Interface ***************************************/
 
     var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
@@ -682,6 +724,7 @@ var createScene = function ()
             surge4SFX.play();
             surge5SFX.play();
             searchSFX.play();
+            alarmSFX.play();
             isMuted = false;
             button2.isVisible = false;
             button3.isVisible = true;
@@ -698,6 +741,7 @@ var createScene = function ()
             surge4SFX.pause();
             surge5SFX.pause();
             searchSFX.pause();
+            alarmSFX.pause();
             isMuted = true;
             button3.isVisible = false;
             button2.isVisible = true;
@@ -959,8 +1003,34 @@ var createScene = function ()
     var alpha = 0;
     var isRedLightOn = false;
     var blinkRand = 0;
+    var sparkRand = 0;
+
+
     scene.registerBeforeRender(function ()
     {
+        //Update spotlight color.
+        if(Math.abs(camera.position.x - sphere2.position.x) <= 3 && Math.abs(camera.position.z - sphere2.position.z) <= 3 )
+        {
+            light3.diffuse = new BABYLON.Color3(5, 0, 0);
+            light3.specular = new BABYLON.Color3(1, 0, 0);
+            sphere2.material = redSpecMat;
+            spotAnim.pause();
+            isFound = true;
+            searchSFX.setVolume(0);
+            alarmSFX.setVolume(1);
+
+        }
+        else
+        {
+            light3.diffuse = new BABYLON.Color3(.5, .5, 5);
+            light3.specular = new BABYLON.Color3(.5, .5, 1);
+            sphere2.material = blueSpecMat;
+            spotAnim.restart();
+            isFound = false;
+            searchSFX.setVolume(3);
+            alarmSFX.setVolume(0);
+        }
+
         //Update dust particles.
         for(let i = 0; i < spriteArray.length; i++)
         {
@@ -968,6 +1038,18 @@ var createScene = function ()
             if(spriteArray[i].position.y < 0)
             {
                 spriteArray[i].position.y = 2;
+            }
+        }
+
+        //Show sparks and play the sound associated with it.
+        sparkRand--;
+        if(sparkRand <= 0)
+        {
+            sparkRand = Math.round(Math.random() * 100 + 250);
+            sparkSprite.playAnimation(0, 10, false, 10);
+            if(!isMuted)
+            {
+                sparkSFX.play();
             }
         }
 
