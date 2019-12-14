@@ -1016,8 +1016,7 @@ var createScene = function ()
             sphere2.material = redSpecMat;
             spotAnim.pause();
             isFound = true;
-            searchSFX.setVolume(0);
-            alarmSFX.setVolume(1);
+            alarmSFX.setVolume(.03);
 
         }
         else
@@ -1027,7 +1026,6 @@ var createScene = function ()
             sphere2.material = blueSpecMat;
             spotAnim.restart();
             isFound = false;
-            searchSFX.setVolume(3);
             alarmSFX.setVolume(0);
         }
 
@@ -1045,7 +1043,7 @@ var createScene = function ()
         sparkRand--;
         if(sparkRand <= 0)
         {
-            sparkRand = Math.round(Math.random() * 100 + 250);
+            sparkRand = Math.round(Math.random() * 250);
             sparkSprite.playAnimation(0, 10, false, 10);
             if(!isMuted)
             {
