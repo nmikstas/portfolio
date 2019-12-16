@@ -331,6 +331,10 @@ var trainCanv   = document.getElementById("train-canv");
 var trainA      = document.getElementById("train-a");
 var weatherCanv = document.getElementById("weather-canv");
 var weatherA    = document.getElementById("weather-a");
+var yassCanv    = document.getElementById("yass-canv");
+var yassA       = document.getElementById("yass-a");
+var burger2Canv = document.getElementById("burger2-canv");
+var burger2A    = document.getElementById("burger2-a");
 
 //Create object to paint target on a canvas.
 new Target(farmerCanv,  farmerA,  .20, Target.ANIM_MOVE);
@@ -339,3 +343,5 @@ new Target(crystalCanv, crystalA, .20, Target.ANIM_MOVE);
 new Target(quizCanv,    quizA,    .95, Target.ANIM_STATIC);
 new Target(trainCanv,   trainA,   .20, Target.ANIM_MOVE);
 new Target(weatherCanv, weatherA, .95, Target.ANIM_STATIC);
+new Target(burger2Canv, burger2A, .20, Target.ANIM_MOVE);
+new Target(yassCanv,    yassA,    .95, Target.ANIM_STATIC);

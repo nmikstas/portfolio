@@ -8,7 +8,6 @@ var isFound    = false; //Indicates the spotlight has found the camera.
 var spotAnim;
 var cameraAnim;
 
-
 /************************************* Main Babylon Function *************************************/
 
 var createScene = function ()
@@ -309,7 +308,6 @@ var createScene = function ()
     sphere2.material = blueSpecMat;
     sphere2.position = light3.position;
 
-
     /******************************************* Audio *******************************************/
 
     //Creepy ambient music.
@@ -425,9 +423,6 @@ var createScene = function ()
 
     sparkSFX.attachToMesh(sphere1);
     sparkSFX.setVolume(.5);
-
-
-
 
     /******************************* Gravity and Collision Checks ********************************/
 
@@ -672,8 +667,6 @@ var createScene = function ()
     sparkSprite.width = .5;
     sparkSprite.playAnimation(0, 10, false, 10);
     
-
-
     /************************************** User Interface ***************************************/
 
     var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
@@ -954,6 +947,7 @@ var createScene = function ()
     );
 
     /************************************ Fog Particle System ************************************/
+    
     var fountain = BABYLON.Mesh.CreateBox("foutain", .01, scene);
     fountain.visibility = 0;
 
@@ -1000,11 +994,11 @@ var createScene = function ()
     createNewSystem();
 
     /******************************** Advanced Animation Updates *********************************/
+
     var alpha = 0;
     var isRedLightOn = false;
     var blinkRand = 0;
     var sparkRand = 0;
-
 
     scene.registerBeforeRender(function ()
     {
@@ -1123,6 +1117,7 @@ var createScene = function ()
 };
 
 /******************************************* Top Level *******************************************/
+
 //Call the createScene function.
 var scene = createScene(); 
 
