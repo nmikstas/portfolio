@@ -65,7 +65,216 @@
         <div class="container bg-white px-4 py-4 my-4">
             <div class="project-title mb-4">Asteroids PCB</div>
 
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="indent">Schematics and PCB Design Pictures</h4>
+                    <p>
+                        I have recreated the original Asteroids arcade PCB in KiCad.  Errors in the original schematic
+                        have been fixed and any patch wires have been included in the board.  Other than the patch wire
+                        fixes, the PCB is a faithful recreation of the Revision 2 circuit board it was based on.
+                        Below are the project files and screenshots.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/asteroids-pcb">
+                        Asteroids PCB Repository
+                    </a>
+                    <a class="page-link indent" href="https://github.com/nmikstas/asteroids-pcb/tree/master/Gerbers">
+                        Asteroids PCB Gerbers
+                    </a>
+                    <a class="page-link indent" href="https://github.com/nmikstas/asteroids-pcb/blob/master/BOM.txt">
+                        Asteroids PCB BOM
+                    </a>
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Processor_Schematic.png" alt="Main Processor">
+                        <div class="overlay overlay-text">Main Processor</div>
+                    </div>
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Vector_State_Machine.png" alt="Vector Generator State Machine">
+                        <div class="overlay overlay-text">Vector Generator State Machine</div>
+                    </div>
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Inputs_Outputs.png" alt="Inputs/Outputs">
+                        <div class="overlay overlay-text">Inputs/Outputs</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Full_PCB.png" alt="Full PCB">
+                        <div class="overlay overlay-text">Full PCB</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/PCB_Closeup3.png" alt="PCB Closeup 3">
+                        <div class="overlay overlay-text">PCB Closeup 3</div>
+                    </div>
             
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/PCB_Closeup2.png" alt="PCB Closeup 2">
+                        <div class="overlay overlay-text">PCB Closeup 2</div>
+                    </div>
+        
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/PCB_Closeup1.png" alt="PCB Closeup 1">
+                        <div class="overlay overlay-text">PCB Closeup 1</div>
+                    </div>
+           
+                    <div class="divider"></div>
+                    <h4 class="indent">Manufactured and Assembled PCB</h4>
+                    <p>
+                        I decided to have some boards manufactured and I assembled some of them and made a working
+                        recreation of the Asteroids game PCB! The images are below.
+                    </p>
+
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DSCF0013.JPG" alt="Bare Circuit Board">
+                        <div class="overlay overlay-text">Bare Circuit Board</div>
+                    </div>
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DSCF0014.JPG" alt="Assembled Circuit Board">
+                        <div class="overlay overlay-text">Assembled Circuit Board</div>
+                    </div>
+                    <div class="divider"></div>
+                    <h4 class="indent">IC Adapter PCBs</h4>
+                    <p>
+                        Notice that IC C8 and M6 are on adapter boards. This is because these ICs are no
+                        longer available.  C8 is the vector state machine ROM. I made an adapter so an
+                        M2716 EPROM chip could be used in its place.  The original M6 IC was an LS83.
+                        The adapter board allows an HC285 IC to be used in its place.  Below are closeups
+                        of the adapter boards.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Adapters.png" alt="Adapter Circuit Boards">
+                        <div class="overlay overlay-text">Adapter Circuit Boards</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-4 border-2px">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/EPROM_Adapter_Sch.png" alt="EPROM Adapter PCB Schematic">
+                        <div class="overlay overlay-text">EPROM Adapter PCB Schematic</div>
+                    </div>
+                </div>
+                <div class="col-md-2"></div>
+                <div class="col-md-4 border-2px">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Adder_Adapter_Sch.png" alt="Adder Adapter PCB Schematic">
+                        <div class="overlay overlay-text">Adder Adapter PCB Schematic</div>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-2">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/EPROM_Adapter_PCB_Top.png" alt="EPROM Adapter PCB, Top Layer">
+                        <div class="overlay overlay-text">EPROM Adapter PCB, Top Layer</div>
+                    </div>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/EPROM_Adapter_PCB_Bottom.png" alt="EPROM Adapter PCB, Bottom Layer">
+                        <div class="overlay overlay-text">EPROM Adapter PCB, Bottom Layer</div>
+                    </div>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/EPROM_Adapter_PCB_All.png" alt="EPROM Adapter PCB, All Layers">
+                        <div class="overlay overlay-text">EPROM Adapter PCB, All Layers</div>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-2">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Adder_Adapter_Top.png" alt="Adder Adapter PCB, Top Layer">
+                        <div class="overlay overlay-text">Adder Adapter PCB, Top Layer</div>
+                    </div>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Adder_Adapter_Bottom.png" alt="Adder Adapter PCB, Bottom Layer">
+                        <div class="overlay overlay-text">Adder Adapter PCB, Bottom Layer</div>
+                    </div>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Adder_Adapter_All.png" alt="Adder Adapter PCB, All Layers">
+                        <div class="overlay overlay-text">Adder Adapter PCB, All Layers</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Component Changes</h4>
+                    <p>
+                        Finally, In order to get the video output to work properly, I had to make some changes to
+                        the components in the analog section of the PCB.  The changes are highlighted in the image below.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Asteroids_resistors.png" alt="Component Changes in the Analog Section">
+                        <div class="overlay overlay-text">Component Changes in the Analog Section</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <ol class="indent">
+                        <li class="indent">
+                            1. The SHCON signal was not pulling low enough to fully turn off the sample and hold analog switches. Because of
+                            this, R115 was changed from the original 330 Ohm resistor to a 220 Ohm resistor.  This allowed the negative
+                            voltage swing to go from -2 volts to -6 volts.
+                        </li>
+                        <li class="indent">
+                            1. The DAC settling time was taking too long and causing artifacts to appear on the display.  To reduce the
+                            settling time, Capacitors C97 and C105 were replaced with 24K Ohm resistors.
+                        </li>
+                        <li class="indent">
+                            1. Although not shown in the image above, IC C4 was replaced with an LS164 due to lack of availability.
+                        </li>
+                    </ol>
+                    <p>
+                        That’s it!  The PCB works and now I have a perfect recreation of the original Asteroids video game.  Stay tuned!
+                        I may decide to sell them if I can make them for a reasonable price…
+                    </p>
+
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/DSCF0027.JPG" alt="Five Working Asteroids Reproduction Boards!">
+                        <div class="overlay overlay-text">Five Working Asteroids Reproduction Boards!</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
         
