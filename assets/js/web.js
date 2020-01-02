@@ -335,6 +335,8 @@ var yassCanv    = document.getElementById("yass-canv");
 var yassA       = document.getElementById("yass-a");
 var burger2Canv = document.getElementById("burger2-canv");
 var burger2A    = document.getElementById("burger2-a");
+var mongoCanv   = document.getElementById("mongo-canv");
+var mongoA      = document.getElementById("mongo-a");
 
 //Create object to paint target on a canvas.
 new Target(farmerCanv,  farmerA,  .20, Target.ANIM_MOVE);
@@ -345,3 +347,5 @@ new Target(trainCanv,   trainA,   .20, Target.ANIM_MOVE);
 new Target(weatherCanv, weatherA, .95, Target.ANIM_STATIC);
 new Target(burger2Canv, burger2A, .20, Target.ANIM_MOVE);
 new Target(yassCanv,    yassA,    .95, Target.ANIM_STATIC);
+new Target(mongoCanv,   mongoA,   .20, Target.ANIM_MOVE);
+
