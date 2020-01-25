@@ -1118,6 +1118,9 @@ var createScene = function ()
 
 /******************************************* Top Level *******************************************/
 
+//Force page to reset if back or forward button is used.
+window.onunload = () => {};
+
 //Call the createScene function.
 var scene = createScene(); 
 
