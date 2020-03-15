@@ -73,7 +73,6 @@ pre
     color: #ffffff;
     font-size: 30px;
     border-bottom: 3px solid #666666;
-    padding: 20px 0px;
 }
 
 .nav-link
@@ -115,7 +114,7 @@ footer
 #renderCanvas
 {
     width: 100%;
-    height: calc(100vh - 175px);
+    height: calc(100vh - 133px);
     touch-action: none;
 }
 
