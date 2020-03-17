@@ -63,14 +63,151 @@
     <!--Main content body-->
     <div id="page-body">
         <div class="container bg-white px-4 py-4 my-4">
+
+            <div class="project-title mb-4">AVG Replacement</div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="indent">AVG Replacement Overview</h4>
+                    <p>
+                        As part of my studies into retro arcade technology, I created replacement parts for the custom Atari AVG chip.
+                        Other people have created AVG replacements, but nobody has released their source code.  There is documentation
+                        on the web about the internal structure of the AVG chip but it is not entirely correct.  I created replacement
+                        components based on the Tempest hardware.  I created two versions of the AVG hardware.  One design is a CPLD
+                        replacement of the logic and is contained within a single integrated circuit.  The other uses discrete TTL ICs
+                        and recreates the Tempest hardware.  The design has been tested on all the Atari AVG games with no known issues.
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/atari-avg-replacements">
+                        AVG Replacement Repository
+                    </a>
+                </div>
+            </div>
+
             <div class="project-title mb-4">AVG Replacement - CPLD</div>
+            <p>
+                The CPLD version of the AVG chip has a status LED that changes state every 64 video frames.
+            </p>
+            <h4 class="indent">AVG CPLD Pictures</h4>
 
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/avg-cpld-pcb-top.png" alt="AVG CPLD PCB Top View">
+                        <div class="overlay overlay-text">AVG CPLD PCB Top View</div>
+                    </div>
+                </div>
+    
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/avg-cpld-pcb-bottoom.png" alt="AVG CPLD PCB Bottom View">
+                        <div class="overlay overlay-text">AVG CPLD PCB Bottom View</div>
+                    </div>
+                </div>
+            </div>
 
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">AVG CPLD Schematic</h4>
+                </div>
+            </div>
+
+           <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        The AVG CPLD PCB was designed KiCad.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/atari-avg-replacements/tree/master/CPLD/AVG_CPLD_KiCad">
+                        AVG CPLD PCB Source
+                    </a>
+                    <br>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="hov border-2px">
+                        <img class="img-fluid img-item" src="images/avg-cpld-schematic.png" alt="AVG CPLD Schematic">
+                        <div class="overlay overlay-text">AVG CPLD Schematic</div>
+                    </div> 
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">AVG CPLD PCB Design</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2"></div>
+
+                <div class="col-md-8">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/avg-cpld-pcb-all-layers.png" alt="AVG CPLD PCB All Layers">
+                        <div class="overlay overlay-text">AVG CPLD PCB All Layers</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">AVG CPLD Hardare Source</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        The Atmel CPLD source was designed with CUPL.
+                    </p>
+                    <a class="page-link indent" href="https://github.com/nmikstas/atari-avg-replacements/blob/master/CPLD/HDL_Source/AVG.pld">
+                        Atmel CPLD Source
+                    </a>
+                </div>
+            </div>
 
             <div class="project-title mb-4">AVG Replacement - TTL</div>
+            <p>
+                The TTL version has an expansion port so the AVG addressing can be increased to a full 16 bits.
+            </p>
+            <h4 class="indent">AVG TTL Pictures</h4>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/avg-ttl-pcb-top.png" alt="AVG TTL PCB Top View">
+                        <div class="overlay overlay-text">AVG TTL PCB Top View</div>
+                    </div>
+                </div>
+    
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/avg-ttl-pcb-bottom.png" alt="AVG TTL PCB Bottom View">
+                        <div class="overlay overlay-text">AVG TTL PCB Bottom View</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">AVG TTL Schematic</h4>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">AVG TTL PCB Design</h4>
+                </div>
+            </div>
 
 
-            
+
         </div>
     </div>
         
