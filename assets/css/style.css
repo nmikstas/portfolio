@@ -235,6 +235,12 @@ footer
     color: #2424e6;
 }
 
+.visual-link
+{
+    font-size: 2rem;
+    color: #9293e2;
+}
+
 .target-canv
 {
     position: absolute;
@@ -316,6 +322,11 @@ footer
     color: #7e7ccf;
     width: 100%;
     font-size: 2rem;
+}
+
+.prev-next-btn
+{
+    width: 100%;
 }
 
 

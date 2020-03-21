@@ -352,6 +352,6 @@ new Target(nt2dCanv,    nt2dA,    .95, Target.ANIM_STATIC);
 new Target(weatherCanv, weatherA, .95, Target.ANIM_STATIC);
 new Target(burger2Canv, burger2A, .20, Target.ANIM_MOVE);
 new Target(yassCanv,    yassA,    .95, Target.ANIM_STATIC);
-new Target(mongoCanv,   mongoA,   .20, Target.ANIM_MOVE);
+new Target(mongoCanv,   mongoA,   .95, Target.ANIM_STATIC);
 new Target(ntntCanv,    ntntA,    .20, Target.ANIM_MOVE);
 
