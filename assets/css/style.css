@@ -315,6 +315,8 @@ footer
 .img-item
 {
     width: 100%;
+    background: transparent url("../images/loading.gif");
+    background-repeat: no-repeat;
 }
 
 .github-link
