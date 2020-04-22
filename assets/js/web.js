@@ -343,6 +343,8 @@ var ntntCanv    = document.getElementById("ntnt-canv");
 var ntntA       = document.getElementById("ntnt-a");
 var googleCanv  = document.getElementById("google-canv");
 var googleA     = document.getElementById("google-a");
+var pickerCanv  = document.getElementById("picker-canv");
+var pickerA     = document.getElementById("picker-a");
 
 //Create object to paint target on a canvas.
 new Target(farmerCanv,  farmerA,  .20, Target.ANIM_MOVE);
@@ -357,4 +359,4 @@ new Target(yassCanv,    yassA,    .95, Target.ANIM_STATIC);
 new Target(mongoCanv,   mongoA,   .95, Target.ANIM_STATIC);
 new Target(ntntCanv,    ntntA,    .20, Target.ANIM_MOVE);
 new Target(googleCanv,  googleA,  .20, Target.ANIM_MOVE);
-
+new Target(pickerCanv,  pickerA,  .20, Target.ANIM_MOVE);
