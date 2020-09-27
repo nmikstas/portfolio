@@ -99,9 +99,9 @@
                     oscilloscope or a graphing calculator. The time domain simply refers to a signal that uses time as the
                     x-axis. Below is a time domain signal on an oscilloscope.
                 </p>
+
                 <div class="row">
                     <div class="col-md-3"></div>
-    
                     <div class="col-md-6">
                         <div class="hov">
                             <img class="img-fluid img-item" src="images/oscilloscope.jpg" alt="Oscilliscope showing a time domain signal">
@@ -109,6 +109,343 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="divider"></div>
+
+                <h4 class="indent">Basic Concept - Frequency Domain</h4>
+                <p>
+                    Many people, except for electrical engineers, may not be familiar with the concept of the frequency domain.
+                    Signals from the time domain can be converted into the frequency domain through the use of an algorithm
+                    called the Fast Fourrier Transform (FFT). Frequency domain signals can be converted into a time domain signal
+                    by use of the inverse fast fourrier transform (IFFT). The theory of how these algorithms work is far beyond
+                    the scope of this webpage. More information on these subjects is readily available all over the internet.
+                </p>
+                <p>
+                    Eventhough the inner workings of the FFT algorithm is not explained here, its effects can be easily understood.
+                    A signal in the frequency domain shows the frequency content of the signal. Anyone who has played with an audio
+                    equalizer has seen a signal in the frequency domain. The columns on an audio equalizer tells you how strong the
+                    various frequencies of the audio signal are. In fact, FFT algorithms are used to produce the displays of audio
+                    equalizers. Below is an image of an audio equalizer and its various frequencies.
+                </p>
+
+                <div class="row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-6">
+                        <div class="hov">
+                            <img class="img-fluid img-item" src="images/audio_equalizer.png" alt="Audio equalizer showing the frequency content of an audio signal">
+                            <div class="overlay overlay-text">Audio equalizer showing the frequency content of an audio signal</div>
+                        </div>
+                    </div>
+                </div>
+
+                <p>
+                    The following image shows an audio signal that has been converted into the frequency domain on a computer using the FFT
+                    algorithm. The signal is interpreted the exact same way the display on an audio equalizer is read. The left side of
+                    the graph shows the strength of the lower frequencies while the right side shows the higher frequencies. All the code used
+                    to generate the frequency data in this website can be found in the Matlab folder after clicking the link found in the
+                    overview section above.
+                </p>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="hov">
+                            <img class="img-fluid img-item" src="images/audio_spectrum.png" alt="Spectrum of an audio signal after using the FFT algorithm">
+                            <div class="overlay overlay-text">Spectrum of an audio signal after using the FFT algorithm</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <h4 class="indent">Basic Concept - Low Pass Filter</h4>
+                <p>
+                    A low pass filter is used to filter out high frequencies from a signal. Anyone who has a custom audio system in their car will
+                    know what a low pass filter is. High frequency audio cannot be fed to the sub-woofer amplifier. High frequencies may damage the 
+                    amplifier and speakers as they are not designed to handle anything but bass frequencies. It is important to note that
+                    low pass filters do not completely eliminate high frequencies. They simply reduce the content of high frequencies until it is
+                    not detectable or not a problem for the low frequency hardware. We can use low pass filters to filter out unwanted high
+                    frequency content left over from the mixing process. More on this will be explained later. They are called low pass filters
+                    because they allow low frequencies to pass through while high frequencies are blocked.
+                </p>
+
+                <div class="divider"></div>
+
+                <h4 class="indent">Heterodyning simple tones</h4>
+
+                <p>
+                    This section shows the fundamental concept of mixing frequencies through the use of simple audio graphs and audio clips.
+                    The goal is provide a basic understangin of how mixing frequencies can produce new frequencies.
+                </p>
+                <p>
+                    Below is a graph of a simple tone generated using a computer. The note shown is A in the fourth octive (A4) and has a
+                    frequency of 440Hz. The audio file below the image plays the tone seen in the graph. The frequency spectrum of the
+                    tone can be seen in the image below the time domain graph. Note how only a single vertical line is present in the
+                    frequency domain. This is because this is a pure tone and only contains a single frequency. If you look closely at the
+                    x axis of the frequency graph, you will see the spike is at exactly 440Hz.
+                </p>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="hov">
+                            <img class="img-fluid img-item" src="images/a4_time_domain.png" alt="Time domain graph of the note A4 (440Hz)">
+                            <div class="overlay overlay-text">Time domain graph of the note A4 (440Hz)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="hov">
+                            <img class="img-fluid img-item" src="images/a4_frequency_domain.png" alt="Frequency domain graph of the note A4 (440Hz)">
+                            <div class="overlay overlay-text">Frequency domain graph of the note A4 (440Hz)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <figure>
+                    <figcaption>Pure Tone A4</figcaption>
+                    <audio controls class="d-block w-100 pb-3">
+                        <source src="audio/a4.wav" type="audio/mpeg">
+                    </audio>
+                </figure>
+
+                <p>
+                    Next, we have a graph of the pure tone C6 represented in the time and frequency domain along with an audio sample.
+                    Just as before, there is only a single vertical spike on the frequency graph. The spike is located at 1047Hz.
+                </p>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="hov">
+                            <img class="img-fluid img-item" src="images/c6_time_domain.png" alt="Time domain graph of the note C6 (1047Hz)">
+                            <div class="overlay overlay-text">Time domain graph of the note C6 (1047Hz)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="hov">
+                            <img class="img-fluid img-item" src="images/c6_frequency_domain.png" alt="Frequency domain graph of the note C6 (1047Hz)">
+                            <div class="overlay overlay-text">Frequency domain graph of the note C6 (1047Hz)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <figure>
+                    <figcaption>Pure Tone C6</figcaption>
+                    <audio controls class="d-block w-100 pb-3">
+                        <source src="audio/c6.wav" type="audio/mpeg">
+                    </audio>
+                </figure>
+
+                <p>
+                    We can mix these two tones together by using simple multiplication to make a new audio waveform as shown below.
+                </p>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="hov">
+                            <img class="img-fluid img-item" src="images/a4_and_c6_mixed_time_domain.png" alt="A4 and C6 tones mixed together in the time domain">
+                            <div class="overlay overlay-text">A4 and C6 tones mixed together in the time domain</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="hov">
+                            <img class="img-fluid img-item" src="images/a4_and_c6_mixed_frequency_domain.png" alt="A4 and C6 tones mixed together in the frequency domain">
+                            <div class="overlay overlay-text">A4 and C6 tones mixed together in the frequency domain</div>
+                        </div>
+                    </div>
+                </div>
+
+                <figure>
+                    <figcaption>Mixed tones A4 and C6</figcaption>
+                    <audio controls class="d-block w-100 pb-3">
+                        <source src="audio/a4c6_mixed.wav" type="audio/mpeg">
+                    </audio>
+                </figure>
+
+                <p>
+                    Wait! What's this? If we look at the frequency content of the mixed signal, the spikes at 440Hz and 1047Hz are gone!
+                    Instead, there are two spikes at 607Hz and 1487Hz! This is the power of mixing frequencies. <b>When two frequencies are mixed,
+                    the resulting frequencies are the addition and differnce of the original frequencies.</b>
+                </p>
+                <p>
+                    Here is a simple math summary of the bolded statement above:
+                    <br>
+                    1047Hz-440Hz = 607Hz
+                    <br>
+                    1047Hz+440Hz = 1487Hz
+                </p>
+                <p>
+                    Said in another way:
+                    <br>
+                    1047Hz X 440Hz = 1047Hz-440Hz AND 1047Hz+440Hz
+                    <br><br>
+                    An interesting side note is that the resulting spikes are only about half the height as the original spikes from the pure tones.
+                    This is due to the conservation of energy. Now that there are two spikes instead of 1, the audio energy needs to be spread out
+                    accross twice as many frequencies. If the two spikes are added together, they will be the same height as one of the pure tone
+                    spikes.
+                </p>
+                <p>
+                    Below is a visual representation of the math concepts from above.
+                </p>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="hov">
+                            <img class="img-fluid img-item" src="images/all_tones_frequency_domain.png" alt="All tones shown together in the frequency domain">
+                            <div class="overlay overlay-text">All tones shown together in the frequency domain</div>
+                        </div>
+                    </div>
+                </div>
+
+                <p>
+                    Now that we have two new frequencies, let's say that we only want one of them. Lets keep the lower of the two frequencies.
+                    We can reduce the value of the higher frequency by applying a low pass filter. The image below shows a low pass filter plot
+                    overlaid on the spectrum of the mixed frequencies. Everything below the filter line will be left intact while everything
+                    above the filter line will be significantly reduced in amplitude.
+                </p>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="hov">
+                            <img class="img-fluid img-item" src="images/filter_overlay.png" alt="Mixed frequencies with a low pass filter overlay">
+                            <div class="overlay overlay-text">Mixed frequencies with a low pass filter overlay</div>
+                        </div>
+                    </div>
+                </div>
+
+                <p>
+                    The graph below shows the audio spectrum after the signal has been passed through a low pass filter. Notice that the
+                    high frequency is not completely gone. A stronger filter could be applied to the signal but a stronger filter means
+                    more processing time would be required. Many times applying filters is a trade-off between effectiveness and processing
+                    time.
+                </p>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="hov">
+                            <img class="img-fluid img-item" src="images/filtered_output.png" alt="Mixed frequencies after being processed by a low pass filter">
+                            <div class="overlay overlay-text">Mixed frequencies after being processed by a low pass filter</div>
+                        </div>
+                    </div>
+                </div>
+
+                <figure>
+                    <figcaption>Final Filtered Output</figcaption>
+                    <audio controls class="d-block w-100 pb-3">
+                        <source src="audio/a4c6_filtered.wav" type="audio/mpeg">
+                    </audio>
+                </figure>
+
+                <p>
+                    So what did we accomplish from all this? We mixed a high frequency with a lower frequency and shifted the high
+                    frequency down the audio spectrum. We can think of the high frequency as an ultrasonic signal and the low frequency
+                    as an IF (intermediate frequency). The next section will apply the exact same concept to an actual audio signal that 
+                    is far more complex but is too high in frequency for the human ear to understand...at least until after it is heterodyned. 
+                </p>
+
+                <div class="divider"></div>
+
+                <h4 class="indent">Heterodyning a real audio signal</h4>
+
+                <p>
+                    This section will use the concept of mixing signals with an IF to shift an audio signal down the frequency spectrum
+                    so it can be understood by the human ear. We will start with the audio signal with the spectrum shown below. The audio
+                    sample can also be listened to. All the audio frequencies in the signal below are between 5KHz and 10KHz.
+                </p>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="hov">
+                            <img class="img-fluid img-item" src="images/original_shifted.png" alt="A high frequency audio signal">
+                            <div class="overlay overlay-text">A high frequency audio signal</div>
+                        </div>
+                    </div>
+                </div>
+
+                <figure>
+                    <figcaption>High Frequency Audio Signal</figcaption>
+                    <audio controls class="d-block w-100 pb-3">
+                        <source src="audio/orig_shift.wav" type="audio/mpeg">
+                    </audio>
+                </figure>
+
+                <p>
+                    Listening to the signal above does not reveal much about what it actually is. It has a rythmic quality to it but
+                    thats about all that can be discerned by listening to it with the human ear. We will now use a pure tone of 5KHz
+                    and mix it with the above signal. Since all the audio content is between 5KHz and 10KHz, after mixing, we will
+                    have two sets of frequencies. One set will be between 0Hz and 5KHz and the other will be between 10KHz and 15KHz.
+                    Remember, mixing two set of frequencies wil give you the addition of the two tones and the difference between the
+                    two tones.
+                </p>
+                <p>
+                    In other words:<br>
+                    (5KHz to 10KHz)+5KHz = (10KHZ to 15KHz)<br>
+                    (5KHz to 10KHz)-5KHz = (0Hz to 5KHz) 
+                </p>
+                <p>
+                    After mixing the signal with a 5KHz IF, the following spectrum is produced. This spectrum is shown in a logarithmic
+                    scale. The two portions are actually the same. The lower frequency portion has been spread out for clarity.
+                </p>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="hov">
+                            <img class="img-fluid img-item" src="images/heterodyned_unfiltered.png" alt="Heterodyned audio signal before filtering">
+                            <div class="overlay overlay-text">Heterodyned audio signal before filtering</div>
+                        </div>
+                    </div>
+                </div>
+
+                <p>
+                    Note that a low pass filter has been overlaid on the above graph. We do not want to keep the second, high frequency
+                    part of the audio as it will add distortion to the heterodyned signal. The next graph shows the audio signal after
+                    the low pass filter is applied. The resulting audio can now be understood by the human ear!
+                </p>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="hov">
+                            <img class="img-fluid img-item" src="images/heterodyned_filtered.png" alt="Heterodyned audio signal after filtering">
+                            <div class="overlay overlay-text">Heterodyned audio signal after filtering</div>
+                        </div>
+                    </div>
+                </div>
+
+                <figure>
+                    <figcaption>Heterodyned And Filtered Audio Signal</figcaption>
+                    <audio controls class="d-block w-100 pb-3">
+                        <source src="audio/output.wav" type="audio/mpeg">
+                    </audio>
+                </figure>
+
+                <p>
+                    <b>
+                        NOTE: If a motor or gearbox sounds similar to this audio sample, it must be replaced immediately as failure is imminent!
+                    </b>
+                </p>
+                <p>
+                    Thats it! we used the concept of mixing frequencies together to take a high frequency signal and shift it down the
+                    frequency spectrum so it can be understood by the human ear. This is the basic concept of the ultrasonic probes
+                    used for predictive maintenance of motors, gearboxes and bearings.
+                </p>
+                <p>
+                    As a side note, the unfiltered signal above can be heard and understood but it has a high frequency component to it
+                    that is undesirable. Below is the audio signal before it is passed through a low pass filter just in case anyone is
+                    curious at to what it sounds like.
+                </p>
+
+                <figure>
+                    <figcaption>Heterodyned, Unfiltered Audio Signal</figcaption>
+                    <audio controls class="d-block w-100 pb-3">
+                        <source src="audio/output_unfiltered.wav" type="audio/mpeg">
+                    </audio>
+                </figure>
         </div>
     </div>
         
