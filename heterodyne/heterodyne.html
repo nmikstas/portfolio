@@ -64,9 +64,51 @@
     <div id="page-body">
         <div class="container bg-white px-4 py-4 my-4">
             <div class="project-title mb-4">The Very Basics Of Heterodyning</div>
+                <h4 class="indent">Heterodyning Overview</h4>
+                <p>
+                    The purpose of this webpage is to describe the basic theory of how an ultrasonic probe
+                    converts ultrasound into something a human can hear. These probes are used in predictive
+                    maintenance with motors, gearboxes and bearings. They can also be used to track down compressed
+                    air leaks. This webpage is designed for a very beginner and only touches on very basic math
+                    topics. The math involved in spectral analysis and digital signal processing can become very
+                    involved and entire graduate programs in electrical engineering are dedicated to the subject.
+                </p>
+                <p>
+                    Heterodyning is simply the multiplication of two frequencies to create new frequencies. Often
+                    times heterodyning is called mixing. The term mixing may be used throughout this document and
+                    is synonymous with heterodyning. The basic concept is that an ultrasonic frequency is mixed
+                    with an intermediate frequency (IF) and a new frequency is generated that can be heard by
+                    the human ear. All the information contained in the ultrasonic frequencies is retained and
+                    shifted to the new frequency. This is the basic concept of how a radio transmitter and
+                    receiver work. When transmitting, the audio is mixed with the carrier frequency, often times in
+                    the tens or hundreds of megahertz range and transmitted through the air. A receiver then mixes the 
+                    incomming transmission with an intermediate frequency and the audio is recovered at a lower frequency.
+                    No information is lost during the mixing process and the audio can be heard and understood.
+                </p>
 
-            
-            
+                <a class="page-link indent" href="./matlab">
+                    Matlab scripts used to generate data for this webpage
+                </a>
+                <br>
+
+                <div class="divider"></div>
+                <h4 class="indent">Basic Concept - Time Domain</h4>
+                <p>
+                    When dealing with the subject of frequency, signals are usually analysed in two different domains:
+                    time domain and frequency domain. Time domain is easy and understood by anyone who has used an
+                    oscilloscope or a graphing calculator. The time domain simply refers to a signal that uses time as the
+                    x-axis. Below is a time domain signal on an oscilloscope.
+                </p>
+                <div class="row">
+                    <div class="col-md-3"></div>
+    
+                    <div class="col-md-6">
+                        <div class="hov">
+                            <img class="img-fluid img-item" src="images/oscilloscope.jpg" alt="Oscilliscope showing a time domain signal">
+                            <div class="overlay overlay-text">Oscilliscope showing a time domain signal</div>
+                        </div>
+                    </div>
+                </div>
         </div>
     </div>
         
