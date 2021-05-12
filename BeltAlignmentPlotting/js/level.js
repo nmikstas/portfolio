@@ -3,9 +3,9 @@
 class Level
 {
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    //                                       Enumerations                                        //
+    //                                Enumerations and Constants                                 //
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    //Number of day squares on the calendar
+
     static get HEIGHT_MULT() {return 3.0}
     static get MAX_WIDTH() {return 150}
     static get GRAD_PERCENT() {return .0666666667}
@@ -42,8 +42,6 @@ class Level
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //                                      Class Functions                                      //
     ///////////////////////////////////////////////////////////////////////////////////////////////
-
-    /************************************* Window Listeners **************************************/
 
     init()
     {
@@ -90,7 +88,6 @@ class Level
 
         this.bodyDraw();
         this.bubbleDraw(this.bubbleOffset);
-        
     }
 
     bodyDraw()
@@ -124,7 +121,7 @@ class Level
         //Draw graduations.
         this.ctxLevel.beginPath();
         this.ctxLevel.lineWidth = this.bodyWidth * .02;
-        this.ctxLevel.strokeStyle = "#ff000070";
+        this.ctxLevel.strokeStyle = "#ff0000";
 
         let posY = this.bodyHeight * .10;
         let IncY = this.bodyHeight * Level.GRAD_PERCENT;
@@ -153,7 +150,7 @@ class Level
         //Draw the circles on the major graduations.
         this.ctxLevel.beginPath();
         this.ctxLevel.lineWidth = this.bodyWidth * .05;
-        this.ctxLevel.strokeStyle = "#ff000070";
+        this.ctxLevel.strokeStyle = "#ff0000";
 
         posY = this.bodyHeight * .10;
 
@@ -177,8 +174,6 @@ class Level
         this.ctxLevel.arc(this.bodyWidth / 2, this.bodyWidth /2, topRadius * 1.07, -Math.PI, 0);
         this.ctxLevel.lineTo(this.bodyWidth, this.bodyHeight - this.bodyWidth / 2);
         this.ctxLevel.arc(this.bodyWidth / 2, this.bodyHeight - this.bodyWidth /2, bottomRadius * 1.07, 0, -Math.PI);
-
-        
         this.ctxLevel.clip();
     }
 
@@ -212,9 +207,6 @@ class Level
             this.ctxLevel.stroke();
         }
 
-        this.bodyDraw();
-
-        
+        this.bodyDraw();        
     }
-
 }

@@ -82,7 +82,7 @@
                    <div class="row">
                         <div class="col-md-9">
                             <p>Foot distance, dimension A<br>(.1 to 100 inches):</p>
-                            <input id="driven-distance" type="number" onkeypress="return isNumberKey(this, .1, 100, event)" onfocusout="validateNumber(this, .1, 100)"/>
+                            <input id="driven-distance" type="text" onkeypress="return isNumberKey(this, .1, 100, event)" onfocusout="validateNumber(this, .1, 100)"/>
                             <div class="divider"></div>
                             <form name="driven-form">
                                 <input type="radio" id="driven-bubble-hi" name="driven-bubble" value="dvn-bubble-hi" onchange="radioChange(this)" checked>
@@ -91,7 +91,7 @@
                                 <label for="dvn-bubble-lo">Bubble Low</label><br>
                             </form>
                             <p>Bubble offset<br>(0 to 8 ticks):</p>
-                            <input id="driven-bubble" type="number" onkeypress="return isNumberKey(this, 0, 8, event)" onfocusout="validateNumber(this, 0, 8)"/>
+                            <input id="driven-bubble" type="text" onkeypress="return isNumberKey(this, 0, 8, event)" onfocusout="validateNumber(this, 0, 8)"/>
                             <p id="driven-line">Line low ???</p>
                         </div>
 
@@ -107,7 +107,7 @@
                     <div class="row">
                         <div class="col-md-9">
                             <p>Foot distance, dimension A<br>(.1 to 100 inches):</p>
-                            <input id="driver-distance" type="number" onkeypress="return isNumberKey(this, .1, 100, event)" onfocusout="validateNumber(this, .1, 100)"/>
+                            <input id="driver-distance" type="text" onkeypress="return isNumberKey(this, .1, 100, event)" onfocusout="validateNumber(this, .1, 100)"/>
                             <div class="divider"></div>
                             <form name="driver-form">
                                 <input type="radio" id="driver-bubble-hi" name="driver-bubble" value="dvr-bubble-hi" onchange="radioChange(this)" checked>
@@ -116,7 +116,7 @@
                                 <label for="dvr-bubble-lo">Bubble Low</label><br>
                             </form>
                             <p>Bubble offset<br>(0 to 8 ticks):</p>
-                            <input id="driver-bubble" type="number" onkeypress="return isNumberKey(this, 0, 8, event)" onfocusout="validateNumber(this, 0, 8)"/>
+                            <input id="driver-bubble" type="text" onkeypress="return isNumberKey(this, 0, 8, event)" onfocusout="validateNumber(this, 0, 8)"/>
                             <p id="driver-line">Line low ???</p>
                         </div>
 

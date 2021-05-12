@@ -20,13 +20,13 @@ document.getElementById("driver-bubble").value = "";
 document.getElementById("driven-bubble").value = "";
 
 //Change radio buttons.
-function radioChange(obj)
+let radioChange = (obj) =>
 {
     updateLineText(obj.id);
 }
 
 //Update the line direction text.
-function updateLineText(id)
+let updateLineText = (id) =>
 {
     switch(id)
     {
@@ -88,7 +88,7 @@ function updateLineText(id)
     }
 }
 
-function isNumberKey(obj, min, max, evt)
+let isNumberKey = (obj, min, max, evt) =>
 {
     //Look for special case when enter is hit.
     if(evt.which === 13)
@@ -102,7 +102,7 @@ function isNumberKey(obj, min, max, evt)
     return true;
 }
 
-function validateNumber(obj, min, max)
+let validateNumber = (obj, min, max) =>
 {
     let num = parseFloat(obj.value, 10);    
     
