@@ -26,3 +26,8 @@ input
     border-width: 5px;
     border-radius: 5px;
 }
+
+.align
+{
+    text-align: center;
+}
