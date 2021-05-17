@@ -143,6 +143,12 @@ class BeltPlot
         //Clear any existing drawings.
         this.ctxPlot.clearRect(0, 0, this.bodyWidth, this.bodyHeight);
 
+        //Ensure the backgroung of the plot is white.
+        this.ctxPlot.beginPath();
+        this.ctxPlot.fillStyle = "#ffffff";
+        this.ctxPlot.fillRect(0, 0, this.bodyWidth, this.bodyHeight);
+        this.ctxPlot.stroke();
+
         //Make sure the calculations can't go negative.
         if(this.bodyWidth < 50) return;
 
@@ -252,11 +258,6 @@ class BeltPlot
         yMilsPerPixel  = ySquareScaling / dxy;
         yPixelPerMil   = 1 / yMilsPerPixel;
 
-        //Calculate the critical points on the graph, in absolute pixle locations.
-        //let drivenMALToStarrettX = xPixelPerInch * BeltPlot.STARRETT + rearFeetRef;
-        //let drivenMALToStarrettY = levelPixel - drivenMALToStarrett * yPixelPerMil;
-        //let driverMALToStarrettX = xPixelPerInch * BeltPlot.STARRETT + rearFeetRef;
-        //let driverMALToStarrettY = levelPixel - driverMALToStarrett * yPixelPerMil;
         let drivenMALToDrivenFFX = xPixelPerInch * this.drivenFeet + rearFeetRef;
         let drivenMALToDrivenFFY = levelPixel - drivenMALToDrivenFF * yPixelPerMil;
         let drivenMALToDriverFFX = xPixelPerInch * this.driverFeet + rearFeetRef;
@@ -306,18 +307,6 @@ class BeltPlot
         {
             driverMALY = this.bodyHeight * .98;   
         }
-
-        
-
-
-
-
-
-
-
-
-
-
 
         //Draw the Y-axis arrow.
         xStart = 2 * dxy;
@@ -437,19 +426,6 @@ class BeltPlot
         this.ctxPlot.lineWidth = this.bodyWidth * .004;
         this.ctxPlot.stroke();
 
-        
-
-
-
-
-
-
-
-
-
-
-
-
         //DrivenM MAL text.
         this.ctxPlot.fillStyle = "#0000ff70";
         this.ctxPlot.font = "bold " + (this.bodyWidth * .015) + "px Arial";
@@ -457,7 +433,6 @@ class BeltPlot
         this.ctxPlot.beginPath();
         this.ctxPlot.fillText("Driven MAL", this.bodyWidth * .915, drivenMALY);
         this.ctxPlot.stroke();
-
 
         //Driver MAL text.
         this.ctxPlot.fillStyle = "#00700070";
@@ -474,7 +449,6 @@ class BeltPlot
         this.ctxPlot.beginPath();
         this.ctxPlot.fillText(xBlocksScaling + " inches", 1.5 * dxy, 65.5 * dxy);
         this.ctxPlot.stroke();
-
 
         //Draw vertical scale text.
         this.ctxPlot.fillStyle = "#000000";
@@ -538,21 +512,6 @@ class BeltPlot
         this.ctxPlot.beginPath();
         this.ctxPlot.fillText("Front Feet", xPixelPerInch * this.drivenFeet + rearFeetRef - this.bodyWidth * .08, this.bodyHeight * .065);
         this.ctxPlot.stroke();
-
-
-
-        
-
-
-
-
-
-
-
-
-
-        
-
 
         //Driven MAL driven FF critical point.
         this.ctxPlot.beginPath();
