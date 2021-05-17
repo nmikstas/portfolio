@@ -258,11 +258,16 @@ let doCalc = () =>
     let dvrToDvnSign = (Math.sign(driverToDriven) >= 0) ? "+" : "";
     let dvnToDvrSign = (Math.sign(drivenToDriver) >= 0) ? "+" : "";
 
+    let drToDn = undefined;
+    let dnToDr = undefined;
+
     //Display the optimal moves.
     if(numOptimalMoves === 2)
     {
         document.getElementById("optimal-moves").innerHTML = "Driver to driven: " + dvrToDvnSign + driverToDriven.toFixed(2) + " mils <br>" +
                                                              "Driven to driver: " + dvnToDvrSign + drivenToDriver.toFixed(2) + " mils";
+        drToDn = dvrToDvnSign + driverToDriven.toFixed(2);
+        dnToDr = dvnToDvrSign + drivenToDriver.toFixed(2);
     }
     else
     {
@@ -270,12 +275,20 @@ let doCalc = () =>
         if(drivenSlope >= driverSlope)
         {
             document.getElementById("optimal-moves").innerHTML = "Driven to driver: " + dvnToDvrSign + drivenToDriver.toFixed(2) + " mils";
+            dnToDr = dvnToDvrSign + drivenToDriver.toFixed(2);
         }
         else
         {
             document.getElementById("optimal-moves").innerHTML = "Driver to driven: " + dvrToDvnSign + driverToDriven.toFixed(2) + " mils";
+            drToDn = dvrToDvnSign + driverToDriven.toFixed(2);
         }
     }
+
+    //Update move values in plotter.
+    let drToLv = ((Math.sign(driverToLevel) >= 0) ? "+" : "") + driverToLevel.toFixed(2);
+    let dnToLv = ((Math.sign(drivenToLevel) >= 0) ? "+" : "") + drivenToLevel.toFixed(2);
+    
+    plot.updateMoves(drToLv, dnToLv, drToDn, dnToDr);
 
     //Plot the data.
     plot.updateValues(signedDriverBubble, signedDrivenBubble, driverFeetDistance, drivenFeetDistance);
