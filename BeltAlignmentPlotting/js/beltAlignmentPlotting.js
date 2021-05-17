@@ -14,7 +14,7 @@ let drivenToDriver     = 0;
 //Create driver and driven level classes.
 let drivenLevel = new Level(document.getElementById("driven-level"), {bubbleColor: "#3030ff"});
 let driverLevel = new Level(document.getElementById("driver-level"));
-let plot = new BeltPlot(document.getElementById("plot"));
+let plot = new BeltPlot(document.getElementById("plot"), {backgroundImg: document.getElementById("blank")});
 
 //Make sure everthing resets on a page refresh.
 document.getElementById("driven-bubble-hi").checked = true;

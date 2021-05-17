@@ -19,7 +19,10 @@ class BeltPlot
 
     constructor
     (
-        parentDiv
+        parentDiv,
+        {
+            backgroundImg = null
+        } = {}
     )
     {
         this.parentDiv = parentDiv;
@@ -27,6 +30,9 @@ class BeltPlot
         //Height and width of the canvas.
         this.bodyWidth = 100;
         this.bodyHeight = 100;
+
+        //Background image of the plot.
+        this.backgroundImg = backgroundImg;
 
         //Variables for line plotting.
         this.driverBubble = undefined;
@@ -144,11 +150,11 @@ class BeltPlot
         this.ctxPlot.clearRect(0, 0, this.bodyWidth, this.bodyHeight);
 
         //Ensure the backgroung of the plot is white.
-        this.ctxPlot.beginPath();
-        this.ctxPlot.fillStyle = "#f7f7f7";
-        this.ctxPlot.fillRect(0, 0, this.bodyWidth, this.bodyHeight);
-        this.ctxPlot.stroke();
-
+        if(this.backgroundImg)
+        {
+            this.ctxPlot.drawImage(this.backgroundImg, 0, 0, this.bodyCanWidth, this.bodyCanWidth);
+        }
+        
         //Make sure the calculations can't go negative.
         if(this.bodyWidth < 50) return;
 
