@@ -62,22 +62,30 @@
     </header>
         
     <!--Main content body-->
-    <div id="page-body">
-        <div class="container bg-white px-4 py-4 my-4">    
+    <div class="mx-5" id="page-body">
+        <div class="container-fluid bg-white px-4 py-4 my-4">    
             <div class="project-title mb-4">Precision Belt Alignment Plotting</div>
 
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
                     <div class="hov">
                         <img class="img-fluid img-item" src="images/motors.png" alt="Motor Foot Distances">
-                        <div class="overlay overlay-text">Dimension A - Distance between front and rear feet of driven device. Dimension B - Distance between front and rear feet of driver device.</div>
+                        <div class="overlay overlay-text">Dimension A - Distance in inches between front and rear feet of driven device. Dimension B - Distance in inches between front and rear feet of driver device.</div>
                     </div>
                 </div>
             </div>
             <div class="divider"></div>
+
             <div class="row">
                 <div class="col-md-12">
-                    <button type="button" id="clear-btn" class="btn btn-outline-success mb-2 mt-3" onclick="clearData()">Clear Data</button>
+                    <h3>Press <b>Enter</b> after inputting data to update the calculations</h3>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="button" id="clear-btn" class="btn btn-outline-success mb-2" onclick="clearData()">Clear Data</button>
                 </div>
             </div>
             
@@ -98,12 +106,10 @@
                             </form>
                             <p>Bubble offset<br>(0 to 8 ticks):</p>
                             <input id="driven-bubble" type="text" onkeypress="return isNumberKey(this, 0, 8, event)" onfocusout="validateNumber(this, 0, 8)"/>
-                            <p id="driven-line">Line low ???</p>
+                            <p id="driven-line">Line down ???</p>
                         </div>
 
-                        <div class="col-md-3" id="driven-level">
-
-                        </div>
+                        <div class="col-md-3" id="driven-level"></div>
                    </div>
                 </div>
 
@@ -123,12 +129,10 @@
                             </form>
                             <p>Bubble offset<br>(0 to 8 ticks):</p>
                             <input id="driver-bubble" type="text" onkeypress="return isNumberKey(this, 0, 8, event)" onfocusout="validateNumber(this, 0, 8)"/>
-                            <p id="driver-line">Line low ???</p>
+                            <p id="driver-line">Line down ???</p>
                         </div>
 
-                        <div class="col-md-3" id="driver-level">
-
-                        </div>
+                        <div class="col-md-3" id="driver-level"></div>
                     </div>
                 </div>
             </div>
@@ -148,6 +152,9 @@
                 </div>
             </div>
 
+            <div class="row">
+                <div class="col-md-12 mt-4" id="plot"></div>
+            </div>
 
         </div>
     </div>
@@ -167,6 +174,7 @@
 
     <!--Javascript-->
     <script src="js/level.js"></script>
+    <script src="js/beltPlot.js"></script>
     <script src="js/beltAlignmentPlotting.js"></script>
 </body>
         

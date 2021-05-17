@@ -14,6 +14,7 @@ let drivenToDriver     = 0;
 //Create driver and driven level classes.
 let drivenLevel = new Level(document.getElementById("driven-level"), {bubbleColor: "#3030ff"});
 let driverLevel = new Level(document.getElementById("driver-level"));
+let plot = new BeltPlot(document.getElementById("plot"));
 
 //Make sure everthing resets on a page refresh.
 document.getElementById("driven-bubble-hi").checked = true;
@@ -38,12 +39,12 @@ let updateLineText = (id) =>
             drivenBubbleHi = true;
             if(drivenTicks === -10)
             {
-                document.getElementById("driven-line").innerHTML = "Line low ???";
+                document.getElementById("driven-line").innerHTML = "Line down ???";
                 drivenLevel.bubbleDraw(-10);
             }
             else
             {
-                document.getElementById("driven-line").innerHTML = "Line low " + drivenTicks.toFixed(2);
+                document.getElementById("driven-line").innerHTML = "Line down " + drivenTicks.toFixed(2);
                 drivenLevel.bubbleDraw(drivenTicks);
             }
         break;
@@ -51,12 +52,12 @@ let updateLineText = (id) =>
             drivenBubbleHi = false;
             if(drivenTicks === -10)
             {
-                document.getElementById("driven-line").innerHTML = "Line high ???";
+                document.getElementById("driven-line").innerHTML = "Line up ???";
                 drivenLevel.bubbleDraw(-10);
             }
             else
             {
-                document.getElementById("driven-line").innerHTML = "Line high " + drivenTicks.toFixed(2);
+                document.getElementById("driven-line").innerHTML = "Line up " + drivenTicks.toFixed(2);
                 drivenLevel.bubbleDraw(-drivenTicks);
             }
         break;
@@ -64,12 +65,12 @@ let updateLineText = (id) =>
             driverBubbleHi = true;
             if(driverTicks === -10)
             {
-                document.getElementById("driver-line").innerHTML = "Line low ???";
+                document.getElementById("driver-line").innerHTML = "Line down ???";
                 driverLevel.bubbleDraw(-10);
             }
             else
             {
-                document.getElementById("driver-line").innerHTML = "Line low " + driverTicks.toFixed(2);
+                document.getElementById("driver-line").innerHTML = "Line down " + driverTicks.toFixed(2);
                 driverLevel.bubbleDraw(driverTicks);
             }
         break;
@@ -77,12 +78,12 @@ let updateLineText = (id) =>
             driverBubbleHi = false;
             if(driverTicks === -10)
             {
-                document.getElementById("driver-line").innerHTML = "Line high ???";
+                document.getElementById("driver-line").innerHTML = "Line up ???";
                 driverLevel.bubbleDraw(-10);
             }
             else
             {
-                document.getElementById("driver-line").innerHTML = "Line high " + driverTicks.toFixed(2);
+                document.getElementById("driver-line").innerHTML = "Line up " + driverTicks.toFixed(2);
                 driverLevel.bubbleDraw(-driverTicks);
             }
         break;
@@ -195,11 +196,14 @@ let clearData = () =>
     document.getElementById("driven-distance").style.backgroundColor = "#ffffff";
     document.getElementById("driver-bubble").style.backgroundColor = "#ffffff";
     document.getElementById("driven-bubble").style.backgroundColor = "#ffffff";
-    document.getElementById("driven-line").innerHTML = "Line low ???";
-    document.getElementById("driver-line").innerHTML = "Line low ???";
+    document.getElementById("driven-line").innerHTML = "Line down ???";
+    document.getElementById("driver-line").innerHTML = "Line down ???";
 
     driverLevel.bubbleDraw(-10);
     drivenLevel.bubbleDraw(-10);
+
+    plot.updateValues(undefined, undefined, undefined, undefined);
+
     checkCalc();
 }
 
@@ -272,4 +276,7 @@ let doCalc = () =>
             document.getElementById("optimal-moves").innerHTML = "Driver to driven: " + dvrToDvnSign + driverToDriven.toFixed(2) + " mils";
         }
     }
+
+    //Plot the data.
+    plot.updateValues(signedDriverBubble, signedDrivenBubble, driverFeetDistance, drivenFeetDistance);
 }

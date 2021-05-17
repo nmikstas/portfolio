@@ -35,7 +35,7 @@ class Level
         this.bodyWidth = 100;
         this.bodyHeight = 300;
 
-        //Only create date/time picker if the parent exists.
+        //Only create level if the parent exists.
         if(this.parentDiv)this.init();
     }
 
@@ -92,6 +92,9 @@ class Level
 
     bodyDraw()
     {
+        //Make sure the calculations can't go negative.
+        if(this.bodyWidth < 5) return;
+
         //Draw the top arc of the level.
         this.ctxLevel.beginPath();
         this.ctxLevel.lineWidth = this.bodyWidth * .05;
