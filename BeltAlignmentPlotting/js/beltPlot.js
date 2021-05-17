@@ -145,7 +145,7 @@ class BeltPlot
 
         //Ensure the backgroung of the plot is white.
         this.ctxPlot.beginPath();
-        this.ctxPlot.fillStyle = "#ffffff";
+        this.ctxPlot.fillStyle = "#f7f7f7";
         this.ctxPlot.fillRect(0, 0, this.bodyWidth, this.bodyHeight);
         this.ctxPlot.stroke();
 
