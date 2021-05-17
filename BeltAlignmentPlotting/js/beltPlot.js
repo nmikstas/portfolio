@@ -211,6 +211,10 @@ class BeltPlot
         let yMilsPerPixel  = 0;
         let yPixelPerMil   = 0;
 
+        //Starting points for drawing the scale arrows.
+        let xStart = 0;
+        let yStart = 0;
+
         //Determine if both are positive or negative or if they are different signs.
         if(maxCritPoint >= 0 && minCritPoint >= 0)
         {
@@ -268,6 +272,43 @@ class BeltPlot
 
 
 
+
+
+        //Draw the Y-axis arrow.
+        xStart = 2 * dxy;
+        yStart = 50.2 * dxy;
+
+        this.ctxPlot.beginPath();
+        this.ctxPlot.strokeStyle = "black";
+        this.ctxPlot.lineWidth = this.bodyWidth * .004;
+        this.ctxPlot.moveTo(xStart, yStart);
+        this.ctxPlot.lineTo(1 * dxy, 51 * dxy);
+        this.ctxPlot.moveTo(xStart, yStart);
+        this.ctxPlot.lineTo(3 * dxy, 51 * dxy);
+        this.ctxPlot.moveTo(xStart, yStart);
+        this.ctxPlot.lineTo(2 * dxy, 59.7 * dxy);
+        this.ctxPlot.lineTo(1 * dxy, 59 * dxy);
+        this.ctxPlot.lineTo(2 * dxy, 59.7 * dxy);
+        this.ctxPlot.lineTo(3 * dxy, 59 * dxy);
+        this.ctxPlot.stroke();
+
+        //Draw the X-axis arrow.
+        xStart = 0.2 * dxy;
+        yStart = 68 * dxy;
+        this.ctxPlot.beginPath();
+        this.ctxPlot.strokeStyle = "black";
+        this.ctxPlot.lineWidth = this.bodyWidth * .004;
+        this.ctxPlot.moveTo(xStart, yStart);
+        this.ctxPlot.lineTo(1 * dxy, 67 * dxy);
+        this.ctxPlot.moveTo(xStart, yStart);
+        this.ctxPlot.lineTo(1 * dxy, 69 * dxy);
+        this.ctxPlot.moveTo(xStart, yStart);
+        this.ctxPlot.lineTo(9.7 * dxy, 68 * dxy);
+        this.ctxPlot.lineTo(9 * dxy, 67 * dxy);
+        this.ctxPlot.lineTo(9.7 * dxy, 68 * dxy);
+        this.ctxPlot.lineTo(9 * dxy, 69 * dxy);
+        this.ctxPlot.stroke();
+
         //Draw level line.
         this.ctxPlot.beginPath();
         this.ctxPlot.setLineDash([this.bodyWidth * .01, this.bodyWidth * .01]);
@@ -324,6 +365,27 @@ class BeltPlot
         this.ctxPlot.moveTo(rearFeetRef, levelPixel);
         this.ctxPlot.lineTo(this.bodyWidth, driverMALToEndY);
         this.ctxPlot.lineWidth = this.bodyWidth * .004;
+        this.ctxPlot.stroke();
+
+        
+
+
+
+        //Draw horizontal scale text.
+        this.ctxPlot.fillStyle = "#000000";
+        this.ctxPlot.font = "bold " + (this.bodyWidth * .015) + "px Arial";
+        this.ctxPlot.textBaseline = "top";
+        this.ctxPlot.beginPath();
+        this.ctxPlot.fillText(xBlocksScaling + " inches", 1.5 * dxy, 65.5 * dxy);
+        this.ctxPlot.stroke();
+
+
+        //Draw vertical scale text.
+        this.ctxPlot.fillStyle = "#000000";
+        this.ctxPlot.font = "bold " + (this.bodyWidth * .015) + "px Arial";
+        this.ctxPlot.textBaseline = "top";
+        this.ctxPlot.beginPath();
+        this.ctxPlot.fillText(yBlockScaling + " mils", 3 * dxy, 54.5 * dxy);
         this.ctxPlot.stroke();
 
         //Draw level text.
@@ -386,7 +448,7 @@ class BeltPlot
         
 
 
-        
+
 
         
 
