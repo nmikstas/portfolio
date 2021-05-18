@@ -149,10 +149,17 @@ class BeltPlot
         //Clear any existing drawings.
         this.ctxPlot.clearRect(0, 0, this.bodyWidth, this.bodyHeight);
 
-        //Ensure the backgroung of the plot is white.
+        //Ensure the backgroung is not transparent.
         if(this.backgroundImg)
         {
-            this.ctxPlot.drawImage(this.backgroundImg, 0, 0, this.bodyCanWidth, this.bodyCanWidth);
+            this.ctxPlot.drawImage(this.backgroundImg, 0, 0, this.bodyWidth, this.bodyHeight);
+        }
+        else
+        {
+            this.ctxPlot.beginPath();
+            this.ctxPlot.fillStyle = "#ffffff";
+            this.ctxPlot.fillRect(0, 0, this.bodyWidth, this.bodyWidth)
+            this.ctxPlot.stroke();
         }
         
         //Make sure the calculations can't go negative.
@@ -351,7 +358,7 @@ class BeltPlot
         //Draw level line.
         this.ctxPlot.beginPath();
         this.ctxPlot.setLineDash([this.bodyWidth * .01, this.bodyWidth * .01]);
-        this.ctxPlot.strokeStyle = "blue";
+        this.ctxPlot.strokeStyle = "#0000ff40";
         this.ctxPlot.moveTo(0, levelPixel);
         this.ctxPlot.lineTo(this.bodyWidth, levelPixel);
         this.ctxPlot.lineWidth = this.bodyWidth * .004;
@@ -386,7 +393,7 @@ class BeltPlot
 
         //Draw the Starrett 98 reference line.
         this.ctxPlot.beginPath();
-        this.ctxPlot.strokeStyle = "red";
+        this.ctxPlot.strokeStyle = "#ff000070";
         this.ctxPlot.moveTo(xPixelPerInch * BeltPlot.STARRETT + rearFeetRef, 0);
         this.ctxPlot.lineTo(xPixelPerInch * BeltPlot.STARRETT + rearFeetRef, this.bodyHeight);
         this.ctxPlot.lineWidth = this.bodyWidth * .004;
@@ -394,7 +401,7 @@ class BeltPlot
 
         //Draw the rear feet reference line.
         this.ctxPlot.beginPath();
-        this.ctxPlot.strokeStyle = "red";
+        this.ctxPlot.strokeStyle = "#ff000070";
         this.ctxPlot.moveTo(rearFeetRef, 0);
         this.ctxPlot.lineTo(rearFeetRef, this.bodyHeight);
         this.ctxPlot.lineWidth = this.bodyWidth * .004;
@@ -402,7 +409,7 @@ class BeltPlot
 
         //Draw the driven front feet reference line.
         this.ctxPlot.beginPath();
-        this.ctxPlot.strokeStyle = "blue";
+        this.ctxPlot.strokeStyle = "#0000ff70";
         this.ctxPlot.moveTo(xPixelPerInch * this.drivenFeet + rearFeetRef, 0);
         this.ctxPlot.lineTo(xPixelPerInch * this.drivenFeet + rearFeetRef, this.bodyHeight);
         this.ctxPlot.lineWidth = this.bodyWidth * .004;
@@ -410,7 +417,7 @@ class BeltPlot
 
         //Draw the driver front feet reference line.
         this.ctxPlot.beginPath();
-        this.ctxPlot.strokeStyle = "#00ff00";
+        this.ctxPlot.strokeStyle = "#00a00070";
         this.ctxPlot.moveTo(xPixelPerInch * this.driverFeet + rearFeetRef, 0);
         this.ctxPlot.lineTo(xPixelPerInch * this.driverFeet + rearFeetRef, this.bodyHeight);
         this.ctxPlot.lineWidth = this.bodyWidth * .004;
@@ -418,7 +425,7 @@ class BeltPlot
 
         //Driven MAL line.
         this.ctxPlot.beginPath();
-        this.ctxPlot.strokeStyle = "#0000ff";
+        this.ctxPlot.strokeStyle = "#0000ff70";
         this.ctxPlot.moveTo(rearFeetRef, levelPixel);
         this.ctxPlot.lineTo(this.bodyWidth, drivenMALToEndY);
         this.ctxPlot.lineWidth = this.bodyWidth * .004;
@@ -426,7 +433,7 @@ class BeltPlot
 
         //Driver MAL line.
         this.ctxPlot.beginPath();
-        this.ctxPlot.strokeStyle = "#00ff00";
+        this.ctxPlot.strokeStyle = "#00a00070";
         this.ctxPlot.moveTo(rearFeetRef, levelPixel);
         this.ctxPlot.lineTo(this.bodyWidth, driverMALToEndY);
         this.ctxPlot.lineWidth = this.bodyWidth * .004;
@@ -519,10 +526,11 @@ class BeltPlot
         this.ctxPlot.fillText("Front Feet", xPixelPerInch * this.drivenFeet + rearFeetRef - this.bodyWidth * .08, this.bodyHeight * .065);
         this.ctxPlot.stroke();
 
+        /*
         //Driven MAL driven FF critical point.
         this.ctxPlot.beginPath();
         this.ctxPlot.lineWidth = this.bodyWidth * .005;
-        this.ctxPlot.strokeStyle = "#00000070";
+        this.ctxPlot.strokeStyle = "#00000030";
         this.ctxPlot.moveTo(drivenMALToDrivenFFX, drivenMALToDrivenFFY);
         this.ctxPlot.arc(drivenMALToDrivenFFX, drivenMALToDrivenFFY, this.bodyWidth * .002, 0, 2 * Math.PI);
         this.ctxPlot.stroke();
@@ -530,7 +538,7 @@ class BeltPlot
         //Driven MAL driver FF critical point.
         this.ctxPlot.beginPath();
         this.ctxPlot.lineWidth = this.bodyWidth * .005;
-        this.ctxPlot.strokeStyle = "#00000070";
+        this.ctxPlot.strokeStyle = "#00000030";
         this.ctxPlot.moveTo(drivenMALToDriverFFX, drivenMALToDriverFFY);
         this.ctxPlot.arc(drivenMALToDriverFFX, drivenMALToDriverFFY, this.bodyWidth * .002, 0, 2 * Math.PI);
         this.ctxPlot.stroke();
@@ -538,7 +546,7 @@ class BeltPlot
         //Driver MAL driven FF critical point.
         this.ctxPlot.beginPath();
         this.ctxPlot.lineWidth = this.bodyWidth * .005;
-        this.ctxPlot.strokeStyle = "#00000070";
+        this.ctxPlot.strokeStyle = "#00000030";
         this.ctxPlot.moveTo(driverMALToDrivenFFX, driverMALToDrivenFFY);
         this.ctxPlot.arc(driverMALToDrivenFFX, driverMALToDrivenFFY, this.bodyWidth * .002, 0, 2 * Math.PI);
         this.ctxPlot.stroke();
@@ -546,7 +554,7 @@ class BeltPlot
         //Driver MAL driver FF critical point.
         this.ctxPlot.beginPath();
         this.ctxPlot.lineWidth = this.bodyWidth * .005;
-        this.ctxPlot.strokeStyle = "#00000070";
+        this.ctxPlot.strokeStyle = "#00000030";
         this.ctxPlot.moveTo(driverMALToDriverFFX, driverMALToDriverFFY);
         this.ctxPlot.arc(driverMALToDriverFFX, driverMALToDriverFFY, this.bodyWidth * .002, 0, 2 * Math.PI);
         this.ctxPlot.stroke();
@@ -554,7 +562,7 @@ class BeltPlot
         //Driven to level critical point.
         this.ctxPlot.beginPath();
         this.ctxPlot.lineWidth = this.bodyWidth * .005;
-        this.ctxPlot.strokeStyle = "#00000070";
+        this.ctxPlot.strokeStyle = "#00000030";
         this.ctxPlot.moveTo(drivenToLevelX, drivenToLevelY);
         this.ctxPlot.arc(drivenToLevelX, drivenToLevelY, this.bodyWidth * .002, 0, 2 * Math.PI);
         this.ctxPlot.stroke();
@@ -562,10 +570,11 @@ class BeltPlot
         //Driver to level critical point.
         this.ctxPlot.beginPath();
         this.ctxPlot.lineWidth = this.bodyWidth * .005;
-        this.ctxPlot.strokeStyle = "#00000070";
+        this.ctxPlot.strokeStyle = "#00000030";
         this.ctxPlot.moveTo(driverToLevelX, driverToLevelY);
         this.ctxPlot.arc(driverToLevelX, driverToLevelY, this.bodyWidth * .002, 0, 2 * Math.PI);
         this.ctxPlot.stroke();
+        */
 
         //Set up the bezier spline line values.
         this.ctxPlot.lineWidth    = this.bodyWidth * .0025;
@@ -579,13 +588,23 @@ class BeltPlot
         let driverToLevelCY      = driverToLevelLowestY + .50 * driverToLeveldy;
         let driverToLevelCX      = driverMALToDriverFFX + this.bodyWidth * .025;
         
+        //Draw point.
         this.ctxPlot.beginPath();
-        this.ctxPlot.strokeStyle  = "#007000";
-        this.ctxPlot.fillStyle    = "#007000";
+        this.ctxPlot.setLineDash([]);
+        this.ctxPlot.fillStyle = "#007000";
+        this.ctxPlot.moveTo(driverToLevelX, levelPixel);
+        this.ctxPlot.arc(driverToLevelX, levelPixel, this.bodyWidth * .004, 0, 2 * Math.PI);
+        this.ctxPlot.fill();
+        this.ctxPlot.setLineDash([this.bodyWidth * .005, this.bodyWidth * .005]);
+
+        //Draw movement arc.
+        this.ctxPlot.beginPath();
+        this.ctxPlot.strokeStyle = "#007000";
         this.ctxPlot.moveTo(driverToLevelX, driverToLevelY);
         this.ctxPlot.bezierCurveTo(driverToLevelCX, driverToLevelCY, driverToLevelCX, driverToLevelCY, driverMALToDriverFFX, driverMALToDriverFFY);
         this.ctxPlot.stroke();
 
+        //add label.
         this.ctxPlot.beginPath();
         this.ctxPlot.fillText(this.dvrToLvl, driverToLevelCX, driverToLevelCY);
         this.ctxPlot.stroke();
@@ -596,13 +615,23 @@ class BeltPlot
         let drivenToLevelCY      = drivenToLevelLowestY + .50 * drivenToLeveldy;
         let drivenToLevelCX      = drivenMALToDrivenFFX + this.bodyWidth * .025;
         
+        //Draw point.
+        this.ctxPlot.beginPath();
+        this.ctxPlot.setLineDash([]);
+        this.ctxPlot.fillStyle = "#0000b0";
+        this.ctxPlot.moveTo(drivenToLevelX, levelPixel);
+        this.ctxPlot.arc(drivenToLevelX, levelPixel, this.bodyWidth * .004, 0, 2 * Math.PI);
+        this.ctxPlot.fill();
+        this.ctxPlot.setLineDash([this.bodyWidth * .005, this.bodyWidth * .005]);
+
+        //Draw movement arc.
         this.ctxPlot.beginPath();
         this.ctxPlot.strokeStyle  = "#0000b0";
-        this.ctxPlot.fillStyle    = "#0000b0";
         this.ctxPlot.moveTo(drivenToLevelX, drivenToLevelY);
         this.ctxPlot.bezierCurveTo(drivenToLevelCX, drivenToLevelCY, drivenToLevelCX, drivenToLevelCY, drivenMALToDrivenFFX, drivenMALToDrivenFFY);
         this.ctxPlot.stroke();
 
+        //Add label.
         this.ctxPlot.beginPath();
         this.ctxPlot.fillText(this.dvnToLvl, drivenToLevelCX, drivenToLevelCY);
         this.ctxPlot.stroke();
@@ -615,14 +644,24 @@ class BeltPlot
             let drivenToDriverdy      = Math.abs(driverMALToDrivenFFY - drivenMALToDrivenFFY);
             let drivenToDriverCY      = drivenToDriverLowestY + .50 * drivenToDriverdy;
             let drivenToDriverCX      = driverMALToDrivenFFX - this.bodyWidth * .025;
+            
+            //Draw point.
+            this.ctxPlot.beginPath();
+            this.ctxPlot.setLineDash([]);
+            this.ctxPlot.fillStyle    = "#700000";
+            this.ctxPlot.moveTo(driverMALToDrivenFFX, driverMALToDrivenFFY);
+            this.ctxPlot.arc(driverMALToDrivenFFX, driverMALToDrivenFFY, this.bodyWidth * .004, 0, 2 * Math.PI);
+            this.ctxPlot.fill();
+            this.ctxPlot.setLineDash([this.bodyWidth * .005, this.bodyWidth * .005]);
 
+            //Draw movement arc.
             this.ctxPlot.beginPath();
             this.ctxPlot.strokeStyle  = "#700000";
-            this.ctxPlot.fillStyle    = "#700000";
             this.ctxPlot.moveTo(drivenMALToDrivenFFX, drivenMALToDrivenFFY);
             this.ctxPlot.bezierCurveTo(drivenToDriverCX, drivenToDriverCY, drivenToDriverCX, drivenToDriverCY, driverMALToDrivenFFX, driverMALToDrivenFFY);
             this.ctxPlot.stroke();
 
+            //Add label.
             this.ctxPlot.beginPath();
             this.ctxPlot.fillText(this.dvnToDvr, drivenToDriverCX - textWidth, drivenToDriverCY);
             this.ctxPlot.stroke();
@@ -636,14 +675,54 @@ class BeltPlot
             let driverToDrivendy      = Math.abs(drivenMALToDriverFFY - driverMALToDriverFFY);
             let driverToDrivenCY      = driverToDrivenLowestY + .50 * driverToDrivendy;
             let driverToDrivenCX      = drivenMALToDriverFFX - this.bodyWidth * .025;
+            
+            /*
+            let arrowOffset           = 0;
+            let xMirror               = 0;
 
+            //Determine the direction of the arrow.
+            if(drivenMALToDriverFFY > driverMALToDriverFFY)
+            {
+                arrowOffset = this.bodyHeight * -.01;
+                xMirror = -1;
+            }
+            else
+            {
+                arrowOffset = this.bodyHeight * .01;
+                xMirror = 1;
+            }
+
+            //Draw arrow.
+            this.ctxPlot.beginPath();
+            this.ctxPlot.setLineDash([]);
+            this.ctxPlot.strokeStyle  = "#700000";
+            this.ctxPlot.moveTo(drivenMALToDriverFFX, drivenMALToDriverFFY + arrowOffset);
+            this.ctxPlot.lineTo(drivenMALToDriverFFX - arrowOffset * xMirror, drivenMALToDriverFFY + .5 * arrowOffset);
+            this.ctxPlot.lineTo(drivenMALToDriverFFX, drivenMALToDriverFFY);
+            this.ctxPlot.lineTo(drivenMALToDriverFFX + .25 * arrowOffset * xMirror, drivenMALToDriverFFY + 1.1 * arrowOffset);
+            this.ctxPlot.lineTo(drivenMALToDriverFFX, drivenMALToDriverFFY + arrowOffset);
+            this.ctxPlot.fill();
+            this.ctxPlot.stroke();
+            this.ctxPlot.setLineDash([this.bodyWidth * .005, this.bodyWidth * .005]);
+            */
+
+            //Draw point.
+            this.ctxPlot.beginPath();
+            this.ctxPlot.setLineDash([]);
+            this.ctxPlot.fillStyle    = "#700000";
+            this.ctxPlot.moveTo(drivenMALToDriverFFX, drivenMALToDriverFFY);
+            this.ctxPlot.arc(drivenMALToDriverFFX, drivenMALToDriverFFY, this.bodyWidth * .004, 0, 2 * Math.PI);
+            this.ctxPlot.fill();
+            this.ctxPlot.setLineDash([this.bodyWidth * .005, this.bodyWidth * .005]);
+
+            //Draw movement arc.
             this.ctxPlot.beginPath();
             this.ctxPlot.strokeStyle  = "#700000";
-            this.ctxPlot.fillStyle    = "#700000";
             this.ctxPlot.moveTo(driverMALToDriverFFX, driverMALToDriverFFY);
             this.ctxPlot.bezierCurveTo(driverToDrivenCX, driverToDrivenCY, driverToDrivenCX, driverToDrivenCY, drivenMALToDriverFFX, drivenMALToDriverFFY);
             this.ctxPlot.stroke();
-
+            
+            //Add label.
             this.ctxPlot.beginPath();
             this.ctxPlot.fillText(this.dvrToDvn, driverToDrivenCX - textWidth, driverToDrivenCY);
             this.ctxPlot.stroke();
