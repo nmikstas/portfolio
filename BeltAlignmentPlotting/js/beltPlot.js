@@ -28,7 +28,7 @@ class BeltPlot
         this.parentDiv = parentDiv;
 
         //Height and width of the canvas.
-        this.bodyWidth = 100;
+        this.bodyWidth  = 100;
         this.bodyHeight = 100;
 
         //Background image of the plot.
@@ -218,7 +218,7 @@ class BeltPlot
         let xSquareScaling = xBlocksScaling / 10;  //Calculate inches per square.
         let xInchPerPixel  = xSquareScaling / dxy; //Calculate inches per pixel.
         let xPixelPerInch  = 1 / xInchPerPixel;    //Calculate pixels per inch.
-        let rearFeetRef = dxy * 10;                //Calculate the rear feet reference offset.
+        let rearFeetRef    = dxy * 10;             //Calculate the rear feet reference offset.
 
         //Calculate the slope of the driver and driven misadjustment lines.
         let driverMALSlope = -this.driverBubble * 5 / BeltPlot.STARRETT;
@@ -369,10 +369,10 @@ class BeltPlot
         let yPixelPer5Mil = yPixelPerMil * 5;
 
         this.ctxPlot.beginPath();
-        this.ctxPlot.strokeStyle = "#00000040";
-        this.ctxPlot.fillStyle   = "#00000040";
-        this.ctxPlot.lineWidth   = this.bodyWidth * .004;
-        this.ctxPlot.font = "bold " + (this.bodyWidth * .015) + "px Arial";
+        this.ctxPlot.strokeStyle  = "#00000040";
+        this.ctxPlot.fillStyle    = "#00000040";
+        this.ctxPlot.lineWidth    = this.bodyWidth * .004;
+        this.ctxPlot.font         = "bold " + (this.bodyWidth * .015) + "px Arial";
         this.ctxPlot.textBaseline = "middle";
 
         for(let i = 0; i < 9; i++)
@@ -709,7 +709,7 @@ class BeltPlot
             //Draw point.
             this.ctxPlot.beginPath();
             this.ctxPlot.setLineDash([]);
-            this.ctxPlot.fillStyle    = "#700000";
+            this.ctxPlot.fillStyle  = "#700000";
             this.ctxPlot.moveTo(drivenMALToDriverFFX, drivenMALToDriverFFY);
             this.ctxPlot.arc(drivenMALToDriverFFX, drivenMALToDriverFFY, this.bodyWidth * .004, 0, 2 * Math.PI);
             this.ctxPlot.fill();
