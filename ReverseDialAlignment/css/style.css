@@ -17,6 +17,7 @@ input
 {
     margin-left: 1.0rem;
     margin-bottom: 1.0rem;
+    max-width: 90%;
 }
 
 .belt-border
@@ -30,4 +31,9 @@ input
 .align
 {
     text-align: center;
+}
+
+.small-img
+{
+    max-width: 100px;
 }

@@ -99,8 +99,68 @@
             </div>
             
             <div class="row">
-                
+                <div class="col-md-12 belt-border">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>Dimension A(.1 to 100 inches):</p>
+                            <input id="dial-dist" type="text" onkeypress="return isNumberKey(this, .1, 100, event)" onfocusout="validateNumber(this, .1, 100)"/>
+                            <p>Dimension B(Greater than A to 100 inches):</p>
+                            <input id="mff-to-dial" type="text" onkeypress="return isNumberKey(this, .1, 100, event)" onfocusout="validateNumber(this, .1, 100)"/>
+                            <p>Dimension C(Greater than B to 100 inches):</p>
+                            <input id="mrf-to-dial" type="text" onkeypress="return isNumberKey(this, .1, 100, event)" onfocusout="validateNumber(this, .1, 100)"/>
+                        </div>
+                        <div class="col-md-6">
+                            <p>Dimension D(.1 to 100 inches):</p>
+                            <input id="sff-to-dial" type="text" onkeypress="return isNumberKey(this, .1, 100, event)" onfocusout="validateNumber(this, .1, 100)"/>
+                            <p>Dimension E(Greater than D to 100 inches):</p>
+                            <input id="srf-to-dial" type="text" onkeypress="return isNumberKey(this, .1, 100, event)" onfocusout="validateNumber(this, .1, 100)"/>
+                            <p>Total length(Dimension F):</p>
+                            <p id="total-dist">???</p>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            <div class="row">
+                <div class="col-md-6 belt-border">
+                    <div class="row">
+                        <div class="col-md-5"></div>
+                        <div class="col-md-2">
+                            <img class="img-fluid small-img" src="images/stationary.png" alt="Stationary dial">
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>TIR(-99 to 99):</p>
+                            <input id="s-tir" type="text" onkeypress="return isSignedNumberKey(this, -99, 99, event)" onfocusout="validateNumber(this, -99, 99)"/>
+                            <p>1/2 TIR: <span id="s-tir-1/2">???</span></p>
+                        </div>
+                        <div class="col-md-6" id="stationary-dial"></div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 belt-border">
+                    <div class="row">
+                        <div class="col-md-5"></div>
+                        <div class="col-md-2">
+                            <img class="img-fluid small-img" src="images/movable.png" alt="Movable dial">
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>TIR(-99 to 99):</p>
+                            <input id="m-tir" type="text" onkeypress="return isSignedNumberKey(this, -99, 99, event)" onfocusout="validateNumber(this, -99, 99)"/>
+                            <p>1/2 TIR: <span id="m-tir-1/2">???</span></p>
+                            <p>-1/2 TIR: <span id="m-tir-pm">???</span></p>
+                        </div>
+                        <div class="col-md-6" id="movable-dial"></div>
+                    </div>
+                </div>
+            </div>
+
+
 
             <div class="row">
                 <div class="col-md-12 mt-4" id="plot"></div>
@@ -123,6 +183,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
     <!--Javascript-->
+    <script src="js/dial.js"></script>
     <script src="js/shaftPlot.js"></script>
     <script src="js/reverseDialAlignment.js"></script>
 </body>
