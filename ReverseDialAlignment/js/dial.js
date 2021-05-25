@@ -106,6 +106,12 @@ class Dial
         //Make sure the calculations can't go negative.
         if(this.bodyWidth < 5) return;
 
+        //Make sure the background of the dial is white.
+        this.ctxDial.beginPath();
+        this.ctxDial.fillStyle = "#ffffff";
+        this.ctxDial.arc(this.bodyMiddle, this.bodyMiddle, this.radius, 0, 2 * Math.PI);
+        this.ctxDial.fill();
+
         //Draw the outer ring of the dial.
         this.drawArc(0, 2 * Math.PI, this.radius, "#000000", this.bodyWidth * .010);
         

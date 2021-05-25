@@ -5,6 +5,10 @@ class ShaftPlot
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     static get HEIGHT_MULT() {return .72727272}
+    static get DIM_MIN() {return .1}
+    static get DIM_MAX() {return 100}
+    static get TIR_MIN() {return -99}
+    static get TIR_MAX() {return 99}
     
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //                                        Constructor                                        //
@@ -22,6 +26,29 @@ class ShaftPlot
 
         //Background image of the plot.
         this.backgroundImg = backgroundImg;
+
+        //Initial values used to calculate critical points.
+        this.dimA = undefined;
+        this.dimB = undefined;
+        this.dimC = undefined;
+        this.dimD = undefined;
+        this.dimE = undefined;
+        this.dimF = undefined;
+        this.sTIR = undefined;
+        this.mTIR = undefined;
+
+        //Calculated moves.
+        this.movable =
+        {
+            mi: undefined, //Movable inboard feet.
+            mo: undefined  //Movable outboard feet.
+        }
+
+        this.inboard =
+        {
+            si: undefined, //Stationary inboard feet.
+            mi: undefined  //Movable inboard feet.
+        }
 
         //Only create plot if parent exists.
         if(this.parentDiv)this.init();
@@ -131,5 +158,107 @@ class ShaftPlot
     plotDraw()
     {
 
+    }
+
+    //Calculate all the critical points for the graph. Units are in feet and mils.
+    doCalcs(dimA, dimB, dimC, dimD, dimE, sTIR, mTIR)
+    {
+        let isValid = true;
+        let dimA1 = parseFloat(dimA);
+        let dimB1 = parseFloat(dimB);
+        let dimC1 = parseFloat(dimC);
+        let dimD1 = parseFloat(dimD);
+        let dimE1 = parseFloat(dimE);
+        let sTIR1 = parseFloat(sTIR);
+        let mTIR1 = parseFloat(mTIR);
+
+        //Make sure all entries are valid.
+        if(isNaN(dimA1) || isNaN(dimB1) || isNaN(dimC1) || isNaN(dimD1) ||
+           isNaN(dimE1) || isNaN(sTIR1) || isNaN(mTIR1))
+        {
+            isValid = false;
+        }
+
+        //Make sure all entries are within the min and max ranges.
+        if(isValid && (
+           dimA1 < ShaftPlot.DIM_MIN || dimA1 > ShaftPlot.DIM_MAX || dimB1 < ShaftPlot.DIM_MIN || dimB1 > ShaftPlot.DIM_MAX ||
+           dimC1 < ShaftPlot.DIM_MIN || dimC1 > ShaftPlot.DIM_MAX || dimD1 < ShaftPlot.DIM_MIN || dimD1 > ShaftPlot.DIM_MAX ||
+           dimE1 < ShaftPlot.DIM_MIN || dimE1 > ShaftPlot.DIM_MAX || sTIR1 < ShaftPlot.TIR_MIN || sTIR1 > ShaftPlot.TIR_MAX ||
+           mTIR1 < ShaftPlot.TIR_MIN || mTIR1 > ShaftPlot.TIR_MAX))
+        {
+            isValid = false;
+        }
+
+        //Make sure certain values are not less than other values.
+        if(isValid && (dimB1 <= dimA1 || dimC1 <= dimB1 || dimC1 <= dimA1 || dimE1 <= dimD1))
+        {
+            isValid = false;
+        }
+
+        //Save the values if they are valid.
+        if(!isValid)
+        {
+            this.dimA = undefined;
+            this.dimB = undefined;
+            this.dimC = undefined;
+            this.dimD = undefined;
+            this.dimE = undefined;
+            this.sTIR = undefined;
+            this.mTIR = undefined;
+
+            this.movable.mi = NaN;
+            this.movable.mo = NaN;
+            this.inboard.si = NaN;
+            this.inboard.mi = NaN;
+        }
+        else
+        {
+            this.dimA = dimA1;
+            this.dimB = dimB1;
+            this.dimC = dimC1;
+            this.dimD = dimD1;
+            this.dimE = dimE1;
+            this.sTIR = sTIR1;
+            this.mTIR = mTIR1;
+            this.dimF = this.dimE + this.dimC;
+        }
+
+        //Do the calculations.
+        if(isValid)
+        {          
+            //Movable calcs, movable inboard.
+            let m1 = (this.mTIR - this.sTIR) / this.dimA;
+            let b1 = this.mTIR;
+            let x1 = this.dimB - this.dimA;
+            this.movable.mi = -(m1 * x1 + b1);
+
+            //Movable calcs, movable outboard.
+            x1 = dimC - dimA;
+            this.movable.mo = -(m1 * x1 + b1);
+
+            //Inboard calcs, stationary inboard.
+            let m2 = -this.movable.mo / this.dimF;
+            let x2 = this.dimE - this.dimD;
+            this.inboard.si = m2 * x2;
+
+            //Inboard calcs, movable inboard.
+            x2 = this.dimE + this.dimB;
+            let b2 = this.movable.mi;
+            this.inboard.mi = m2 * x2 + b2;
+        }
+        
+        let movable =
+        {
+            mi: this.movable.mi,
+            mo: this.movable.mo
+        }
+
+        let inboard =
+        {
+            si: this.inboard.si,
+            mi: this.inboard.mi
+        }
+        
+        return {movable, inboard};
     }
 }

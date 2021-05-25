@@ -218,5 +218,23 @@ let validateNumber = (obj, min, max) =>
         document.getElementById("m-tir-pm").innerHTML  = (-mTIR / 2).toFixed(2);
     }
 
+    //Pass everything on for calculation.
+    let moves = plot.doCalcs(dialDist, mffToDial, mrfToDial, sffToDial, srfToDial, sTIR / 2, -mTIR / 2);
+
+    //If everything passes, display the results.
+    if(!isNaN(moves.movable.mi))
+    {
+        document.getElementById("mov-in1").innerHTML  = ((moves.movable.mi >= 0) ? "+" : "") + moves.movable.mi.toFixed(2) + " mils";
+        document.getElementById("mov-out1").innerHTML = ((moves.movable.mo >= 0) ? "+" : "") + moves.movable.mo.toFixed(2) + " mils";
+        document.getElementById("sta-in1").innerHTML  = ((moves.inboard.si >= 0) ? "+" : "") + moves.inboard.si.toFixed(2) + " mils";
+        document.getElementById("mov-in2").innerHTML  = ((moves.inboard.mi >= 0) ? "+" : "") + moves.inboard.mi.toFixed(2) + " mils";
+    }
+    else
+    {
+        document.getElementById("mov-in1").innerHTML  = "???";
+        document.getElementById("mov-out1").innerHTML = "???";
+        document.getElementById("sta-in1").innerHTML  = "???";
+        document.getElementById("mov-in2").innerHTML  = "???";
+    }
 
 }
