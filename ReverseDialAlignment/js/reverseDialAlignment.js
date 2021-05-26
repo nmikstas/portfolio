@@ -13,25 +13,41 @@ let validDist = false;
 //Create the dials and plot.
 let sDial = new Dial(document.getElementById("stationary-dial"), {numberColor: "#c0000070", needleColor: "#700000"});
 let mDial = new Dial(document.getElementById("movable-dial"), {numberColor: "#0000c070", needleColor: "#000070"});
-let plot  = new ShaftPlot(document.getElementById("plot"), {backgroundImg: document.getElementById("blank")});
-
-//Make sure everthing resets on a page refresh.
-document.getElementById("dial-dist").value       = "";
-document.getElementById("mff-to-dial").value     = "";
-document.getElementById("mrf-to-dial").value     = "";
-document.getElementById("sff-to-dial").value     = "";
-document.getElementById("srf-to-dial").value     = "";
-document.getElementById("total-dist").innerHTML  = "??? inches";
-document.getElementById("m-tir").value           = "";
-document.getElementById("s-tir").value           = "";
-document.getElementById("m-tir-1/2").value       = "???";
-document.getElementById("s-tir-1/2").value       = "???";
-document.getElementById("m-tir-pm").value        = "???";
+let plot  = new ShaftPlot(document.getElementById("plot"), {backgroundImg: document.getElementById("blank"), debug: true});
 
 //Clear all inputted data.
 let clearData = () =>
 {
-    
+    document.getElementById("dial-dist").value      = "";
+    document.getElementById("mff-to-dial").value    = "";
+    document.getElementById("mrf-to-dial").value    = "";
+    document.getElementById("sff-to-dial").value    = "";
+    document.getElementById("srf-to-dial").value    = "";
+    document.getElementById("total-dist").innerHTML = "??? inches";
+    document.getElementById("m-tir").value          = "";
+    document.getElementById("s-tir").value          = "";
+    document.getElementById("m-tir-1/2").innerHTML  = "???";
+    document.getElementById("s-tir-1/2").innerHTML  = "???";
+    document.getElementById("m-tir-pm").innerHTML   = "???";
+
+    document.getElementById("mov-in1").innerHTML  = "???";
+    document.getElementById("mov-out1").innerHTML = "???";
+    document.getElementById("sta-in1").innerHTML  = "???";
+    document.getElementById("mov-in2").innerHTML  = "???";
+
+    dialDist  = undefined;
+    mffToDial = undefined;
+    mrfToDial = undefined;
+    sffToDial = undefined;
+    srfToDial = undefined;
+    totalDist = undefined;
+    mTIR      = undefined;
+    sTIR      = undefined;
+    validDist = false;
+
+    sDial.setDial(sTIR);
+    mDial.setDial(mTIR);
+    plot.doCalcs(dialDist, mffToDial, mrfToDial, sffToDial, srfToDial, sTIR / 2, -mTIR / 2);
 }
 
 let isNumberKey = (obj, min, max, evt) =>
@@ -238,3 +254,6 @@ let validateNumber = (obj, min, max) =>
     }
 
 }
+
+//Make sure everthing resets on a page refresh.
+clearData();

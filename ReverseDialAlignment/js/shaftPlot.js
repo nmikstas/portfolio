@@ -18,7 +18,8 @@ class ShaftPlot
     (
         parentDiv,
         {
-            backgroundImg = null
+            backgroundImg = null,
+            debug         = false
         } = {}
     )
     {
@@ -26,6 +27,17 @@ class ShaftPlot
 
         //Background image of the plot.
         this.backgroundImg = backgroundImg;
+
+        //Graphing variables.
+        this.paddingDiv;
+        this.bodyCanvas;
+        this.ctxPlot;
+        this.pixelsPerSquare;
+        this.inchesPerBlock;
+        this.milsPerBlock;
+
+        //Used for printing extra stuff while debugging.
+        this.debug = debug;
 
         //Initial values used to calculate critical points.
         this.dimA = undefined;
@@ -36,6 +48,9 @@ class ShaftPlot
         this.dimF = undefined;
         this.sTIR = undefined;
         this.mTIR = undefined;
+
+        //Boolean to tell wether a complete set of valid data is present or not.
+        this.isValid = false;
 
         //Calculated moves.
         this.movable =
@@ -49,6 +64,10 @@ class ShaftPlot
             si: undefined, //Stationary inboard feet.
             mi: undefined  //Movable inboard feet.
         }
+
+        //Intermediate calculation values.
+        this.m1 = undefined; //Slope of the green MAL.
+        this.m2 = undefined; //Slope of the red MAL.
 
         //Only create plot if parent exists.
         if(this.parentDiv)this.init();
@@ -155,15 +174,11 @@ class ShaftPlot
         this.plotDraw();
     }
 
-    plotDraw()
-    {
-
-    }
-
     //Calculate all the critical points for the graph. Units are in feet and mils.
     doCalcs(dimA, dimB, dimC, dimD, dimE, sTIR, mTIR)
     {
-        let isValid = true;
+        this.isValid = true;
+
         let dimA1 = parseFloat(dimA);
         let dimB1 = parseFloat(dimB);
         let dimC1 = parseFloat(dimC);
@@ -176,27 +191,27 @@ class ShaftPlot
         if(isNaN(dimA1) || isNaN(dimB1) || isNaN(dimC1) || isNaN(dimD1) ||
            isNaN(dimE1) || isNaN(sTIR1) || isNaN(mTIR1))
         {
-            isValid = false;
+            this.isValid = false;
         }
 
         //Make sure all entries are within the min and max ranges.
-        if(isValid && (
+        if(this.isValid && (
            dimA1 < ShaftPlot.DIM_MIN || dimA1 > ShaftPlot.DIM_MAX || dimB1 < ShaftPlot.DIM_MIN || dimB1 > ShaftPlot.DIM_MAX ||
            dimC1 < ShaftPlot.DIM_MIN || dimC1 > ShaftPlot.DIM_MAX || dimD1 < ShaftPlot.DIM_MIN || dimD1 > ShaftPlot.DIM_MAX ||
            dimE1 < ShaftPlot.DIM_MIN || dimE1 > ShaftPlot.DIM_MAX || sTIR1 < ShaftPlot.TIR_MIN || sTIR1 > ShaftPlot.TIR_MAX ||
            mTIR1 < ShaftPlot.TIR_MIN || mTIR1 > ShaftPlot.TIR_MAX))
         {
-            isValid = false;
+            this.isValid = false;
         }
 
         //Make sure certain values are not less than other values.
-        if(isValid && (dimB1 <= dimA1 || dimC1 <= dimB1 || dimC1 <= dimA1 || dimE1 <= dimD1))
+        if(this.isValid && (dimB1 <= dimA1 || dimC1 <= dimB1 || dimC1 <= dimA1 || dimE1 <= dimD1))
         {
-            isValid = false;
+            this.isValid = false;
         }
 
         //Save the values if they are valid.
-        if(!isValid)
+        if(!this.isValid)
         {
             this.dimA = undefined;
             this.dimB = undefined;
@@ -224,20 +239,22 @@ class ShaftPlot
         }
 
         //Do the calculations.
-        if(isValid)
+        if(this.isValid)
         {          
             //Movable calcs, movable inboard.
             let m1 = (this.mTIR - this.sTIR) / this.dimA;
+            this.m1 = m1;
             let b1 = this.mTIR;
             let x1 = this.dimB - this.dimA;
             this.movable.mi = -(m1 * x1 + b1);
-
+            
             //Movable calcs, movable outboard.
             x1 = dimC - dimA;
             this.movable.mo = -(m1 * x1 + b1);
 
             //Inboard calcs, stationary inboard.
             let m2 = -this.movable.mo / this.dimF;
+            this.m2 = m2;
             let x2 = this.dimE - this.dimD;
             this.inboard.si = m2 * x2;
 
@@ -246,6 +263,8 @@ class ShaftPlot
             let b2 = this.movable.mi;
             this.inboard.mi = m2 * x2 + b2;
         }
+
+        this.bodyDraw();
         
         let movable =
         {
@@ -260,5 +279,345 @@ class ShaftPlot
         }
         
         return {movable, inboard};
+    }
+
+    //This is where the plot is actually drawn.
+    plotDraw()
+    {
+        //Exit if there is not a valid dataset to plot.
+        if(!this.isValid) return;
+
+        /************************************ Inches and Mils ************************************/
+
+        let maxX            = this.dimF;           //Max X distance to fit onto graph.
+        let inchesPerBlock  = Math.ceil(maxX / 9); //Calculate inches per block (10 squares).
+
+        //try to stretch the graph as far as possible but don't let it go off screen.
+        let inchesPerBlock1 = Math.round(inchesPerBlock / 2.5) * 2.5;
+        let inchesPerBlock2 = Math.ceil(inchesPerBlock / 2.5) * 2.5;
+        if(inchesPerBlock1 * 9.5 >= this.dimF)
+        {
+            inchesPerBlock = inchesPerBlock1;
+        }
+        else
+        {
+            inchesPerBlock = inchesPerBlock2;
+        }
+
+        if(this.dimF <= 9)inchesPerBlock = 1;
+
+        this.inchesPerBlock = inchesPerBlock;      //Save a class copy of the variable.
+        let inchesPerSquare = inchesPerBlock / 10; //Calculate inches per square.
+        
+        //Figure out the min/max value of y at stationary dial.
+        let y1, y2;
+        if((this.mTIR >= 0 && this.sTIR >= 0 && this.sTIR <= this.mTIR) || (this.mTIR < 0 && this.sTIR < 0 && this.sTIR >= this.mTIR))
+        {
+            y1 = 0;
+        }
+        else
+        {
+            y1 = this.sTIR;
+        }
+
+        y2 = -this.movable.mo;
+
+        let maxY          = y2 - y1;                         //Max Y distance to fit into graph;
+        let milsPerBlock  = Math.abs(Math.ceil(maxY / 6));   //Calculate mils per block (10 squares).
+        milsPerBlock      = Math.ceil(milsPerBlock / 5) * 5; //Mils per block ar divisions of 5.
+        if(milsPerBlock === 0)milsPerBlock = 1;
+        this.milsPerBlock = milsPerBlock;                    //Save a class copy of the variable.
+        let milsPerSquare = milsPerBlock / 10;               //Calculate mils per square.
+
+        //The calibration line should always be on a block boundary. Calculate that block number.
+        //This value starts at 0 (top block) and goes to 8 (bottom block). Should be 1 to 7.
+        let yCalBlock = 0;
+        if(y1 === 0 && this.m1 >= 0)
+        {
+                yCalBlock = 7;
+        }
+        else if(y1 === 0 && this.m1 < 0)
+        {
+                yCalBlock = 1;
+        }
+        else
+        {
+            //Somewhere in between. figure out how many blocks above/below cal line y1 is.
+            yCalBlock = y1 / milsPerBlock;
+
+            if(yCalBlock >= 0)
+            {
+                yCalBlock = Math.ceil(yCalBlock);
+            }
+            else
+            {
+                yCalBlock = Math.floor(yCalBlock);
+            }
+
+            if(yCalBlock < 0)
+            {
+                yCalBlock = 7 + yCalBlock;
+            }
+            else
+            {
+                yCalBlock = 1 + yCalBlock;
+            }
+        }
+
+
+
+
+
+
+
+
+       
+        
+        /**************************************** Pixels *****************************************/
+
+        let pixelsPerBlock   = this.bodyWidth / 11;               //Pixels per block(10 squares).
+        let pixelsPerSquare  = this.bodyWidth / 110;              //Pixels per square.
+        this.pixelsPerSquare = pixelsPerSquare;                   //Save a class copy of the variable.
+        let inchesPerPixel   = inchesPerSquare / pixelsPerSquare; //Inches per pixel(x axis).
+        let pixelsPerInch    = 1 / inchesPerPixel;                //Pixels per inch.
+        let milsPerPixel     = milsPerSquare / pixelsPerSquare;   //Mils per pixel(y axis).
+        let pixelsPerMil     = 1 / milsPerPixel;                  //Pixels per mil.
+
+        let yOrigin = pixelsPerBlock * yCalBlock; //Y pixel location of cal line(also the Y origin).
+        let xOrigin = (this.dimE + this.dimA) * pixelsPerInch + pixelsPerBlock; //X pixel origin.
+
+        let siX = pixelsPerBlock + (this.dimE - this.dimD) * pixelsPerInch; //Stationary object, inboard feet.
+        let soX = pixelsPerBlock; //Stationary object, outboard feet.
+
+        let miX = pixelsPerBlock + (this.dimE + this.dimB) * pixelsPerInch; //Movable object, inboard feet.
+        let moX = pixelsPerBlock + (this.dimE + this.dimC) * pixelsPerInch; //Movable object, outboard feet.
+        
+        let sDialX = pixelsPerBlock + this.dimE * pixelsPerInch; //Stationary dial.
+        let mDialX = pixelsPerBlock + (this.dimE + this.dimA) * pixelsPerInch; //Movable dial.
+
+        //Green MAL line points.
+        let greenMalX1 = sDialX;
+        let greenMalX2 = moX;
+        let greenMalY1 = yOrigin - this.sTIR * pixelsPerMil;
+        let greenMalY2 = yOrigin + this.movable.mo * pixelsPerMil;
+
+        //Red MAL line plot points.
+        let redMalX1 = pixelsPerBlock;
+        let redMalX2 = moX;
+        let redMalY1 = yOrigin;
+        let redMalY2 = yOrigin + this.movable.mo * pixelsPerMil;
+
+
+
+
+
+
+        
+
+        /************************************* Plot Routines *************************************/
+
+        //Draw the X and Y axis arrows.
+        this.drawVertScaling(0, 5);
+        this.drawHorzScaling(0, 6);
+        
+        //Draw the stationary object, inboard and outboard feet lines.
+        this.drawSolidLine(soX, this.bodyHeight * .035, soX, this.bodyHeight - this.bodyHeight * .035, this.bodyWidth * .004, "#00000060");
+        this.drawSolidLine(siX, this.bodyHeight * .035, siX, this.bodyHeight - this.bodyHeight * .035, this.bodyWidth * .004, "#00000060");
+
+        //Draw the movable object, inboard and outboard feet lines.
+        this.drawSolidLine(moX, this.bodyHeight * .035, moX, this.bodyHeight - this.bodyHeight * .035, this.bodyWidth * .004, "#00000060");
+        this.drawSolidLine(miX, this.bodyHeight * .035, miX, this.bodyHeight - this.bodyHeight * .035, this.bodyWidth * .004, "#00000060");
+
+        //Draw the stationary and movable dial lines.
+        this.drawSolidLine(sDialX, this.bodyHeight * .05, sDialX, this.bodyHeight, this.bodyWidth * .004, "#ff000070");
+        this.drawSolidLine(mDialX, this.bodyHeight * .05, mDialX, this.bodyHeight, this.bodyWidth * .004, "#0000ff70");
+
+        //Draw the feet symbols.
+        this.drawFoot(soX, this.bodyHeight * .02, "#00000070");
+        this.drawFoot(siX, this.bodyHeight * .02, "#00000070");
+        this.drawFoot(miX, this.bodyHeight * .02, "#00000070");
+        this.drawFoot(moX, this.bodyHeight * .02, "#00000070");
+        this.drawFoot(soX, this.bodyHeight - this.bodyHeight * .02, "#00000070");
+        this.drawFoot(siX, this.bodyHeight - this.bodyHeight * .02, "#00000070");
+        this.drawFoot(miX, this.bodyHeight - this.bodyHeight * .02, "#00000070");
+        this.drawFoot(moX, this.bodyHeight - this.bodyHeight * .02, "#00000070");
+
+        //Draw the stationary and movable dial symbols.
+        this.drawSDial(sDialX, this.bodyHeight * .025, "#ff000070");
+        this.drawMDial(mDialX, this.bodyHeight * .025, "#0000ff70");
+
+        
+
+        //Draw the green and red MAL lines.
+        this.drawSolidLine(greenMalX1, greenMalY1, greenMalX2, greenMalY2, this.bodyWidth * .004, "#00a00070");
+        this.drawDashedLine(redMalX1, redMalY1, redMalX2, redMalY2, this.bodyWidth * .004, "#ff000070");
+
+        //Draw the solid and dashed portions of the cal line.
+        this.drawSolidLine(pixelsPerBlock, yOrigin, xOrigin, yOrigin, this.bodyWidth * .004, "#0000ff40");
+        this.drawDashedLine(xOrigin, yOrigin, moX, yOrigin, this.bodyWidth * .004, "#0000ff40");
+     
+        
+
+
+
+
+        
+    }
+
+    drawMDial(x, y, color)
+    {
+        let width = this.bodyHeight * .025;
+        this.ctxPlot.strokeStyle = color;
+        this.ctxPlot.fillStyle = color;
+        this.ctxPlot.lineWidth = this.bodyWidth * .002;
+
+        this.ctxPlot.beginPath();
+        this.ctxPlot.arc(x, y, width * .65, 0, 2 * Math.PI);        
+        this.ctxPlot.stroke();
+        this.ctxPlot.beginPath();
+        this.ctxPlot.moveTo(x, y - width * .4);
+        this.ctxPlot.lineTo(x, y + width * .4);
+        this.ctxPlot.moveTo(x - width * .4, y);
+        this.ctxPlot.lineTo(x + width * .4, y);
+        this.ctxPlot.stroke();
+        this.ctxPlot.beginPath();
+        this.ctxPlot.moveTo(x - width * .8, y + width * .8);
+        this.ctxPlot.lineTo(x - width / 2, y + width / 2);
+        this.ctxPlot.stroke();
+        this.ctxPlot.beginPath();
+        this.ctxPlot.moveTo(x + width * .8, y - width * .8);
+        this.ctxPlot.lineTo(x + width * .8, y - width  * .3);
+        this.ctxPlot.lineTo(x + width * .3, y - width  * .8);
+        this.ctxPlot.fill();
+        this.ctxPlot.beginPath();
+        this.ctxPlot.moveTo(x + width * .55, y - width * .55);
+        this.ctxPlot.lineTo(x + width / 2, y - width / 2);
+        this.ctxPlot.stroke();
+    }
+
+    drawSDial(x, y, color)
+    {
+        let width = this.bodyHeight * .025;
+        this.ctxPlot.strokeStyle = color;
+        this.ctxPlot.fillStyle = color;
+        this.ctxPlot.lineWidth = this.bodyWidth * .002;
+
+        this.ctxPlot.beginPath();
+        this.ctxPlot.arc(x, y, width * .65, 0, 2 * Math.PI);        
+        this.ctxPlot.stroke();
+        this.ctxPlot.beginPath();
+        this.ctxPlot.arc(x, y, width * .40, 0, 2 * Math.PI);
+        this.ctxPlot.stroke();
+        this.ctxPlot.beginPath();
+        this.ctxPlot.arc(x, y, width * .25, 0, 2 * Math.PI);
+        this.ctxPlot.fill();
+        this.ctxPlot.beginPath();
+        this.ctxPlot.moveTo(x - width * .8, y + width * .8);
+        this.ctxPlot.lineTo(x - width / 2, y + width / 2);
+        this.ctxPlot.stroke();
+        this.ctxPlot.beginPath();
+        this.ctxPlot.moveTo(x + width * .8, y - width * .8);
+        this.ctxPlot.lineTo(x + width * .8, y - width  * .3);
+        this.ctxPlot.lineTo(x + width * .3, y - width  * .8);
+        this.ctxPlot.fill();
+        this.ctxPlot.beginPath();
+        this.ctxPlot.moveTo(x + width * .55, y - width * .55);
+        this.ctxPlot.lineTo(x + width / 2, y - width / 2);
+        this.ctxPlot.stroke();
+    }
+
+    drawFoot(x, y, color)
+    {
+        let width = this.bodyWidth * .02;
+
+        this.ctxPlot.strokeStyle = color;
+        this.ctxPlot.lineWidth = this.bodyWidth * .002;
+        this.ctxPlot.strokeRect(x - width / 2, y - width / 2, width, width);
+
+        this.ctxPlot.beginPath();
+        this.ctxPlot.arc(x, y, width * .3, 0, 2 * Math.PI);
+        this.ctxPlot.stroke();
+    }
+
+    drawHorzScaling(blockX, blockY)
+    {
+        let pixelsPerSquare = this.pixelsPerSquare;
+        let xStart = (blockX * 10 + 0.2) * pixelsPerSquare;
+        let yStart = (blockY * 10 + 8) * pixelsPerSquare;
+        this.ctxPlot.strokeStyle = "black";
+        this.ctxPlot.lineWidth = this.bodyWidth * .004;
+
+        //Draw the arrow.
+        this.ctxPlot.beginPath();
+        this.ctxPlot.moveTo(xStart, yStart);
+        this.ctxPlot.lineTo((blockX * 10 + 1) * pixelsPerSquare, (blockY * 10 + 7) * pixelsPerSquare);
+        this.ctxPlot.moveTo(xStart, yStart);
+        this.ctxPlot.lineTo((blockX * 10 + 1) * pixelsPerSquare, (blockY * 10 + 9) * pixelsPerSquare);
+        this.ctxPlot.moveTo(xStart, yStart);
+        this.ctxPlot.lineTo((blockX * 10 + 9.7) * pixelsPerSquare, (blockY * 10 + 8) * pixelsPerSquare);
+        this.ctxPlot.lineTo((blockX * 10 + 9) * pixelsPerSquare, (blockY * 10 + 7) * pixelsPerSquare);
+        this.ctxPlot.lineTo((blockX * 10 + 9.7) * pixelsPerSquare, (blockY * 10 + 8) * pixelsPerSquare);
+        this.ctxPlot.lineTo((blockX * 10 + 9) * pixelsPerSquare, (blockY * 10 + 9) * pixelsPerSquare);
+        this.ctxPlot.stroke();
+
+        //Draw the text.
+        this.ctxPlot.fillStyle = "black";
+        this.ctxPlot.font = "bold " + (this.bodyWidth * .015) + "px Arial";
+        this.ctxPlot.textBaseline = "top";
+        this.ctxPlot.beginPath();
+        this.ctxPlot.fillText(this.inchesPerBlock + " inches", (blockX * 10 + 1.5) * pixelsPerSquare, (blockY * 10 + 5.5) * pixelsPerSquare);
+        this.ctxPlot.stroke();
+    }
+
+    drawVertScaling(blockX, blockY)
+    {
+        let pixelsPerSquare = this.pixelsPerSquare;
+        let xStart = (blockX * 10 + 2) * pixelsPerSquare;
+        let yStart = (blockY * 10 + .2) * pixelsPerSquare;
+        this.ctxPlot.strokeStyle = "black";
+        this.ctxPlot.lineWidth = this.bodyWidth * .004;
+
+        //Draw the arrow.
+        this.ctxPlot.beginPath();
+        this.ctxPlot.moveTo(xStart, yStart);
+        this.ctxPlot.lineTo((blockX * 10 + 1) * pixelsPerSquare, (blockY * 10 + 1) * pixelsPerSquare);
+        this.ctxPlot.moveTo(xStart, yStart);
+        this.ctxPlot.lineTo((blockX * 10 + 3) * pixelsPerSquare, (blockY * 10 + 1) * pixelsPerSquare);
+        this.ctxPlot.moveTo(xStart, yStart);
+        this.ctxPlot.lineTo((blockX * 10 + 2) * pixelsPerSquare, (blockY * 10 + 9.7) * pixelsPerSquare);
+        this.ctxPlot.lineTo((blockX * 10 + 1) * pixelsPerSquare, (blockY * 10 + 9) * pixelsPerSquare);
+        this.ctxPlot.lineTo((blockX * 10 + 2) * pixelsPerSquare, (blockY * 10 + 9.7) * pixelsPerSquare);
+        this.ctxPlot.lineTo((blockX * 10 + 3) * pixelsPerSquare, (blockY * 10 + 9) * pixelsPerSquare);
+        this.ctxPlot.stroke();
+
+        //Draw the text.
+        this.ctxPlot.fillStyle = "black";
+        this.ctxPlot.font = "bold " + (this.bodyWidth * .015) + "px Arial";
+        this.ctxPlot.textBaseline = "top";
+        this.ctxPlot.beginPath();
+        this.ctxPlot.fillText(this.milsPerBlock + " mils", (blockX * 10 + 3) * pixelsPerSquare, (blockY * 10 + 4.5) * pixelsPerSquare);
+        this.ctxPlot.stroke();
+    }
+
+    drawSolidLine(startX, startY, endX, endY, width, color)
+    {
+        this.ctxPlot.beginPath();
+        this.ctxPlot.strokeStyle = color;
+        this.ctxPlot.lineWidth = width;
+        this.ctxPlot.moveTo(startX, startY);
+        this.ctxPlot.lineTo(endX, endY);
+        this.ctxPlot.stroke();
+    }
+
+    drawDashedLine(startX, startY, endX, endY, width, color)
+    {
+        this.ctxPlot.beginPath();
+        this.ctxPlot.strokeStyle = color;
+        this.ctxPlot.setLineDash([this.bodyWidth * .01, this.bodyWidth * .01]);
+        this.ctxPlot.lineWidth = width;
+        this.ctxPlot.moveTo(startX, startY);
+        this.ctxPlot.lineTo(endX, endY);
+        this.ctxPlot.stroke();
+        this.ctxPlot.setLineDash([]);
     }
 }
