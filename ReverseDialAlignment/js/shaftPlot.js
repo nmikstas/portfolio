@@ -9,6 +9,8 @@ class ShaftPlot
     static get DIM_MAX() {return 100}
     static get TIR_MIN() {return -99}
     static get TIR_MAX() {return 99}
+    static get LEFT() {return -1}
+    static get RIGHT() {return 1}
     
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //                                        Constructor                                        //
@@ -363,15 +365,6 @@ class ShaftPlot
                 yCalBlock = 1 + yCalBlock;
             }
         }
-
-
-
-
-
-
-
-
-       
         
         /**************************************** Pixels *****************************************/
 
@@ -407,18 +400,31 @@ class ShaftPlot
         let redMalY1 = yOrigin;
         let redMalY2 = yOrigin + this.movable.mo * pixelsPerMil;
 
+        //Movements from green MAL.
+        let greenMoveX1 = miX;
+        let greenMoveY1 = yOrigin + this.movable.mi * pixelsPerMil;
+        let greenMoveX2 = miX;
+        let greenMoveY2 = yOrigin;
+        let greenMoveX3 = moX;
+        let greenMoveY3 = yOrigin + this.movable.mo * pixelsPerMil;
+        let greenMoveX4 = moX;
+        let greenMoveY4 = yOrigin;
 
-
-
-
-
-        
+        //Movement to red MAL line.
+        let redMoveX1 = siX;
+        let redMoveY1 = yOrigin;
+        let redMoveX2 = siX;
+        let redMoveY2 = yOrigin - this.inboard.si * pixelsPerMil;
+        let redMoveX3 = miX;
+        let redMoveY3 = greenMoveY1;
+        let redMoveX4 = miX;
+        let redMoveY4 = greenMoveY1 - this.inboard.mi * pixelsPerMil;
 
         /************************************* Plot Routines *************************************/
 
         //Draw the X and Y axis arrows.
-        this.drawVertScaling(0, 5);
-        this.drawHorzScaling(0, 6);
+        this.drawVertScaling(0, 6);
+        this.drawHorzScaling(0, 6.7);
         
         //Draw the stationary object, inboard and outboard feet lines.
         this.drawSolidLine(soX, this.bodyHeight * .035, soX, this.bodyHeight - this.bodyHeight * .035, this.bodyWidth * .004, "#00000060");
@@ -446,22 +452,149 @@ class ShaftPlot
         this.drawSDial(sDialX, this.bodyHeight * .025, "#ff000070");
         this.drawMDial(mDialX, this.bodyHeight * .025, "#0000ff70");
 
-        
-
         //Draw the green and red MAL lines.
         this.drawSolidLine(greenMalX1, greenMalY1, greenMalX2, greenMalY2, this.bodyWidth * .004, "#00a00070");
         this.drawDashedLine(redMalX1, redMalY1, redMalX2, redMalY2, this.bodyWidth * .004, "#ff000070");
 
+        //Draw MAL text.
+        this.drawMAL(moX, greenMalY2, "#00a00070");
+
         //Draw the solid and dashed portions of the cal line.
         this.drawSolidLine(pixelsPerBlock, yOrigin, xOrigin, yOrigin, this.bodyWidth * .004, "#0000ff40");
         this.drawDashedLine(xOrigin, yOrigin, moX, yOrigin, this.bodyWidth * .004, "#0000ff40");
+
+        //Draw the movable cal symbol.
+        this.drawMSym(moX, yOrigin, "#0000ff70");
+        this.drawSSym(soX, yOrigin, "#0000ff70");
      
+        //Draw the movement destination points.
+        this.drawPoint(greenMoveX2, greenMoveY2, "#007000");
+        this.drawPoint(greenMoveX4, greenMoveY4, "#007000");
+        this.drawPoint(redMoveX2, redMoveY2, "#700000");
+        this.drawPoint(redMoveX4, redMoveY4, "#700000");
+
+        //Draw the movement arcs.
+        this.drawDashedArc(greenMoveX1, greenMoveY1, greenMoveX2, greenMoveY2, "#007000", this.movable.mi, ShaftPlot.RIGHT);
+        this.drawDashedArc(greenMoveX3, greenMoveY3, greenMoveX4, greenMoveY4, "#007000", this.movable.mo, ShaftPlot.LEFT);
+        this.drawDashedArc(redMoveX1, redMoveY1, redMoveX2, redMoveY2, "#700000", this.inboard.si, ShaftPlot.RIGHT);
+        this.drawDashedArc(redMoveX3, redMoveY3, redMoveX4, redMoveY4, "#700000", this.inboard.mi, ShaftPlot.LEFT);
+    }
+
+    drawDashedArc(x1, y1, x2, y2, color, value, side)
+    {
+        let text = (value >= 0) ? "+" + value.toFixed(2) : "" + value.toFixed(2);
+        this.ctxPlot.setLineDash([this.bodyWidth * .005, this.bodyWidth * .005]);
+        this.ctxPlot.strokeStyle  = color;
+        this.ctxPlot.fillStyle = color;
+        this.ctxPlot.font = "bold " + (this.bodyWidth * .015) + "px Arial";
+        this.ctxPlot.textBaseline = "middle";
         
-
-
-
-
+        let textWidth = this.ctxPlot.measureText(text).width;
         
+        let cX, cY;
+
+        cX = x1 + this.bodyWidth * .025 * side;
+
+        if(y1 < y2)
+        {
+            console.log("Control");
+            cY = y1 + .5 * (y2 - y1);
+        }
+        else
+        {
+            cY = y2 + .5 * (y1 - y2);
+        }
+        
+        this.ctxPlot.beginPath();
+        this.ctxPlot.moveTo(x1, y1);
+        this.ctxPlot.bezierCurveTo(cX, cY, cX, cY, x2, y2);
+        this.ctxPlot.stroke();
+        this.ctxPlot.setLineDash([]);
+
+        //Draw the text.
+        let xOffset = 0;
+        if(side === ShaftPlot.LEFT) xOffset = textWidth;
+        this.ctxPlot.beginPath();
+        this.ctxPlot.fillText(text, cX - xOffset, cY);
+        this.ctxPlot.stroke();
+    }
+
+    drawPoint(x, y, color)
+    {
+        this.ctxPlot.beginPath();
+        this.ctxPlot.fillStyle = color;
+        this.ctxPlot.moveTo(x, y);
+        this.ctxPlot.arc(x, y, this.bodyWidth * .005, 0, 2 * Math.PI);
+        this.ctxPlot.fill();
+    }
+
+    drawMAL(x, y, color)
+    {
+        this.ctxPlot.fillStyle = color;
+        this.ctxPlot.font = "bold " + (this.bodyWidth * .015) + "px Arial";
+        this.ctxPlot.textBaseline = "middle";
+        this.ctxPlot.beginPath();
+        this.ctxPlot.fillText("MAL", x + this.bodyWidth * .007, y);
+        this.ctxPlot.stroke();
+    }
+
+    drawMSym(x, y, color)
+    {
+        let x1 = x + this.bodyWidth * .02;
+        let x2 = x + this.bodyWidth * .007;
+        let y1 = y - this.bodyHeight * .02;
+        let width = this.bodyHeight * .025;
+        this.ctxPlot.strokeStyle = color;
+        this.ctxPlot.fillStyle = color;
+        this.ctxPlot.lineWidth = this.bodyWidth * .002;
+
+        this.ctxPlot.beginPath();
+        this.ctxPlot.arc(x1, y1, width * .65, 0, 2 * Math.PI);        
+        this.ctxPlot.stroke();
+        this.ctxPlot.beginPath();
+        this.ctxPlot.moveTo(x1, y1 - width * .4);
+        this.ctxPlot.lineTo(x1, y1 + width * .4);
+        this.ctxPlot.moveTo(x1 - width * .4, y1);
+        this.ctxPlot.lineTo(x1 + width * .4, y1);
+        this.ctxPlot.stroke();
+        this.ctxPlot.beginPath();
+
+        //Draw the text.
+        this.ctxPlot.fillStyle = color;
+        this.ctxPlot.font = "bold " + (this.bodyWidth * .015) + "px Arial";
+        this.ctxPlot.textBaseline = "top";
+        this.ctxPlot.beginPath();
+        this.ctxPlot.fillText("CAL", x2, y);
+        this.ctxPlot.stroke();
+    }
+
+    drawSSym(x, y, color)
+    {
+        let x1 = x - this.bodyWidth * .02;
+        let x2 = x - this.bodyWidth * .037;
+        let y1 = y - this.bodyHeight * .02;
+        let width = this.bodyHeight * .025;
+        this.ctxPlot.strokeStyle = color;
+        this.ctxPlot.fillStyle = color;
+        this.ctxPlot.lineWidth = this.bodyWidth * .002;
+
+        this.ctxPlot.beginPath();
+        this.ctxPlot.arc(x1, y1, width * .65, 0, 2 * Math.PI);        
+        this.ctxPlot.stroke();
+        this.ctxPlot.beginPath();
+        this.ctxPlot.arc(x1, y1, width * .40, 0, 2 * Math.PI);
+        this.ctxPlot.stroke();
+        this.ctxPlot.beginPath();
+        this.ctxPlot.arc(x1, y1, width * .25, 0, 2 * Math.PI);
+        this.ctxPlot.fill();
+
+        //Draw the text.
+        this.ctxPlot.fillStyle = color;
+        this.ctxPlot.font = "bold " + (this.bodyWidth * .015) + "px Arial";
+        this.ctxPlot.textBaseline = "top";
+        this.ctxPlot.beginPath();
+        this.ctxPlot.fillText("CAL", x2, y);
+        this.ctxPlot.stroke();
     }
 
     drawMDial(x, y, color)

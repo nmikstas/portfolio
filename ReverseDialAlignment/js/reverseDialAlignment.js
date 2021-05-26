@@ -19,13 +19,20 @@ let plot  = new ShaftPlot(document.getElementById("plot"), {backgroundImg: docum
 let clearData = () =>
 {
     document.getElementById("dial-dist").value      = "";
+    document.getElementById("dial-dist").style.backgroundColor = "#ffffff";
     document.getElementById("mff-to-dial").value    = "";
+    document.getElementById("mff-to-dial").style.backgroundColor = "#ffffff";
     document.getElementById("mrf-to-dial").value    = "";
+    document.getElementById("mrf-to-dial").style.backgroundColor = "#ffffff";
     document.getElementById("sff-to-dial").value    = "";
+    document.getElementById("sff-to-dial").style.backgroundColor = "#ffffff";
     document.getElementById("srf-to-dial").value    = "";
+    document.getElementById("srf-to-dial").style.backgroundColor = "#ffffff";
     document.getElementById("total-dist").innerHTML = "??? inches";
     document.getElementById("m-tir").value          = "";
+    document.getElementById("m-tir").style.backgroundColor = "#ffffff";
     document.getElementById("s-tir").value          = "";
+    document.getElementById("s-tir").style.backgroundColor = "#ffffff";
     document.getElementById("m-tir-1/2").innerHTML  = "???";
     document.getElementById("s-tir-1/2").innerHTML  = "???";
     document.getElementById("m-tir-pm").innerHTML   = "???";
