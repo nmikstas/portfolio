@@ -5,12 +5,12 @@ class ShaftPlot
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     static get HEIGHT_MULT() {return .72727272}
-    static get DIM_MIN() {return .1}
-    static get DIM_MAX() {return 100}
-    static get TIR_MIN() {return -99}
-    static get TIR_MAX() {return 99}
-    static get LEFT() {return -1}
-    static get RIGHT() {return 1}
+    static get DIM_MIN()     {return .1}
+    static get DIM_MAX()     {return 100}
+    static get TIR_MIN()     {return -99}
+    static get TIR_MAX()     {return 99}
+    static get LEFT()        {return -1}
+    static get RIGHT()       {return 1}
     
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //                                        Constructor                                        //
@@ -490,14 +490,12 @@ class ShaftPlot
         this.ctxPlot.textBaseline = "middle";
         
         let textWidth = this.ctxPlot.measureText(text).width;
-        
         let cX, cY;
 
         cX = x1 + this.bodyWidth * .025 * side;
 
         if(y1 < y2)
         {
-            console.log("Control");
             cY = y1 + .5 * (y2 - y1);
         }
         else
