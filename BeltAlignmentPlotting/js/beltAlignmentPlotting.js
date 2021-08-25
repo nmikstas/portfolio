@@ -34,6 +34,7 @@ document.getElementById("monthly-radio").checked = true;
 document.getElementById("kwh").value = "";
 document.getElementById("volt").value = "";
 document.getElementById("mult").value = "";
+document.getElementById("advanced-use").style.display = "none";
 bam.clearData();
 
 //Change between basic and advanced mode.
