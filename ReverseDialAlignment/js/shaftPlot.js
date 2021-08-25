@@ -326,7 +326,7 @@ class ShaftPlot
 
         let maxY          = y2 - y1;                         //Max Y distance to fit into graph;
         let milsPerBlock  = Math.abs(Math.ceil(maxY / 6));   //Calculate mils per block (10 squares).
-        milsPerBlock      = Math.ceil(milsPerBlock / 5) * 5; //Mils per block ar divisions of 5.
+        milsPerBlock      = Math.ceil(milsPerBlock / 5) * 5; //Mils per block are divisions of 5.
         if(milsPerBlock === 0)milsPerBlock = 1;
         this.milsPerBlock = milsPerBlock;                    //Save a class copy of the variable.
         let milsPerSquare = milsPerBlock / 10;               //Calculate mils per square.

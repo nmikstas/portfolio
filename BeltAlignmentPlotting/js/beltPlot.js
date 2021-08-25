@@ -12,6 +12,8 @@ class BeltPlot
     static get MIN_FEET()    {return .1}
     static get MAX_FEET()    {return 100}
     static get STARRETT()    {return 12}
+    static get LEFT()        {return -1}
+    static get RIGHT()       {return 1}
     
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //                                        Constructor                                        //
@@ -34,13 +36,37 @@ class BeltPlot
         //Background image of the plot.
         this.backgroundImg = backgroundImg;
 
+        //Graphing variables.
+        this.pixelsPerSquare;
+        this.milsPerBlock;
+        this.milsPerSquare;
+        this.inchesPerBlock;
+        this.inchesPerSquare;
+        this.milsPerPixel;
+        this.inchesPerPixel;
+        this.pixelsPerInch;
+        this.pixelsPerMil;
+        this.pixelLevel;
+        this.lineWidth;
+        this.starretX;
+        this.rearFeetRef;
+
+        //Boolean to tell wether a complete set of valid data is present or not.
+        this.isValid = false;
+
         //Variables for line plotting.
         this.driverBubble = undefined;
         this.driverBubble = undefined;
         this.driverFeet   = undefined;
         this.drivenFeet   = undefined;
 
-        //Variables for move distances.
+        //Numerical variables for move distances.
+        this.driverToLevel  = undefined;
+        this.drivenToLevel  = undefined;
+        this.driverToDriven = undefined;
+        this.drivenToDriver = undefined;
+
+        //Text variables for move distances.
         this.dvrToLvl = undefined;
         this.dvnToLvl = undefined;
         this.dvrToDvn = undefined;
@@ -93,55 +119,124 @@ class BeltPlot
        this.bodyDraw();
     }
 
-    updateMoves(driverToLevel, drivenToLevel, driverToDriven, DrivenToDriver)
+    doCalcs(driverDist, drivenDist, driverBubble, drivenBubble)
     {
-        this.dvrToLvl = driverToLevel;
-        this.dvnToLvl = drivenToLevel;
-        this.dvrToDvn = driverToDriven;
-        this.dvnToDvr = DrivenToDriver;
-    }
+        this.isValid = true;
 
-    updateValues(driverBubble, drivenBubble, driverFeet, drivenFeet)
-    {
-
-        //Range check the given values.
-        if(driverBubble > BeltPlot.MAX_BUBBLE || driverBubble < BeltPlot.MIN_BUBBLE)
+        let driverDist1   = parseFloat(driverDist);
+        let drivenDist1   = parseFloat(drivenDist);
+        let driverBubble1 = parseFloat(driverBubble);
+        let drivenBubble1 = parseFloat(drivenBubble);
+        
+        //Make sure all entries are valid.
+        if(isNaN(driverDist1) || isNaN(drivenDist1) || isNaN(driverBubble1) || isNaN(drivenBubble1))
         {
+            this.isValid = false;
+        }
+
+        //Make sure all entries are within the min and max ranges.
+        if(this.isValid && (
+            driverDist1   < BeltPlot.MIN_FEET   || driverDist1   > BeltPlot.MAX_FEET   ||
+            drivenDist1   < BeltPlot.MIN_FEET   || drivenDist1   > BeltPlot.MAX_FEET   ||
+            driverBubble1 < BeltPlot.MIN_BUBBLE || driverBubble1 > BeltPlot.MAX_BUBBLE || 
+            drivenBubble1 < BeltPlot.MIN_BUBBLE || drivenBubble1 > BeltPlot.MAX_BUBBLE))
+         {
+             this.isValid = false;
+         }
+
+        //Save the values if they are valid.
+        if(!this.isValid)
+        {
+            this.driverFeet   = undefined;
+            this.drivenFeet   = undefined;
             this.driverBubble = undefined;
-        }
-        else
-        {
-            this.driverBubble = driverBubble;
-        }
-
-        if(drivenBubble > BeltPlot.MAX_BUBBLE || drivenBubble < BeltPlot.MIN_BUBBLE)
-        {
             this.drivenBubble = undefined;
+
+            this.driverToLevel  = undefined;
+            this.drivenToLevel  = undefined;
+            this.driverToDriven = undefined;
+            this.drivenToDriver = undefined;
+
+            this.dvrToLvl = undefined;
+            this.dvnToLvl = undefined;
+            this.dvrToDvn = undefined;
+            this.dvnToDvr = undefined;
         }
         else
         {
-            this.drivenBubble = drivenBubble;
+            this.driverFeet   = driverDist1;
+            this.drivenFeet   = drivenDist1;
+            this.driverBubble = driverBubble1;
+            this.drivenBubble = drivenBubble1;
         }
 
-        if(driverFeet > BeltPlot.MAX_FEET || driverFeet < BeltPlot.MIN_FEET)
+        //Do the calculations.
+        if(this.isValid)
         {
-            this.driverFeet = undefined;
-        }
-        else
-        {
-            this.driverFeet = driverFeet;
-        }
+            this.driverToLevel  = this.driverFeet * this.driverBubble * 5 / 12;
+            this.drivenToLevel  = this.drivenFeet * this.drivenBubble * 5 / 12;
+            this.driverToDriven = this.driverFeet * (this.driverBubble - this.drivenBubble) * 5 / 12;
+            this.drivenToDriver = this.drivenFeet * (this.drivenBubble - this.driverBubble) * 5 / 12;
 
-        if(drivenFeetDistance > BeltPlot.MAX_FEET || drivenFeet < BeltPlot.MIN_FEET)
-        {
-            this.drivenFeet = undefined;
-        }
-        else
-        {
-            this.drivenFeet = drivenFeet;
+            this.dvrToLvl = ((Math.sign(this.driverToLevel) >= 0) ? "+" : "") + this.driverToLevel.toFixed(2);
+            this.dvnToLvl = ((Math.sign(this.drivenToLevel) >= 0) ? "+" : "") + this.drivenToLevel.toFixed(2);
+
+            //Determine if there are 1 or 2 optimal moves.
+            let numOptimalMoves = 0;
+            let dvrToLvl1 = Math.sign(this.driverToLevel);
+            let dvnToLvl1 = Math.sign(this.drivenToLevel);
+
+            //Include zero as a positive number.
+            if(dvrToLvl1 === 0) dvrToLvl1 = 1;
+            if(dvnToLvl1 === 0) dvnToLvl1 = 1;
+            numOptimalMoves = (dvrToLvl1 === dvnToLvl1) ? 1 : 2;
+
+            //Find the absolute slope value of the driver and driven.
+            let driverSlope = Math.abs(this.driverBubble);
+            let drivenSlope = Math.abs(this.drivenBubble);
+
+            //Calculate if a plus symbol is needed in the movement.
+            let dvrToDvnSign = (Math.sign(this.driverToDriven) >= 0) ? "+" : "";
+            let dvnToDvrSign = (Math.sign(this.drivenToDriver) >= 0) ? "+" : "";
+     
+            this.dvrToDvn = undefined;
+            this.dvnToDvr = undefined;
+
+            //Calculate the optimal moves.
+            if(numOptimalMoves === 2)
+            {
+                this.dvrToDvn = dvrToDvnSign + this.driverToDriven.toFixed(2);
+                this.dvnToDvr = dvnToDvrSign + this.drivenToDriver.toFixed(2);
+            }
+            else
+            {
+                //Determine which is the optimal move.
+                if(drivenSlope >= driverSlope)
+                {
+                    this.dvnToDvr = dvnToDvrSign + this.drivenToDriver.toFixed(2);
+                }
+                else
+                {
+                    this.dvrToDvn = dvrToDvnSign + this.driverToDriven.toFixed(2);
+                }
+            }
         }
 
         this.bodyDraw();
+
+        let level =
+        {
+            dvrToLvl: this.dvrToLvl,
+            dvnToLvl: this.dvnToLvl
+        }
+
+        let optimal =
+        {
+            dvrToDvn: this.dvrToDvn,
+            dvnToDvr: this.dvnToDvr
+        }
+
+        return {level, optimal};
     }
 
     bodyDraw()
@@ -152,6 +247,7 @@ class BeltPlot
         //Ensure the backgroung is not transparent.
         if(this.backgroundImg)
         {
+            //Add background image, if applicable.
             this.ctxPlot.drawImage(this.backgroundImg, 0, 0, this.bodyWidth, this.bodyHeight);
         }
         else
@@ -204,21 +300,21 @@ class BeltPlot
 
     plotDraw()
     {
-        //Don't draw the graph is the data is invalid.
+        //Don't draw the graph if the data is invalid.
         if(this.drivenBubble === undefined || this.driverBubble === undefined || 
            this.drivenFeet   === undefined || this.driverFeet   === undefined) return;
 
         //Calculate the height/width of the grid squares in pixels.
-        let dxy = this.bodyWidth / 110;
+        this.pixelsPerSquare = this.bodyWidth / 110;
 
         //Calculate the x scaling of the graph.
         let maxX = Math.max(BeltPlot.STARRETT, this.driverFeet, this.drivenFeet);
         
-        let xBlocksScaling = Math.ceil(maxX / 9);  //Calculate inches per block (10 squares).
-        let xSquareScaling = xBlocksScaling / 10;  //Calculate inches per square.
-        let xInchPerPixel  = xSquareScaling / dxy; //Calculate inches per pixel.
-        let xPixelPerInch  = 1 / xInchPerPixel;    //Calculate pixels per inch.
-        let rearFeetRef    = dxy * 10;             //Calculate the rear feet reference offset.
+        this.inchesPerBlock  = Math.ceil(maxX / 9); //Calculate inches per block (10 squares).
+        this.inchesPerSquare = this.inchesPerBlock / 10; //Calculate inches per square.
+        this.inchesPerPixel  = this.inchesPerSquare / this.pixelsPerSquare; //Calculate inches per pixel.
+        this.pixelsPerInch   = 1 / this.inchesPerPixel; //Calculate pixels per inch.
+        this.rearFeetRef     = this.pixelsPerSquare * 10; //Calculate the rear feet reference offset.
 
         //Calculate the slope of the driver and driven misadjustment lines.
         let driverMALSlope = -this.driverBubble * 5 / BeltPlot.STARRETT;
@@ -228,74 +324,65 @@ class BeltPlot
         let drivenMALToStarrett = drivenMALSlope * BeltPlot.STARRETT;
         let drivenMALToDrivenFF = drivenMALSlope * this.drivenFeet;
         let drivenMALToDriverFF = drivenMALSlope * this.driverFeet;
-        let drivenMALToEnd      = drivenMALSlope * xBlocksScaling * 10;
-        let drivenMAL9          = drivenMALSlope * xBlocksScaling * 9;
+        let drivenMALToEnd      = drivenMALSlope * this.inchesPerBlock * 10;
+        let drivenMAL9          = drivenMALSlope * this.inchesPerBlock * 9;
         let driverMALToStarrett = driverMALSlope * BeltPlot.STARRETT;
         let driverMALToDrivenFF = driverMALSlope * this.drivenFeet;
         let driverMALToDriverFF = driverMALSlope * this.driverFeet;
-        let driverMALToEnd      = driverMALSlope * xBlocksScaling * 10;
-        let driverMAL9          = driverMALSlope * xBlocksScaling * 9;
+        let driverMALToEnd      = driverMALSlope * this.inchesPerBlock * 10;
+        let driverMAL9          = driverMALSlope * this.inchesPerBlock * 9;
 
         //Find the maximum and minimum of the critical points.
         let maxCritPoint = Math.max(drivenMALToStarrett, drivenMALToDrivenFF, drivenMALToDriverFF, driverMALToStarrett, driverMALToDrivenFF, driverMALToDriverFF);
         let minCritPoint = Math.min(drivenMALToStarrett, drivenMALToDrivenFF, drivenMALToDriverFF, driverMALToStarrett, driverMALToDrivenFF, driverMALToDriverFF);
 
-        let levelPixel     = 0;
-        let yBlockScaling  = 0;
-        let ySquareScaling = 0;
-        let yMilsPerPixel  = 0;
-        let yPixelPerMil   = 0;
-
-        //Starting points for drawing the scale arrows.
-        let xStart = 0;
-        let yStart = 0;
+        this.lineWidth = this.bodyWidth * .004; //Set the width of the lines.
 
         //Determine if both are positive or negative or if they are different signs.
         if(maxCritPoint >= 0 && minCritPoint >= 0)
         {
-            levelPixel     = this.bodyHeight - dxy * 10;
-            yBlockScaling  = Math.ceil(maxCritPoint / 6 / 5) * 5;
+            this.levelPixel   = this.bodyHeight - this.pixelsPerSquare * 10;
+            this.milsPerBlock = Math.ceil(maxCritPoint / 6 / 5) * 5;
         }
         else if(maxCritPoint < 0 && minCritPoint < 0)
         {
-            levelPixel     = dxy * 10;
-            yBlockScaling  = Math.abs(Math.floor(minCritPoint / 6 / 5) * 5);
+            this.levelPixel   = this.pixelsPerSquare * 10;
+            this.milsPerBlock = Math.abs(Math.floor(minCritPoint / 6 / 5) * 5);
         }
         else
         {
-            levelPixel     = this.bodyHeight / 2;
-            yBlockScaling  = maxCritPoint >= Math.abs(minCritPoint) ? Math.ceil(maxCritPoint / 3 / 5) * 5 : Math.abs(Math.floor(minCritPoint / 3 / 5) * 5);
+            this.levelPixel   = this.bodyHeight / 2;
+            this.milsPerBlock = maxCritPoint >= Math.abs(minCritPoint) ? Math.ceil(maxCritPoint / 3 / 5) * 5 : Math.abs(Math.floor(minCritPoint / 3 / 5) * 5);
         }
 
-        ySquareScaling = yBlockScaling / 10;
-        yMilsPerPixel  = ySquareScaling / dxy;
-        yPixelPerMil   = 1 / yMilsPerPixel;
+        this.milsPerSquare = this.milsPerBlock / 10;
+        this.milsPerPixel  = this.milsPerSquare / this.pixelsPerSquare;
+        this.pixelsPerMil  = 1 / this.milsPerPixel;
 
-        let drivenMALToDrivenFFX = xPixelPerInch * this.drivenFeet + rearFeetRef;
-        let drivenMALToDrivenFFY = levelPixel - drivenMALToDrivenFF * yPixelPerMil;
-        let drivenMALToDriverFFX = xPixelPerInch * this.driverFeet + rearFeetRef;
-        let drivenMALToDriverFFY = levelPixel - drivenMALToDriverFF * yPixelPerMil;
-        let drivenToLevelX       = xPixelPerInch * this.drivenFeet + rearFeetRef;;
-        let drivenToLevelY       = levelPixel;
+        let drivenMALToDrivenFFX = this.pixelsPerInch * this.drivenFeet + this.rearFeetRef;
+        let drivenMALToDrivenFFY = this.levelPixel - drivenMALToDrivenFF * this.pixelsPerMil;
+        let drivenMALToDriverFFX = this.pixelsPerInch * this.driverFeet + this.rearFeetRef;
+        let drivenMALToDriverFFY = this.levelPixel - drivenMALToDriverFF * this.pixelsPerMil;
+        let drivenToLevelX       = this.pixelsPerInch * this.drivenFeet + this.rearFeetRef;;
+        let drivenToLevelY       = this.levelPixel;
 
-        let driverMALToDrivenFFX = xPixelPerInch * this.drivenFeet + rearFeetRef;
-        let driverMALToDrivenFFY = levelPixel - driverMALToDrivenFF * yPixelPerMil;
-        let driverMALToDriverFFX = xPixelPerInch * this.driverFeet + rearFeetRef;
-        let driverMALToDriverFFY = levelPixel - driverMALToDriverFF * yPixelPerMil;
-        let driverToLevelX       = xPixelPerInch * this.driverFeet + rearFeetRef;
-        let driverToLevelY       = levelPixel;
+        let driverMALToDrivenFFX = this.pixelsPerInch * this.drivenFeet + this.rearFeetRef;
+        let driverMALToDrivenFFY = this.levelPixel - driverMALToDrivenFF * this.pixelsPerMil;
+        let driverMALToDriverFFX = this.pixelsPerInch * this.driverFeet + this.rearFeetRef;
+        let driverMALToDriverFFY = this.levelPixel - driverMALToDriverFF * this.pixelsPerMil;
+        let driverToLevelX       = this.pixelsPerInch * this.driverFeet + this.rearFeetRef;
+        let driverToLevelY       = this.levelPixel;
         
         //Used for plotting MAL lines and text.
-        let drivenMALToEndY = levelPixel - drivenMALToEnd * yPixelPerMil;
-        let drivenMALY      = levelPixel - drivenMAL9 * yPixelPerMil;
-        let driverMALToEndY = levelPixel - driverMALToEnd * yPixelPerMil;
-        let driverMALY      = levelPixel - driverMAL9 * yPixelPerMil;
-
+        let drivenMALToEndY = this.levelPixel - drivenMALToEnd * this.pixelsPerMil;
+        let drivenMALY      = this.levelPixel - drivenMAL9 * this.pixelsPerMil;
+        let driverMALToEndY = this.levelPixel - driverMALToEnd * this.pixelsPerMil;
+        let driverMALY      = this.levelPixel - driverMAL9 * this.pixelsPerMil;
 
         //Make sure text for the driver and driven MAL stay on the graph.
-        if(drivenMALY > levelPixel)
+        if(drivenMALY > this.levelPixel)
         {
-            drivenMALY -= 2 * dxy;
+            drivenMALY -= 2 * this.pixelsPerSquare;
         }
 
         if(drivenMALY < 0)
@@ -307,9 +394,9 @@ class BeltPlot
             drivenMALY = this.bodyHeight * .98;   
         }
 
-        if(driverMALY > levelPixel)
+        if(driverMALY > this.levelPixel)
         {
-            driverMALY -= 2 * dxy;
+            driverMALY -= 2 * this.pixelsPerSquare;
         }
 
         if(driverMALY < 0)
@@ -322,412 +409,273 @@ class BeltPlot
         }
 
         //Draw the Y-axis arrow.
-        xStart = 2 * dxy;
-        yStart = 50.2 * dxy;
-        this.ctxPlot.beginPath();
-        this.ctxPlot.strokeStyle = "black";
-        this.ctxPlot.lineWidth = this.bodyWidth * .004;
-        this.ctxPlot.moveTo(xStart, yStart);
-        this.ctxPlot.lineTo(1 * dxy, 51 * dxy);
-        this.ctxPlot.moveTo(xStart, yStart);
-        this.ctxPlot.lineTo(3 * dxy, 51 * dxy);
-        this.ctxPlot.moveTo(xStart, yStart);
-        this.ctxPlot.lineTo(2 * dxy, 59.7 * dxy);
-        this.ctxPlot.lineTo(1 * dxy, 59 * dxy);
-        this.ctxPlot.lineTo(2 * dxy, 59.7 * dxy);
-        this.ctxPlot.lineTo(3 * dxy, 59 * dxy);
-        this.ctxPlot.stroke();
+        this.drawVertScaling(0, 5);
 
         //Draw the X-axis arrow.
-        xStart = 0.2 * dxy;
-        yStart = 68 * dxy;
-        this.ctxPlot.beginPath();
-        this.ctxPlot.strokeStyle = "black";
-        this.ctxPlot.lineWidth = this.bodyWidth * .004;
-        this.ctxPlot.moveTo(xStart, yStart);
-        this.ctxPlot.lineTo(1 * dxy, 67 * dxy);
-        this.ctxPlot.moveTo(xStart, yStart);
-        this.ctxPlot.lineTo(1 * dxy, 69 * dxy);
-        this.ctxPlot.moveTo(xStart, yStart);
-        this.ctxPlot.lineTo(9.7 * dxy, 68 * dxy);
-        this.ctxPlot.lineTo(9 * dxy, 67 * dxy);
-        this.ctxPlot.lineTo(9.7 * dxy, 68 * dxy);
-        this.ctxPlot.lineTo(9 * dxy, 69 * dxy);
-        this.ctxPlot.stroke();
-
+        this.drawHorzScaling(0, 6);
+        
         //Draw level line.
+        this.drawDashedLine(0, this.levelPixel, this.bodyWidth, this.levelPixel, this.lineWidth, "#0000ff40");
+
+        //Draw the Starrett 98 reference line.
+        this.starretX = this.pixelsPerInch * BeltPlot.STARRETT + this.rearFeetRef;
+        this.drawSolidLine(this.starretX, 0, this.starretX, this.bodyHeight, this.lineWidth, "#ff000070");
+       
+        //Draw the rear feet reference line.
+        this.drawSolidLine(this.rearFeetRef, 0, this.rearFeetRef, this.bodyHeight, this.lineWidth, "#ff000070");
+       
+        //Draw the driven front feet reference line.
+        let rearFeetX = this.pixelsPerInch * this.drivenFeet + this.rearFeetRef;
+        this.drawSolidLine(rearFeetX, 0, rearFeetX, this.bodyHeight, this.lineWidth, "#0000ff70");
+        
+        //Draw the driver front feet reference line.
+        let frontFeetX = this.pixelsPerInch * this.driverFeet + this.rearFeetRef;
+        this.drawSolidLine(frontFeetX, 0, frontFeetX, this.bodyHeight, this.lineWidth, "#00a00070");
+        
+        //Driven MAL line.
+        this.drawSolidLine(this.rearFeetRef, this.levelPixel, this.bodyWidth, drivenMALToEndY, this.lineWidth, "#0000ff70");
+       
+        //Driver MAL line.
+        this.drawSolidLine(this.rearFeetRef, this.levelPixel, this.bodyWidth, driverMALToEndY, this.lineWidth, "#00a00070");
+       
+        //Draw the rear feet reference text.
+        let textSize  = this.bodyWidth * .015;
+        let textArray = [{text:"Ref Driver", x:this.bodyWidth * .005, y:this.bodyHeight * .005}, 
+                         {text:"and Driven", x:this.bodyWidth * .005, y:this.bodyHeight * .025},
+                         {text:"Rear Feet",  x:this.bodyWidth * .005, y:this.bodyHeight * .045}];
+        this.DrawText(textArray, textSize, "#ff000070", "top");
+
+        //DrivenM MAL text.
+        textArray = [{text:"Driven MAL", x:this.bodyWidth * .915, y:drivenMALY}];
+        this.DrawText(textArray, textSize, "#0000ff70", "top");
+
+        //Driver MAL text.
+        textArray = [{text:"Driver MAL", x:this.bodyWidth * .915, y:driverMALY}];
+        this.DrawText(textArray, textSize, "#00700070", "top");
+        
+        //Draw level text.
+        textArray = [{text:"Level", x:this.bodyWidth * .005, y:this.levelPixel + this.bodyHeight * .005}];
+        this.DrawText(textArray, textSize, "#0000ff70", "top");
+        
+        //Draw the Starrett 98 reference text.
+        let textX = this.starretX - this.bodyWidth * .08;
+        textArray = [{text:"Starrett 98", x:textX, y:this.bodyHeight * .005}, {text:"12\" Ref", x:textX, y:this.bodyHeight * .025}];
+        this.DrawText(textArray, textSize, "#ff000070", "top");
+        
+        //Draw the driver front feet reference text.
+        textX = this.pixelsPerInch * this.driverFeet + this.rearFeetRef - this.bodyWidth * .08;
+        textArray = [{text:"Driver", x:textX, y:this.bodyHeight * .085}, {text:"Front Feet", x:textX, y:this.bodyHeight * .105}];
+        this.DrawText(textArray, textSize, "#00700070", "top");
+
+        //Draw the driven front feet reference text.
+        textX = this.pixelsPerInch * this.drivenFeet + this.rearFeetRef - this.bodyWidth * .08;
+        textArray = [{text:"Driven", x:textX, y:this.bodyHeight * .045}, {text:"Front Feet", x:textX, y:this.bodyHeight * .065}];
+        this.DrawText(textArray, textSize, "#0000ff70", "top");
+        
+        //Draw the Starrett graduations.
+        this.drawGraduations();
+
+        //Driver to level spline and ending point.
+        this.drawDashedArc(driverToLevelX, driverToLevelY, driverMALToDriverFFX, driverMALToDriverFFY, "#007000", this.dvrToLvl, BeltPlot.RIGHT);
+        this.drawPoint(driverToLevelX, this.levelPixel, "#007000");
+        
+        //Driven to level spline and ending point.
+        this.drawDashedArc(drivenToLevelX, drivenToLevelY, drivenMALToDrivenFFX, drivenMALToDrivenFFY, "#0000b0", this.dvnToLvl, BeltPlot.RIGHT);
+        this.drawPoint(drivenToLevelX, this.levelPixel, "#0000b0");
+        
+        //Driven to driver spline and ending point.
+        if(this.dvnToDvr !== undefined)
+        {          
+            this.drawDashedArc(drivenMALToDrivenFFX, drivenMALToDrivenFFY, driverMALToDrivenFFX, driverMALToDrivenFFY, "#700000", this.dvnToDvr, BeltPlot.LEFT);
+            this.drawPoint(driverMALToDrivenFFX, driverMALToDrivenFFY, "#700000");
+        }
+
+        //Driver to driven spline and ending point.
+        if(this.dvrToDvn !== undefined)
+        {
+            this.drawDashedArc(driverMALToDriverFFX, driverMALToDriverFFY, drivenMALToDriverFFX, drivenMALToDriverFFY, "#700000", this.dvrToDvn, BeltPlot.LEFT);
+            this.drawPoint(drivenMALToDriverFFX, drivenMALToDriverFFY, "#700000");
+        }
+    }
+
+    //Draw the bezier splines.
+    drawDashedArc(x1, y1, x2, y2, color, value, side)
+    {
+        let text = value;
+        this.ctxPlot.setLineDash([this.bodyWidth * .005, this.bodyWidth * .005]);
+        this.ctxPlot.lineWidth    = this.bodyWidth * .0025;
+        this.ctxPlot.strokeStyle  = color;
+        this.ctxPlot.fillStyle    = color;
+        this.ctxPlot.font         = "bold " + (this.bodyWidth * .015) + "px Arial";
+        this.ctxPlot.textBaseline = "middle";
+        
+        let textWidth = this.ctxPlot.measureText(text).width;
+        let cX, cY;
+
+        cX = x1 + this.bodyWidth * .025 * side;
+
+        if(y1 < y2)
+        {
+            cY = y1 + .5 * (y2 - y1);
+        }
+        else
+        {
+            cY = y2 + .5 * (y1 - y2);
+        }
+        
         this.ctxPlot.beginPath();
-        this.ctxPlot.setLineDash([this.bodyWidth * .01, this.bodyWidth * .01]);
-        this.ctxPlot.strokeStyle = "#0000ff40";
-        this.ctxPlot.moveTo(0, levelPixel);
-        this.ctxPlot.lineTo(this.bodyWidth, levelPixel);
-        this.ctxPlot.lineWidth = this.bodyWidth * .004;
+        this.ctxPlot.moveTo(x1, y1);
+        this.ctxPlot.bezierCurveTo(cX, cY, cX, cY, x2, y2);
         this.ctxPlot.stroke();
         this.ctxPlot.setLineDash([]);
 
-        //Draw the Starrett graduations.
-        let yPixelPer5Mil = yPixelPerMil * 5;
+        //Draw the text.
+        let xOffset = 0;
+        if(side === BeltPlot.LEFT) xOffset = textWidth;
+        this.ctxPlot.beginPath();
+        this.ctxPlot.fillText(text, cX - xOffset, cY);
+        this.ctxPlot.stroke();
+    }
 
+    //Draw the graduations on the Starrett line.
+    drawGraduations()
+    {
+        let yPixelPer5Mil = this.pixelsPerMil * 5;
+        
         this.ctxPlot.beginPath();
         this.ctxPlot.strokeStyle  = "#00000040";
         this.ctxPlot.fillStyle    = "#00000040";
-        this.ctxPlot.lineWidth    = this.bodyWidth * .004;
+        this.ctxPlot.lineWidth    = this.lineWidth;
         this.ctxPlot.font         = "bold " + (this.bodyWidth * .015) + "px Arial";
         this.ctxPlot.textBaseline = "middle";
 
         for(let i = 0; i < 9; i++)
         {
-            this.ctxPlot.moveTo(xPixelPerInch * BeltPlot.STARRETT + rearFeetRef - this.bodyWidth *.005, levelPixel - i * yPixelPer5Mil);
-            this.ctxPlot.lineTo(xPixelPerInch * BeltPlot.STARRETT + rearFeetRef + this.bodyWidth *.005, levelPixel - i * yPixelPer5Mil);
-            this.ctxPlot.fillText(i, xPixelPerInch * BeltPlot.STARRETT + rearFeetRef + this.bodyWidth *.005, levelPixel - i * yPixelPer5Mil);
+            this.ctxPlot.moveTo(this.starretX - this.bodyWidth *.005, this.levelPixel - i * yPixelPer5Mil);
+            this.ctxPlot.lineTo(this.starretX + this.bodyWidth *.005, this.levelPixel - i * yPixelPer5Mil);
+            this.ctxPlot.fillText(i, this.starretX + this.bodyWidth *.005, this.levelPixel - i * yPixelPer5Mil);
         }
 
         for(let i = 1; i < 9; i++)
         {
-            this.ctxPlot.moveTo(xPixelPerInch * BeltPlot.STARRETT + rearFeetRef - this.bodyWidth *.005, levelPixel + i * yPixelPer5Mil);
-            this.ctxPlot.lineTo(xPixelPerInch * BeltPlot.STARRETT + rearFeetRef + this.bodyWidth *.005, levelPixel + i * yPixelPer5Mil);
-            this.ctxPlot.fillText(i, xPixelPerInch * BeltPlot.STARRETT + rearFeetRef + this.bodyWidth *.005, levelPixel + i * yPixelPer5Mil);
+            this.ctxPlot.moveTo(this.starretX - this.bodyWidth *.005, this.levelPixel + i * yPixelPer5Mil);
+            this.ctxPlot.lineTo(this.starretX + this.bodyWidth *.005, this.levelPixel + i * yPixelPer5Mil);
+            this.ctxPlot.fillText(i, this.starretX + this.bodyWidth *.005, this.levelPixel + i * yPixelPer5Mil);
         }
 
         this.ctxPlot.stroke();
+    }
 
-        //Draw the Starrett 98 reference line.
+    //Draw horizontal scaling arrows.
+    drawHorzScaling(blockX, blockY)
+    {
+        let pixelsPerSquare = this.pixelsPerSquare;
+        let xStart = (blockX * 10 + 0.2) * pixelsPerSquare;
+        let yStart = (blockY * 10 + 8) * pixelsPerSquare;
+        this.ctxPlot.strokeStyle = "black";
+        this.ctxPlot.lineWidth = this.lineWidth;
+
+        //Draw the arrow.
         this.ctxPlot.beginPath();
-        this.ctxPlot.strokeStyle = "#ff000070";
-        this.ctxPlot.moveTo(xPixelPerInch * BeltPlot.STARRETT + rearFeetRef, 0);
-        this.ctxPlot.lineTo(xPixelPerInch * BeltPlot.STARRETT + rearFeetRef, this.bodyHeight);
-        this.ctxPlot.lineWidth = this.bodyWidth * .004;
+        this.ctxPlot.moveTo(xStart, yStart);
+        this.ctxPlot.lineTo((blockX * 10 + 1) * pixelsPerSquare, (blockY * 10 + 7) * pixelsPerSquare);
+        this.ctxPlot.moveTo(xStart, yStart);
+        this.ctxPlot.lineTo((blockX * 10 + 1) * pixelsPerSquare, (blockY * 10 + 9) * pixelsPerSquare);
+        this.ctxPlot.moveTo(xStart, yStart);
+        this.ctxPlot.lineTo((blockX * 10 + 9.7) * pixelsPerSquare, (blockY * 10 + 8) * pixelsPerSquare);
+        this.ctxPlot.lineTo((blockX * 10 + 9) * pixelsPerSquare, (blockY * 10 + 7) * pixelsPerSquare);
+        this.ctxPlot.lineTo((blockX * 10 + 9.7) * pixelsPerSquare, (blockY * 10 + 8) * pixelsPerSquare);
+        this.ctxPlot.lineTo((blockX * 10 + 9) * pixelsPerSquare, (blockY * 10 + 9) * pixelsPerSquare);
         this.ctxPlot.stroke();
 
-        //Draw the rear feet reference line.
-        this.ctxPlot.beginPath();
-        this.ctxPlot.strokeStyle = "#ff000070";
-        this.ctxPlot.moveTo(rearFeetRef, 0);
-        this.ctxPlot.lineTo(rearFeetRef, this.bodyHeight);
-        this.ctxPlot.lineWidth = this.bodyWidth * .004;
-        this.ctxPlot.stroke();
-
-        //Draw the driven front feet reference line.
-        this.ctxPlot.beginPath();
-        this.ctxPlot.strokeStyle = "#0000ff70";
-        this.ctxPlot.moveTo(xPixelPerInch * this.drivenFeet + rearFeetRef, 0);
-        this.ctxPlot.lineTo(xPixelPerInch * this.drivenFeet + rearFeetRef, this.bodyHeight);
-        this.ctxPlot.lineWidth = this.bodyWidth * .004;
-        this.ctxPlot.stroke();
-
-        //Draw the driver front feet reference line.
-        this.ctxPlot.beginPath();
-        this.ctxPlot.strokeStyle = "#00a00070";
-        this.ctxPlot.moveTo(xPixelPerInch * this.driverFeet + rearFeetRef, 0);
-        this.ctxPlot.lineTo(xPixelPerInch * this.driverFeet + rearFeetRef, this.bodyHeight);
-        this.ctxPlot.lineWidth = this.bodyWidth * .004;
-        this.ctxPlot.stroke();
-
-        //Driven MAL line.
-        this.ctxPlot.beginPath();
-        this.ctxPlot.strokeStyle = "#0000ff70";
-        this.ctxPlot.moveTo(rearFeetRef, levelPixel);
-        this.ctxPlot.lineTo(this.bodyWidth, drivenMALToEndY);
-        this.ctxPlot.lineWidth = this.bodyWidth * .004;
-        this.ctxPlot.stroke();
-
-        //Driver MAL line.
-        this.ctxPlot.beginPath();
-        this.ctxPlot.strokeStyle = "#00a00070";
-        this.ctxPlot.moveTo(rearFeetRef, levelPixel);
-        this.ctxPlot.lineTo(this.bodyWidth, driverMALToEndY);
-        this.ctxPlot.lineWidth = this.bodyWidth * .004;
-        this.ctxPlot.stroke();
-
-        //DrivenM MAL text.
-        this.ctxPlot.fillStyle = "#0000ff70";
+        //Draw the text.
+        this.ctxPlot.fillStyle = "black";
         this.ctxPlot.font = "bold " + (this.bodyWidth * .015) + "px Arial";
         this.ctxPlot.textBaseline = "top";
         this.ctxPlot.beginPath();
-        this.ctxPlot.fillText("Driven MAL", this.bodyWidth * .915, drivenMALY);
+        this.ctxPlot.fillText(this.inchesPerBlock + " inches", (blockX * 10 + 1.5) * pixelsPerSquare, (blockY * 10 + 5.5) * pixelsPerSquare);
+        this.ctxPlot.stroke();
+    }
+
+    //Draw vertical scaling arrows.
+    drawVertScaling(blockX, blockY)
+    {
+        let pixelsPerSquare = this.pixelsPerSquare;
+        let xStart = (blockX * 10 + 2) * pixelsPerSquare;
+        let yStart = (blockY * 10 + .2) * pixelsPerSquare;
+        this.ctxPlot.strokeStyle = "black";
+        this.ctxPlot.lineWidth = this.lineWidth;
+
+        //Draw the arrow.
+        this.ctxPlot.beginPath();
+        this.ctxPlot.moveTo(xStart, yStart);
+        this.ctxPlot.lineTo((blockX * 10 + 1) * pixelsPerSquare, (blockY * 10 + 1) * pixelsPerSquare);
+        this.ctxPlot.moveTo(xStart, yStart);
+        this.ctxPlot.lineTo((blockX * 10 + 3) * pixelsPerSquare, (blockY * 10 + 1) * pixelsPerSquare);
+        this.ctxPlot.moveTo(xStart, yStart);
+        this.ctxPlot.lineTo((blockX * 10 + 2) * pixelsPerSquare, (blockY * 10 + 9.7) * pixelsPerSquare);
+        this.ctxPlot.lineTo((blockX * 10 + 1) * pixelsPerSquare, (blockY * 10 + 9) * pixelsPerSquare);
+        this.ctxPlot.lineTo((blockX * 10 + 2) * pixelsPerSquare, (blockY * 10 + 9.7) * pixelsPerSquare);
+        this.ctxPlot.lineTo((blockX * 10 + 3) * pixelsPerSquare, (blockY * 10 + 9) * pixelsPerSquare);
         this.ctxPlot.stroke();
 
-        //Driver MAL text.
-        this.ctxPlot.fillStyle = "#00700070";
+        //Draw the text.
+        this.ctxPlot.fillStyle = "black";
         this.ctxPlot.font = "bold " + (this.bodyWidth * .015) + "px Arial";
         this.ctxPlot.textBaseline = "top";
         this.ctxPlot.beginPath();
-        this.ctxPlot.fillText("Driver MAL", this.bodyWidth * .915, driverMALY);
+        this.ctxPlot.fillText(this.milsPerBlock + " mils", (blockX * 10 + 3) * pixelsPerSquare, (blockY * 10 + 4.5) * pixelsPerSquare);
         this.ctxPlot.stroke();
+    }
 
-        //Draw horizontal scale text.
-        this.ctxPlot.fillStyle = "#000000";
-        this.ctxPlot.font = "bold " + (this.bodyWidth * .015) + "px Arial";
-        this.ctxPlot.textBaseline = "top";
+    //Draw a point on the graph.
+    drawPoint(x, y, color)
+    {
         this.ctxPlot.beginPath();
-        this.ctxPlot.fillText(xBlocksScaling + " inches", 1.5 * dxy, 65.5 * dxy);
-        this.ctxPlot.stroke();
-
-        //Draw vertical scale text.
-        this.ctxPlot.fillStyle = "#000000";
-        this.ctxPlot.font = "bold " + (this.bodyWidth * .015) + "px Arial";
-        this.ctxPlot.textBaseline = "top";
-        this.ctxPlot.beginPath();
-        this.ctxPlot.fillText(yBlockScaling + " mils", 3 * dxy, 54.5 * dxy);
-        this.ctxPlot.stroke();
-
-        //Draw level text.
-        this.ctxPlot.fillStyle = "#0000ff70";
-        this.ctxPlot.font = "bold " + (this.bodyWidth * .015) + "px Arial";
-        this.ctxPlot.textBaseline = "top";
-        this.ctxPlot.beginPath();
-        this.ctxPlot.fillText("Level", this.bodyWidth * .005, levelPixel + this.bodyHeight * .005);
-        this.ctxPlot.stroke();
-
-        //Draw the rear feet reference text.
-        this.ctxPlot.fillStyle = "#ff000070";
-        this.ctxPlot.font = "bold " + (this.bodyWidth * .015) + "px Arial";
-        this.ctxPlot.textBaseline = "top";
-        this.ctxPlot.beginPath();
-        this.ctxPlot.fillText("Ref Driver", this.bodyWidth * .005, this.bodyHeight * .005);
-        this.ctxPlot.stroke();
-        this.ctxPlot.beginPath();
-        this.ctxPlot.fillText("and Driven", this.bodyWidth * .005, this.bodyHeight * .025);
-        this.ctxPlot.stroke();
-        this.ctxPlot.beginPath();
-        this.ctxPlot.fillText("Rear Feet", this.bodyWidth * .005, this.bodyHeight * .045);
-        this.ctxPlot.stroke();
-
-        //Draw the Starrett 98 reference text.
-        this.ctxPlot.fillStyle = "#ff000070";
-        this.ctxPlot.font = "bold " + (this.bodyWidth * .015) + "px Arial";
-        this.ctxPlot.textBaseline = "top";
-        this.ctxPlot.beginPath();
-        this.ctxPlot.fillText("Starrett 98", xPixelPerInch * BeltPlot.STARRETT + rearFeetRef - this.bodyWidth * .08, this.bodyHeight * .005);
-        this.ctxPlot.stroke();
-        this.ctxPlot.beginPath();
-        this.ctxPlot.fillText("12\" Ref", xPixelPerInch * BeltPlot.STARRETT + rearFeetRef - this.bodyWidth * .08, this.bodyHeight * .025);
-        this.ctxPlot.stroke();
-
-        //Draw the driver front feet reference text.
-        this.ctxPlot.fillStyle = "#00700070";
-        this.ctxPlot.font = "bold " + (this.bodyWidth * .015) + "px Arial";
-        this.ctxPlot.textBaseline = "top";
-        this.ctxPlot.beginPath();
-        this.ctxPlot.fillText("Driver", xPixelPerInch * this.driverFeet + rearFeetRef - this.bodyWidth * .08, this.bodyHeight * .085);
-        this.ctxPlot.stroke();
-        this.ctxPlot.beginPath();
-        this.ctxPlot.fillText("Front Feet", xPixelPerInch * this.driverFeet + rearFeetRef - this.bodyWidth * .08, this.bodyHeight * .105);
-        this.ctxPlot.stroke();
-
-        //Draw the driven front feet reference text.
-        this.ctxPlot.fillStyle = "#0000ff70";
-        this.ctxPlot.font = "bold " + (this.bodyWidth * .015) + "px Arial";
-        this.ctxPlot.textBaseline = "top";
-        this.ctxPlot.beginPath();
-        this.ctxPlot.fillText("Driven", xPixelPerInch * this.drivenFeet + rearFeetRef - this.bodyWidth * .08, this.bodyHeight * .045);
-        this.ctxPlot.stroke();
-        this.ctxPlot.beginPath();
-        this.ctxPlot.fillText("Front Feet", xPixelPerInch * this.drivenFeet + rearFeetRef - this.bodyWidth * .08, this.bodyHeight * .065);
-        this.ctxPlot.stroke();
-
-        /*
-        //Driven MAL driven FF critical point.
-        this.ctxPlot.beginPath();
-        this.ctxPlot.lineWidth = this.bodyWidth * .005;
-        this.ctxPlot.strokeStyle = "#00000030";
-        this.ctxPlot.moveTo(drivenMALToDrivenFFX, drivenMALToDrivenFFY);
-        this.ctxPlot.arc(drivenMALToDrivenFFX, drivenMALToDrivenFFY, this.bodyWidth * .002, 0, 2 * Math.PI);
-        this.ctxPlot.stroke();
-
-        //Driven MAL driver FF critical point.
-        this.ctxPlot.beginPath();
-        this.ctxPlot.lineWidth = this.bodyWidth * .005;
-        this.ctxPlot.strokeStyle = "#00000030";
-        this.ctxPlot.moveTo(drivenMALToDriverFFX, drivenMALToDriverFFY);
-        this.ctxPlot.arc(drivenMALToDriverFFX, drivenMALToDriverFFY, this.bodyWidth * .002, 0, 2 * Math.PI);
-        this.ctxPlot.stroke();
-
-        //Driver MAL driven FF critical point.
-        this.ctxPlot.beginPath();
-        this.ctxPlot.lineWidth = this.bodyWidth * .005;
-        this.ctxPlot.strokeStyle = "#00000030";
-        this.ctxPlot.moveTo(driverMALToDrivenFFX, driverMALToDrivenFFY);
-        this.ctxPlot.arc(driverMALToDrivenFFX, driverMALToDrivenFFY, this.bodyWidth * .002, 0, 2 * Math.PI);
-        this.ctxPlot.stroke();
-
-        //Driver MAL driver FF critical point.
-        this.ctxPlot.beginPath();
-        this.ctxPlot.lineWidth = this.bodyWidth * .005;
-        this.ctxPlot.strokeStyle = "#00000030";
-        this.ctxPlot.moveTo(driverMALToDriverFFX, driverMALToDriverFFY);
-        this.ctxPlot.arc(driverMALToDriverFFX, driverMALToDriverFFY, this.bodyWidth * .002, 0, 2 * Math.PI);
-        this.ctxPlot.stroke();
-
-        //Driven to level critical point.
-        this.ctxPlot.beginPath();
-        this.ctxPlot.lineWidth = this.bodyWidth * .005;
-        this.ctxPlot.strokeStyle = "#00000030";
-        this.ctxPlot.moveTo(drivenToLevelX, drivenToLevelY);
-        this.ctxPlot.arc(drivenToLevelX, drivenToLevelY, this.bodyWidth * .002, 0, 2 * Math.PI);
-        this.ctxPlot.stroke();
-
-        //Driver to level critical point.
-        this.ctxPlot.beginPath();
-        this.ctxPlot.lineWidth = this.bodyWidth * .005;
-        this.ctxPlot.strokeStyle = "#00000030";
-        this.ctxPlot.moveTo(driverToLevelX, driverToLevelY);
-        this.ctxPlot.arc(driverToLevelX, driverToLevelY, this.bodyWidth * .002, 0, 2 * Math.PI);
-        this.ctxPlot.stroke();
-        */
-
-        //Set up the bezier spline line values.
-        this.ctxPlot.lineWidth    = this.bodyWidth * .0025;
-        this.ctxPlot.textBaseline = "middle";
-        this.ctxPlot.font         = "bold " + (this.bodyWidth * .015) + "px Arial";
-        this.ctxPlot.setLineDash([this.bodyWidth * .005, this.bodyWidth * .005]);
-
-        //**********Bezier spline calculations, driver to level**********
-        let driverToLevelLowestY = (driverToLevelY > driverMALToDriverFFY) ? driverMALToDriverFFY: driverToLevelY;
-        let driverToLeveldy      = Math.abs(driverToLevelY - driverMALToDriverFFY);
-        let driverToLevelCY      = driverToLevelLowestY + .50 * driverToLeveldy;
-        let driverToLevelCX      = driverMALToDriverFFX + this.bodyWidth * .025;
-        
-        //Draw point.
-        this.ctxPlot.beginPath();
-        this.ctxPlot.setLineDash([]);
-        this.ctxPlot.fillStyle = "#007000";
-        this.ctxPlot.moveTo(driverToLevelX, levelPixel);
-        this.ctxPlot.arc(driverToLevelX, levelPixel, this.bodyWidth * .004, 0, 2 * Math.PI);
+        this.ctxPlot.fillStyle = color;
+        this.ctxPlot.moveTo(x, y);
+        this.ctxPlot.arc(x, y, this.lineWidth, 0, 2 * Math.PI);
         this.ctxPlot.fill();
-        this.ctxPlot.setLineDash([this.bodyWidth * .005, this.bodyWidth * .005]);
+    }
 
-        //Draw movement arc.
+    //Draw solid lines on the graph.
+    drawSolidLine(startX, startY, endX, endY, width, color)
+    {
         this.ctxPlot.beginPath();
-        this.ctxPlot.strokeStyle = "#007000";
-        this.ctxPlot.moveTo(driverToLevelX, driverToLevelY);
-        this.ctxPlot.bezierCurveTo(driverToLevelCX, driverToLevelCY, driverToLevelCX, driverToLevelCY, driverMALToDriverFFX, driverMALToDriverFFY);
+        this.ctxPlot.strokeStyle = color;
+        this.ctxPlot.lineWidth = width;
+        this.ctxPlot.moveTo(startX, startY);
+        this.ctxPlot.lineTo(endX, endY);
         this.ctxPlot.stroke();
+    }
 
-        //add label.
+    //Draw dashed lines on the graph.
+    drawDashedLine(startX, startY, endX, endY, width, color)
+    {        
         this.ctxPlot.beginPath();
-        this.ctxPlot.fillText(this.dvrToLvl, driverToLevelCX, driverToLevelCY);
+        this.ctxPlot.strokeStyle = color;
+        this.ctxPlot.setLineDash([this.bodyWidth * .01, this.bodyWidth * .01]);
+        this.ctxPlot.lineWidth = width;
+        this.ctxPlot.moveTo(startX, startY);
+        this.ctxPlot.lineTo(endX, endY);
         this.ctxPlot.stroke();
-
-        //**********Bezier spline calculations, driven to level**********
-        let drivenToLevelLowestY = (drivenToLevelY > drivenMALToDrivenFFY) ? drivenMALToDrivenFFY: drivenToLevelY;
-        let drivenToLeveldy      = Math.abs(drivenToLevelY - drivenMALToDrivenFFY);
-        let drivenToLevelCY      = drivenToLevelLowestY + .50 * drivenToLeveldy;
-        let drivenToLevelCX      = drivenMALToDrivenFFX + this.bodyWidth * .025;
-        
-        //Draw point.
-        this.ctxPlot.beginPath();
         this.ctxPlot.setLineDash([]);
-        this.ctxPlot.fillStyle = "#0000b0";
-        this.ctxPlot.moveTo(drivenToLevelX, levelPixel);
-        this.ctxPlot.arc(drivenToLevelX, levelPixel, this.bodyWidth * .004, 0, 2 * Math.PI);
-        this.ctxPlot.fill();
-        this.ctxPlot.setLineDash([this.bodyWidth * .005, this.bodyWidth * .005]);
+    }
 
-        //Draw movement arc.
+    //Draw 1 or more lines of text.
+    DrawText(textArray, size, color, baseline)
+    {
         this.ctxPlot.beginPath();
-        this.ctxPlot.strokeStyle  = "#0000b0";
-        this.ctxPlot.moveTo(drivenToLevelX, drivenToLevelY);
-        this.ctxPlot.bezierCurveTo(drivenToLevelCX, drivenToLevelCY, drivenToLevelCX, drivenToLevelCY, drivenMALToDrivenFFX, drivenMALToDrivenFFY);
-        this.ctxPlot.stroke();
+        this.ctxPlot.fillStyle = color;
+        this.ctxPlot.font = "bold " + size + "px Arial";
+        this.ctxPlot.textBaseline = baseline;
 
-        //Add label.
-        this.ctxPlot.beginPath();
-        this.ctxPlot.fillText(this.dvnToLvl, drivenToLevelCX, drivenToLevelCY);
-        this.ctxPlot.stroke();
-        
-        //**********Bezier spline calculations, driven to driver**********
-        if(this.dvnToDvr !== undefined)
+        //Each object in the text array should have text, x position and y position, in pixels.
+        for(let i = 0; i < textArray.length; i++)
         {
-            let textWidth             = this.ctxPlot.measureText(this.dvnToDvr).width;
-            let drivenToDriverLowestY = (driverMALToDrivenFFY > drivenMALToDrivenFFY) ? drivenMALToDrivenFFY: driverMALToDrivenFFY;
-            let drivenToDriverdy      = Math.abs(driverMALToDrivenFFY - drivenMALToDrivenFFY);
-            let drivenToDriverCY      = drivenToDriverLowestY + .50 * drivenToDriverdy;
-            let drivenToDriverCX      = driverMALToDrivenFFX - this.bodyWidth * .025;
-            
-            //Draw point.
-            this.ctxPlot.beginPath();
-            this.ctxPlot.setLineDash([]);
-            this.ctxPlot.fillStyle    = "#700000";
-            this.ctxPlot.moveTo(driverMALToDrivenFFX, driverMALToDrivenFFY);
-            this.ctxPlot.arc(driverMALToDrivenFFX, driverMALToDrivenFFY, this.bodyWidth * .004, 0, 2 * Math.PI);
-            this.ctxPlot.fill();
-            this.ctxPlot.setLineDash([this.bodyWidth * .005, this.bodyWidth * .005]);
-
-            //Draw movement arc.
-            this.ctxPlot.beginPath();
-            this.ctxPlot.strokeStyle  = "#700000";
-            this.ctxPlot.moveTo(drivenMALToDrivenFFX, drivenMALToDrivenFFY);
-            this.ctxPlot.bezierCurveTo(drivenToDriverCX, drivenToDriverCY, drivenToDriverCX, drivenToDriverCY, driverMALToDrivenFFX, driverMALToDrivenFFY);
-            this.ctxPlot.stroke();
-
-            //Add label.
-            this.ctxPlot.beginPath();
-            this.ctxPlot.fillText(this.dvnToDvr, drivenToDriverCX - textWidth, drivenToDriverCY);
-            this.ctxPlot.stroke();
+            this.ctxPlot.fillText(textArray[i].text, textArray[i].x, textArray[i].y);
         }
 
-        //**********Bezier spline calculations, driver to driven**********
-        if(this.dvrToDvn !== undefined)
-        {
-            let textWidth             = this.ctxPlot.measureText(this.dvrToDvn).width;
-            let driverToDrivenLowestY = (drivenMALToDriverFFY > driverMALToDriverFFY) ? driverMALToDriverFFY: drivenMALToDriverFFY;
-            let driverToDrivendy      = Math.abs(drivenMALToDriverFFY - driverMALToDriverFFY);
-            let driverToDrivenCY      = driverToDrivenLowestY + .50 * driverToDrivendy;
-            let driverToDrivenCX      = drivenMALToDriverFFX - this.bodyWidth * .025;
-            
-            /*
-            let arrowOffset           = 0;
-            let xMirror               = 0;
-
-            //Determine the direction of the arrow.
-            if(drivenMALToDriverFFY > driverMALToDriverFFY)
-            {
-                arrowOffset = this.bodyHeight * -.01;
-                xMirror = -1;
-            }
-            else
-            {
-                arrowOffset = this.bodyHeight * .01;
-                xMirror = 1;
-            }
-
-            //Draw arrow.
-            this.ctxPlot.beginPath();
-            this.ctxPlot.setLineDash([]);
-            this.ctxPlot.strokeStyle  = "#700000";
-            this.ctxPlot.moveTo(drivenMALToDriverFFX, drivenMALToDriverFFY + arrowOffset);
-            this.ctxPlot.lineTo(drivenMALToDriverFFX - arrowOffset * xMirror, drivenMALToDriverFFY + .5 * arrowOffset);
-            this.ctxPlot.lineTo(drivenMALToDriverFFX, drivenMALToDriverFFY);
-            this.ctxPlot.lineTo(drivenMALToDriverFFX + .25 * arrowOffset * xMirror, drivenMALToDriverFFY + 1.1 * arrowOffset);
-            this.ctxPlot.lineTo(drivenMALToDriverFFX, drivenMALToDriverFFY + arrowOffset);
-            this.ctxPlot.fill();
-            this.ctxPlot.stroke();
-            this.ctxPlot.setLineDash([this.bodyWidth * .005, this.bodyWidth * .005]);
-            */
-
-            //Draw point.
-            this.ctxPlot.beginPath();
-            this.ctxPlot.setLineDash([]);
-            this.ctxPlot.fillStyle  = "#700000";
-            this.ctxPlot.moveTo(drivenMALToDriverFFX, drivenMALToDriverFFY);
-            this.ctxPlot.arc(drivenMALToDriverFFX, drivenMALToDriverFFY, this.bodyWidth * .004, 0, 2 * Math.PI);
-            this.ctxPlot.fill();
-            this.ctxPlot.setLineDash([this.bodyWidth * .005, this.bodyWidth * .005]);
-
-            //Draw movement arc.
-            this.ctxPlot.beginPath();
-            this.ctxPlot.strokeStyle  = "#700000";
-            this.ctxPlot.moveTo(driverMALToDriverFFX, driverMALToDriverFFY);
-            this.ctxPlot.bezierCurveTo(driverToDrivenCX, driverToDrivenCY, driverToDrivenCX, driverToDrivenCY, drivenMALToDriverFFX, drivenMALToDriverFFY);
-            this.ctxPlot.stroke();
-            
-            //Add label.
-            this.ctxPlot.beginPath();
-            this.ctxPlot.fillText(this.dvrToDvn, driverToDrivenCX - textWidth, driverToDrivenCY);
-            this.ctxPlot.stroke();
-        }
-
-        this.ctxPlot.setLineDash([]);
+        this.ctxPlot.stroke();
     }
 }

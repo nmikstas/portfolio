@@ -1,28 +1,60 @@
 "use strict";
 
-let driverFeetDistance = 0;
-let drivenFeetDistance = 0;
-let driverTicks        = -10;
-let drivenTicks        = -10;
+let driverFeetDistance = undefined;
+let drivenFeetDistance = undefined;
+let driverTicks        = undefined;
+let drivenTicks        = undefined;
+let driverToLevel      = undefined;
+let drivenToLevel      = undefined;
+let driverToDriven     = undefined;
+let drivenToDriver     = undefined;
 let driverBubbleHi     = true;
 let drivenBubbleHi     = true;
-let driverToLevel      = 0;
-let drivenToLevel      = 0;
-let driverToDriven     = 0;
-let drivenToDriver     = 0;
+
+let mode = 0; //0=basic mode, any other value is advanced mode.
 
 //Create driver and driven level classes.
 let drivenLevel = new Level(document.getElementById("driven-level"), {bubbleColor: "#3030ff"});
 let driverLevel = new Level(document.getElementById("driver-level"));
 let plot = new BeltPlot(document.getElementById("plot"), {backgroundImg: document.getElementById("blank")});
 
+//Creat belt alignment manager.
+let bam = new Bam(document.getElementById("multi"));
+
 //Make sure everthing resets on a page refresh.
 document.getElementById("driven-bubble-hi").checked = true;
 document.getElementById("driver-bubble-hi").checked = true;
+document.getElementById("basic").checked = true;
 document.getElementById("driver-distance").value = "";
 document.getElementById("driven-distance").value = "";
 document.getElementById("driver-bubble").value = "";
 document.getElementById("driven-bubble").value = "";
+
+document.getElementById("monthly-radio").checked = true;
+document.getElementById("kwh").value = "";
+document.getElementById("volt").value = "";
+document.getElementById("mult").value = "";
+bam.clearData();
+
+//Change between basic and advanced mode.
+let basicAdvanced = (obj) =>
+{
+    if(obj.id === "basic")
+    {
+        document.getElementById("advanced-use").style.display = "none";
+        document.getElementById("basic-use").style.display = "block";
+        mode = 0;
+        drivenLevel.resize();
+        driverLevel.resize();
+        plot.resize();
+    }
+    else
+    {
+        document.getElementById("advanced-use").style.display = "block";
+        document.getElementById("basic-use").style.display = "none";
+        mode = 1;
+    }
+}
 
 //Change radio buttons.
 let radioChange = (obj) =>
@@ -37,10 +69,10 @@ let updateLineText = (id) =>
     {
         case "driven-bubble-hi":
             drivenBubbleHi = true;
-            if(drivenTicks === -10)
+            if(drivenTicks === undefined)
             {
                 document.getElementById("driven-line").innerHTML = "Line down ???";
-                drivenLevel.bubbleDraw(-10);
+                drivenLevel.bubbleDraw(undefined);
             }
             else
             {
@@ -50,10 +82,10 @@ let updateLineText = (id) =>
         break;
         case "driven-bubble-lo":
             drivenBubbleHi = false;
-            if(drivenTicks === -10)
+            if(drivenTicks === undefined)
             {
                 document.getElementById("driven-line").innerHTML = "Line up ???";
-                drivenLevel.bubbleDraw(-10);
+                drivenLevel.bubbleDraw(undefined);
             }
             else
             {
@@ -63,10 +95,10 @@ let updateLineText = (id) =>
         break;
         case "driver-bubble-hi":
             driverBubbleHi = true;
-            if(driverTicks === -10)
+            if(driverTicks === undefined)
             {
                 document.getElementById("driver-line").innerHTML = "Line down ???";
-                driverLevel.bubbleDraw(-10);
+                driverLevel.bubbleDraw(undefined);
             }
             else
             {
@@ -76,10 +108,10 @@ let updateLineText = (id) =>
         break;
         case "driver-bubble-lo":
             driverBubbleHi = false;
-            if(driverTicks === -10)
+            if(driverTicks === undefined)
             {
                 document.getElementById("driver-line").innerHTML = "Line up ???";
-                driverLevel.bubbleDraw(-10);
+                driverLevel.bubbleDraw(undefined);
             }
             else
             {
@@ -121,21 +153,26 @@ let validateNumber = (obj, min, max) =>
         {
             case "driven-distance":
                 drivenFeetDistance = num;
-                console.log("drivenFeetDistance = " + drivenFeetDistance);
             break;
             case "driver-distance":
                 driverFeetDistance = num;
-                console.log("driverFeetDistance = " + driverFeetDistance);
             break;
             case "driven-bubble":
                 drivenTicks = num;
-                console.log("drivenTicks = " + drivenTicks);
                 drivenBubbleHi ? updateLineText("driven-bubble-hi") : updateLineText("driven-bubble-lo");
             break;
             case "driver-bubble":
                 driverTicks = num;
-                console.log("driverTicks = " + driverTicks);
                 driverBubbleHi ? updateLineText("driver-bubble-hi") : updateLineText("driver-bubble-lo");
+            break;
+            case "kwh":
+                bam.updateKwh(num);
+            break;
+            case "volt":
+                bam.updateVolts(num);
+            break;
+            case "mult":
+                bam.updateMultiplier(num);
             break;
             default:
                 console.log("Unrecognized ID");
@@ -150,22 +187,27 @@ let validateNumber = (obj, min, max) =>
         switch(obj.id)
         {
             case "driven-distance":
-                drivenFeetDistance = 0;
-                console.log("drivenFeetDistance = " + drivenFeetDistance);
+                drivenFeetDistance = undefined;
             break;
             case "driver-distance":
-                driverFeetDistance = 0;
-                console.log("driverFeetDistance = " + driverFeetDistance);
+                driverFeetDistance = undefined;
             break;
             case "driven-bubble":
-                drivenTicks = -10;
-                console.log("drivenTicks = " + drivenTicks);
+                drivenTicks = undefined;
                 drivenBubbleHi ? updateLineText("driven-bubble-hi") : updateLineText("driven-bubble-lo");
             break;
             case "driver-bubble":
-                driverTicks = -10;
-                console.log("driverTicks = " + driverTicks);
+                driverTicks = undefined;
                 driverBubbleHi ? updateLineText("driver-bubble-hi") : updateLineText("driver-bubble-lo");
+            break;
+            case "kwh":
+                bam.updateKwh(undefined);
+            break;
+            case "volt":
+                bam.updateVolts(undefined);
+            break;
+            case "mult":
+                bam.updateMultiplier(undefined);
             break;
             default:
                 console.log("Unrecognized ID");
@@ -179,10 +221,22 @@ let validateNumber = (obj, min, max) =>
 //Clear all inputted data.
 let clearData = () =>
 {
-    driverFeetDistance = 0;
-    drivenFeetDistance = 0;
-    driverTicks        = -10;
-    drivenTicks        = -10;
+    //Check for advanced mode. If in advanced mode, let the belt alignment manager handle the data clear.
+    if(mode)
+    {
+        document.getElementById("monthly-radio").checked = true;
+        document.getElementById("kwh").value = "";
+        document.getElementById("volt").value = "";
+        document.getElementById("mult").value = "";
+        document.getElementById("multi").innerHTML = "";
+        bam.clearData();
+        return;
+    }
+
+    driverFeetDistance = undefined;
+    drivenFeetDistance = undefined;
+    driverTicks        = undefined;
+    drivenTicks        = undefined;
     driverBubbleHi     = true;
     drivenBubbleHi     = true;
 
@@ -199,23 +253,9 @@ let clearData = () =>
     document.getElementById("driven-line").innerHTML = "Line down ???";
     document.getElementById("driver-line").innerHTML = "Line down ???";
 
-    driverLevel.bubbleDraw(-10);
-    drivenLevel.bubbleDraw(-10);
-
-    plot.updateValues(undefined, undefined, undefined, undefined);
-
-    checkCalc();
-}
-
-let checkCalc = () =>
-{
-    if(driverFeetDistance === 0 || drivenFeetDistance === 0 || driverTicks === -10 || drivenTicks === -10 )
-    {
-        clearCalc();
-        return;
-    }
-
-    doCalc();
+    driverLevel.bubbleDraw(undefined);
+    drivenLevel.bubbleDraw(undefined);
+    clearCalc();
 }
 
 let clearCalc = () =>
@@ -223,73 +263,73 @@ let clearCalc = () =>
     document.getElementById("driven-to-level").innerHTML = "???";
     document.getElementById("driver-to-level").innerHTML = "???";
     document.getElementById("optimal-moves").innerHTML   = "???";
+    plot.doCalcs(undefined, undefined, undefined, undefined);
 }
 
-let doCalc = () =>
+let checkCalc = () =>
 {
+    if(driverFeetDistance === undefined || drivenFeetDistance === undefined || driverTicks === undefined || drivenTicks === undefined)
+    {
+        clearCalc();
+        return;
+    }
+
     //Find the signed values of the level variables.
     let signedDriverBubble = driverBubbleHi ? driverTicks : -driverTicks;
     let signedDrivenBubble = drivenBubbleHi ? drivenTicks : -drivenTicks;
 
-    driverToLevel  = driverFeetDistance * signedDriverBubble * 5 / 12;
-    drivenToLevel  = drivenFeetDistance * signedDrivenBubble * 5 / 12;
-    driverToDriven = driverFeetDistance * (signedDriverBubble - signedDrivenBubble) * 5 / 12;
-    drivenToDriver = drivenFeetDistance * (signedDrivenBubble - signedDriverBubble) * 5 / 12;
+    //Pass everything on for calculation.
+    let moves = plot.doCalcs(driverFeetDistance, drivenFeetDistance, signedDriverBubble, signedDrivenBubble);
 
-    //Always give the two values to the level position.
-    document.getElementById("driven-to-level").innerHTML = ((Math.sign(drivenToLevel) >= 0) ? "+" : "") + drivenToLevel.toFixed(2) + " mils";
-    document.getElementById("driver-to-level").innerHTML = ((Math.sign(driverToLevel) >= 0) ? "+" : "") + driverToLevel.toFixed(2) + " mils";
+    //Get the numeric results.
+    [driverToLevel, drivenToLevel, driverToDriven, drivenToDriver] =
+        [moves.level.dvrToLvl, moves.level.dvnToLvl, moves.optimal.dvrToDvn, moves.optimal.dvnToDvr];
 
-    //Determine if there are 1 or 2 optimal moves.
-    let numOptimalMoves = 0;
-    let dvrToLvl = Math.sign(driverToLevel);
-    let dvnToLvl = Math.sign(drivenToLevel);
-
-    //Include zero as a positive number.
-    if(dvrToLvl === 0) dvrToLvl = 1;
-    if(dvnToLvl === 0) dvnToLvl = 1;
-    numOptimalMoves = (dvrToLvl === dvnToLvl) ? 1 : 2;
-
-    //Find the absolute slope value of the driver and driven.
-    let driverSlope = Math.abs(driverTicks);
-    let drivenSlope = Math.abs(drivenTicks);
-
-    //Calculate if a plus symbol is needed in the movement.
-    let dvrToDvnSign = (Math.sign(driverToDriven) >= 0) ? "+" : "";
-    let dvnToDvrSign = (Math.sign(drivenToDriver) >= 0) ? "+" : "";
-
-    let drToDn = undefined;
-    let dnToDr = undefined;
-
-    //Display the optimal moves.
-    if(numOptimalMoves === 2)
+    //If everything passes, display the results.
+    if(driverToLevel !== undefined)
     {
-        document.getElementById("optimal-moves").innerHTML = "Driver to driven: " + dvrToDvnSign + driverToDriven.toFixed(2) + " mils <br>" +
-                                                             "Driven to driver: " + dvnToDvrSign + drivenToDriver.toFixed(2) + " mils";
-        drToDn = dvrToDvnSign + driverToDriven.toFixed(2);
-        dnToDr = dvnToDvrSign + drivenToDriver.toFixed(2);
+        //Always give the two values to the level position.
+        document.getElementById("driver-to-level").innerHTML = driverToLevel + " mils";
+        document.getElementById("driven-to-level").innerHTML = drivenToLevel + " mils";
+        
+        //Display the optimal moves.
+        let optimalCount = 0;
+        document.getElementById("optimal-moves").innerHTML = "";
+
+        if(driverToDriven !== undefined)
+        {
+            optimalCount++;
+            document.getElementById("optimal-moves").innerHTML += "Driver to Driven: " + driverToDriven + " mils";
+        }
+
+        if(drivenToDriver !== undefined)
+        {
+            if(optimalCount > 0) document.getElementById("optimal-moves").innerHTML += "<br>";
+            document.getElementById("optimal-moves").innerHTML += "Driven to Driver: " + drivenToDriver + " mils";
+        }  
     }
     else
     {
-        //Determine which is the optimal move.
-        if(drivenSlope >= driverSlope)
-        {
-            document.getElementById("optimal-moves").innerHTML = "Driven to driver: " + dvnToDvrSign + drivenToDriver.toFixed(2) + " mils";
-            dnToDr = dvnToDvrSign + drivenToDriver.toFixed(2);
-        }
-        else
-        {
-            document.getElementById("optimal-moves").innerHTML = "Driver to driven: " + dvrToDvnSign + driverToDriven.toFixed(2) + " mils";
-            drToDn = dvrToDvnSign + driverToDriven.toFixed(2);
-        }
+        clearCalc();
     }
+}
 
-    //Update move values in plotter.
-    let drToLv = ((Math.sign(driverToLevel) >= 0) ? "+" : "") + driverToLevel.toFixed(2);
-    let dnToLv = ((Math.sign(drivenToLevel) >= 0) ? "+" : "") + drivenToLevel.toFixed(2);
-    
-    plot.updateMoves(drToLv, dnToLv, drToDn, dnToDr);
+let addAdjustment = () =>
+{
+    bam.addAdjustment();
+}
 
-    //Plot the data.
-    plot.updateValues(signedDriverBubble, signedDrivenBubble, driverFeetDistance, drivenFeetDistance);
+let addMeasurement = () =>
+{
+    bam.addMeasurement();
+}
+
+let generatePdf = () =>
+{
+    bam.generatePdf();
+}
+
+let updateTime = (x) =>
+{
+    bam.updateTime(x);
 }

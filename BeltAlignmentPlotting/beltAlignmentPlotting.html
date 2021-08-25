@@ -85,77 +85,139 @@
             </div>
 
             <div class="row">
-                <div class="col-md-12">
-                    <button type="button" id="clear-btn" class="btn btn-outline-success mb-2" onclick="clearData()">Clear Data</button>
+                <div class="col-md-6">
+                    <form name="functionality-form">
+                        <input type="radio" id="basic" name="function-btn" value="basic-select" onchange="basicAdvanced(this)" checked>
+                        <label for="basic-select">Basic Mode</label>
+                        <input type="radio" id="advanced" name="function-btn" value="advanced-select" onchange="basicAdvanced(this)">
+                        <label for="advanced-select">Advanced Mode</label>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <button type="button" id="clear-btn" style="float: right;" class="btn btn-outline-warning mb-2" onclick="clearData()">Clear Data</button>
                 </div>
             </div>
-            
-            <div class="row">
-                <div class="col-md-6 belt-border">
-                   <h3>Driven</h3>
 
-                   <div class="row">
-                        <div class="col-md-9">
-                            <p>Foot distance, dimension A<br>(.1 to 100 inches):</p>
-                            <input id="driven-distance" type="text" onkeypress="return isNumberKey(this, .1, 100, event)" onfocusout="validateNumber(this, .1, 100)"/>
-                            <div class="divider"></div>
-                            <form name="driven-form">
-                                <input type="radio" id="driven-bubble-hi" name="driven-bubble" value="dvn-bubble-hi" onchange="radioChange(this)" checked>
-                                <label for="dvn-bubble-hi">Bubble Up</label><br>
-                                <input type="radio" id="driven-bubble-lo" name="driven-bubble" value="dvn-bubble-lo" onchange="radioChange(this)">
-                                <label for="dvn-bubble-lo">Bubble Down</label><br>
-                            </form>
-                            <p>Bubble offset<br>(0 to 8 ticks):</p>
-                            <input id="driven-bubble" type="text" onkeypress="return isNumberKey(this, 0, 8, event)" onfocusout="validateNumber(this, 0, 8)"/>
-                            <p id="driven-line">Line down ???</p>
+            <div id="basic-use">
+                <div class="row">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-4 belt-border">
+                        <h3>Driven</h3>
+
+                        <div class="row">
+                            <div class="col-md-9">
+                                <p>Foot distance, dimension A<br>(.1 to 100 inches):</p>
+                                <input id="driven-distance" class="form-control" maxlength="6" type="text" onkeypress="return isNumberKey(this, .1, 100, event)" onfocusout="validateNumber(this, .1, 100)"/>
+                                <div class="divider"></div>
+                                <form name="driven-form">
+                                    <input type="radio" id="driven-bubble-hi" name="driven-bubble" value="dvn-bubble-hi" onchange="radioChange(this)" checked>
+                                    <label for="dvn-bubble-hi">Bubble Up</label><br>
+                                    <input type="radio" id="driven-bubble-lo" name="driven-bubble" value="dvn-bubble-lo" onchange="radioChange(this)">
+                                    <label for="dvn-bubble-lo">Bubble Down</label><br>
+                                </form>
+                                <p>Bubble offset<br>(0 to 8 ticks):</p>
+                                <input id="driven-bubble" class="form-control" maxlength="5" type="text" onkeypress="return isNumberKey(this, 0, 8, event)" onfocusout="validateNumber(this, 0, 8)"/>
+                                <p id="driven-line">Line down ???</p>
+                            </div>
+
+                            <div class="col-md-3" id="driven-level"></div>
                         </div>
+                    </div>
 
-                        <div class="col-md-3" id="driven-level"></div>
-                   </div>
+                    <div class="col-md-2"></div>
+
+                    <div class="col-md-4 belt-border">
+                        <h3>Driver</h3>
+                   
+                        <div class="row">
+                            <div class="col-md-9">
+                                <p>Foot distance, dimension B<br>(.1 to 100 inches):</p>
+                                <input id="driver-distance" class="form-control" maxlength="6" type="text" onkeypress="return isNumberKey(this, .1, 100, event)" onfocusout="validateNumber(this, .1, 100)"/>
+                                <div class="divider"></div>
+                                <form name="driver-form">
+                                    <input type="radio" id="driver-bubble-hi" name="driver-bubble" value="dvr-bubble-hi" onchange="radioChange(this)" checked>
+                                    <label for="dvr-bubble-hi">Bubble Up</label><br>
+                                    <input type="radio" id="driver-bubble-lo" name="driver-bubble" value="dvr-bubble-lo" onchange="radioChange(this)">
+                                    <label for="dvr-bubble-lo">Bubble Down</label><br>
+                                </form>
+                                <p>Bubble offset<br>(0 to 8 ticks):</p>
+                                <input id="driver-bubble" class="form-control" maxlength="5" type="text" onkeypress="return isNumberKey(this, 0, 8, event)" onfocusout="validateNumber(this, 0, 8)"/>
+                                <p id="driver-line">Line down ???</p>
+                            </div>
+
+                            <div class="col-md-3" id="driver-level"></div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="col-md-6 belt-border">
-                    <h3>Driver</h3>
-                   
-                    <div class="row">
-                        <div class="col-md-9">
-                            <p>Foot distance, dimension B<br>(.1 to 100 inches):</p>
-                            <input id="driver-distance" type="text" onkeypress="return isNumberKey(this, .1, 100, event)" onfocusout="validateNumber(this, .1, 100)"/>
-                            <div class="divider"></div>
-                            <form name="driver-form">
-                                <input type="radio" id="driver-bubble-hi" name="driver-bubble" value="dvr-bubble-hi" onchange="radioChange(this)" checked>
-                                <label for="dvr-bubble-hi">Bubble Up</label><br>
-                                <input type="radio" id="driver-bubble-lo" name="driver-bubble" value="dvr-bubble-lo" onchange="radioChange(this)">
-                                <label for="dvr-bubble-lo">Bubble Down</label><br>
-                            </form>
-                            <p>Bubble offset<br>(0 to 8 ticks):</p>
-                            <input id="driver-bubble" type="text" onkeypress="return isNumberKey(this, 0, 8, event)" onfocusout="validateNumber(this, 0, 8)"/>
-                            <p id="driver-line">Line down ???</p>
-                        </div>
+                <div class="row mt-3">
+                    <div class="col-md-4 belt-border">
+                        <h3>Driven to Level</h3>
+                        <p id="driven-to-level" class="align">???</p>
+                    </div>
+                    <div class="col-md-4 belt-border">
+                        <h3>Driver to Level</h3>
+                        <p id="driver-to-level" class="align">???</p>
+                    </div>
+                    <div class="col-md-4 belt-border">
+                        <h3>Optimal Move(s)</h3>
+                        <p id="optimal-moves" class="align">???</p>
+                    </div>
+                </div>
 
-                        <div class="col-md-3" id="driver-level"></div>
+                <div class="row">
+                    <div class="col-md-12 mt-4" id="plot"></div>
+                </div>
+            </div>
+
+            <div id="advanced-use">
+                <div class="row">
+                    <div class="col-md-12 belt-border">
+                        <h3>Cost Data</h3>
+                        <div class="divider"></div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p>Cost per KWh<br>(.01 to 100 dollars):</p>
+                                <input id="kwh" class="form-control" maxlength="5" type="text" onkeypress="return isNumberKey(this, 0.01, 100, event)" onfocusout="validateNumber(this, 0.01, 100)"/>    
+                            </div>
+                            <div class="col-md-3">
+                                <p>Motor voltage<br>(208 to 600 volts):</p>
+                                <input id="volt" class="form-control" maxlength="5" type="text" onkeypress="return isNumberKey(this, 208, 600, event)" onfocusout="validateNumber(this, 208, 600)"/>    
+                            </div>
+                            <div class="col-md-3">
+                                <p>Usage multiplier<br>(.001 to 1.0):</p>
+                                <input id="mult" class="form-control" maxlength="5" type="text" onkeypress="return isNumberKey(this, 0.001, 1.0, event)" onfocusout="validateNumber(this, 0.001, 1.0)"/>    
+                            </div>
+                            <div class="col-md-3">
+                                <form name="cost-form">
+                                    <input type="radio" id="weekly-radio" name="cost-radios" value="weekly-radio" onchange="updateTime(0)">
+                                    <label for="weekly-radio">Weekly</label><br>
+                                    <input type="radio" id="monthly-radio" name="cost-radios" value="monthly radio" onchange="updateTime(1)" checked>
+                                    <label for="monthly-radio">Monthly</label><br>
+                                    <input type="radio" id="yearly-radio" name="cost-radios" value="yearly radio" onchange="updateTime(2)">
+                                    <label for="yearly-radio">Yearly</label>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type="button" id="adj-btn" class="btn btn-outline-primary mb-2 mt-3" onclick="addAdjustment()">Add Adjustment</button>
+                        <button type="button" id="meas-btn" class="btn btn-outline-primary mb-2 mt-3" onclick="addMeasurement()">Add Measurement</button>
+                        <button type="button" id="pdf-btn" class="btn btn-outline-primary mb-2 mt-3" onclick="generatePdf()">Generate PDF</button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12" id="multi">
+                        <!--Container for measurements and adjustments-->
                     </div>
                 </div>
             </div>
 
-            <div class="row mt-3">
-                <div class="col-md-4 belt-border">
-                    <h3>Driven to Level</h3>
-                    <p id="driven-to-level" class="align">???</p>
-                </div>
-                <div class="col-md-4 belt-border">
-                    <h3>Driver to Level</h3>
-                    <p id="driver-to-level" class="align">???</p>
-                </div>
-                <div class="col-md-4 belt-border">
-                    <h3>Optimal Move(s)</h3>
-                    <p id="optimal-moves" class="align">???</p>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-12 mt-4" id="plot"></div>
-            </div>
             <p>The source code for this page can be found <a href="https://github.com/nmikstas/portfolio/tree/master/BeltAlignmentPlotting">here</a></p>
         </div>
     </div>
@@ -176,6 +238,7 @@
     <!--Javascript-->
     <script src="js/level.js"></script>
     <script src="js/beltPlot.js"></script>
+    <script src="js/bam.js"></script>
     <script src="js/beltAlignmentPlotting.js"></script>
 </body>
         

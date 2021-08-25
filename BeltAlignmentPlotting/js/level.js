@@ -186,6 +186,9 @@ class Level
 
         this.ctxLevel.clearRect(0, 0, this.bodyWidth, this.bodyHeight);
 
+        //Make sure the calculations can't go negative.
+        if(this.bodyWidth < 5) return;
+
         //Only draw the bubble if its in a valid range.
         if(this.bubbleOffset <= 8.0 && this.bubbleOffset >= -8.0)
         {

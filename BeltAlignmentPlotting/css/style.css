@@ -17,7 +17,12 @@ input
 {
     margin-left: 1.0rem;
     margin-bottom: 1.0rem;
-    max-width: 90%;
+    max-width: 200px;
+}
+
+.delete
+{
+    float: right;
 }
 
 .belt-border
