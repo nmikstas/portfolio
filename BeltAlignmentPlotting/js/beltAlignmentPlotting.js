@@ -54,6 +54,7 @@ let basicAdvanced = (obj) =>
         document.getElementById("advanced-use").style.display = "block";
         document.getElementById("basic-use").style.display = "none";
         mode = 1;
+        bam.redraw();
     }
 }
 
@@ -325,9 +326,19 @@ let addMeasurement = () =>
     bam.addMeasurement();
 }
 
-let generatePdf = () =>
+let saveData = () =>
 {
-    bam.generatePdf();
+    bam.saveData();
+}
+
+let loadData = () =>
+{
+    bam.loadData();
+}
+
+let print = () =>
+{
+    bam.print();
 }
 
 let updateTime = (x) =>
