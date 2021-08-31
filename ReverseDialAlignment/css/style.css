@@ -4,6 +4,13 @@ h3
     text-align: center;
 }
 
+h4
+{
+    color: #797979;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
 p
 {
     font-size: 1.2rem;

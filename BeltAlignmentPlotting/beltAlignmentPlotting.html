@@ -147,16 +147,23 @@
                 </div>
 
                 <div class="row mt-3">
-                    <div class="col-md-4 belt-border">
-                        <h3>Driven to Level</h3>
-                        <p id="driven-to-level" class="align">???</p>
+                    <div class="col-md-8 belt-border">
+                        <h3>Option 1</h3>
+                        <div class="divider"></div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <h4>Driven to Level</h4>
+                                <p id="driven-to-level" class="align">???</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>Driver to Level</h4>
+                                <p id="driver-to-level" class="align">???</p>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-4 belt-border">
-                        <h3>Driver to Level</h3>
-                        <p id="driver-to-level" class="align">???</p>
-                    </div>
-                    <div class="col-md-4 belt-border">
-                        <h3>Optimal Move(s)</h3>
+                        <h3>Option 2 (Option 3)</h2>
+                        <div class="divider"></div>
                         <p id="optimal-moves" class="align">???</p>
                     </div>
                 </div>
@@ -175,15 +182,15 @@
                         <div class="row">
                             <div class="col-md-3">
                                 <p>Cost per KWh<br>(.01 to 100 dollars):</p>
-                                <input id="kwh" class="form-control" maxlength="5" type="text" onkeypress="return isNumberKey(this, 0.01, 100, event)" onfocusout="validateNumber(this, 0.01, 100)"/>    
+                                <input id="kwh" class="form-control bubble-input" maxlength="5" type="text" onkeypress="return isNumberKey(this, 0.01, 100, event)" onfocusout="validateNumber(this, 0.01, 100)"/>    
                             </div>
                             <div class="col-md-3">
                                 <p>Motor voltage<br>(208 to 600 volts):</p>
-                                <input id="volt" class="form-control" maxlength="5" type="text" onkeypress="return isNumberKey(this, 208, 600, event)" onfocusout="validateNumber(this, 208, 600)"/>    
+                                <input id="volt" class="form-control bubble-input" maxlength="5" type="text" onkeypress="return isNumberKey(this, 208, 600, event)" onfocusout="validateNumber(this, 208, 600)"/>    
                             </div>
                             <div class="col-md-3">
                                 <p>Usage multiplier<br>(.001 to 1.0):</p>
-                                <input id="mult" class="form-control" maxlength="5" type="text" onkeypress="return isNumberKey(this, 0.001, 1.0, event)" onfocusout="validateNumber(this, 0.001, 1.0)"/>    
+                                <input id="mult" class="form-control bubble-input" maxlength="5" type="text" onkeypress="return isNumberKey(this, 0.001, 1.0, event)" onfocusout="validateNumber(this, 0.001, 1.0)"/>    
                             </div>
                             <div class="col-md-3">
                                 <input type="radio" id="weekly-radio" name="cost-radios" value="weekly-radio" onchange="updateTime(0)">
