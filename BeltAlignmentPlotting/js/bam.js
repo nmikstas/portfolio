@@ -12,10 +12,14 @@ class Bam
 
     constructor
     (
-        parentDiv
+        parentDiv,
+        changeCostData
     )
     {
         this.parentDiv = parentDiv;
+
+        //Callback functions.
+        this.changeCostData = changeCostData;
 
         this.history = []; //Array of adjustment and measurement objects.
         this.entryNum = 0; //Unique entry number into history array.
@@ -548,6 +552,8 @@ class Bam
 
     addMeasurement(object)
     {
+        if(object) this.entryNum = object.num;
+
         /************************************* HTML Creation *************************************/
 
         //Create main div.
@@ -1004,14 +1010,14 @@ class Bam
         label1m3.innerHTML = "Highest UE(dB)";
         let txtHighestUe = document.createElement("input");
         txtHighestUe.classList.add("form-control", "position-input");
-        txtHighestUe.setAttribute("maxlength", 6);
+        txtHighestUe.setAttribute("maxlength", 7);
         txtHighestUe.setAttribute("id", "highest-ue" + this.entryNum);
         let label2m3 = document.createElement("label");
         label2m3.setAttribute("for", "highest-snd" + this.entryNum);
         label2m3.innerHTML = "Highest Sound(DB)";
         let txtHighestSnd = document.createElement("input");
         txtHighestSnd.classList.add("form-control", "position-input");
-        txtHighestSnd.setAttribute("maxlength", 6);
+        txtHighestSnd.setAttribute("maxlength", 7);
         txtHighestSnd.setAttribute("id", "highest-snd" + this.entryNum);
 
         //Column 4.
@@ -1082,31 +1088,66 @@ class Bam
         /********************************** JSON Instantiation ***********************************/
 
         //Create object of relevant stuff for the history array.
-        let obj =
+        let obj = {};
+
+        if(object)
         {
-            //Object info.
-            num:      this.entryNum,
-            type:     Bam.MEAS,
-            title:    "",
-            comments: "",
 
-            //Bearing data.
-            p1hVel: "", p1hGe: "", p1vVel: "", p1vGe: "", p1aVel: "", p1aGe: "", p1Temp: "",
-            p2hVel: "", p2hGe: "", p2vVel: "", p2vGe: "", p2aVel: "", p2aGe: "", p2Temp: "",
-            p3hVel: "", p3hGe: "", p3vVel: "", p3vGe: "", p3aVel: "", p3aGe: "", p3Temp: "",
-            p4hVel: "", p4hGe: "", p4vVel: "", p4vGe: "", p4aVel: "", p4aGe: "", p4Temp: "",
+            obj =
+            {
+                //Object info.
+                num:      this.entryNum,
+                type:     Bam.MEAS,
+                title:    object.title,
+                comments: object.comments,
 
-            //Motor data.
-            ampDraw:    undefined,
-            cost:       undefined,
-            rpmDriver:  "",
-            rpmDriven:  "",
-            beltTemp:   "",
-            highestUe:  "",
-            highestSnd: "",
+                //Bearing data.
+                p1hVel: object.p1hVel, p1hGe: object.p1hGe, p1vVel: object.p1vVel, p1vGe: object.p1vGe, p1aVel: object.p1aVel, p1aGe: object.p1aGe, p1Temp: object.p1Temp,
+                p2hVel: object.p2hVel, p2hGe: object.p2hGe, p2vVel: object.p2vVel, p2vGe: object.p2vGe, p2aVel: object.p2aVel, p2aGe: object.p2aGe, p2Temp: object.p2Temp,
+                p3hVel: object.p3hVel, p3hGe: object.p3hGe, p3vVel: object.p3vVel, p3vGe: object.p3vGe, p3aVel: object.p3aVel, p3aGe: object.p3aGe, p3Temp: object.p3Temp,
+                p4hVel: object.p4hVel, p4hGe: object.p4hGe, p4vVel: object.p4vVel, p4vGe: object.p4vGe, p4aVel: object.p4aVel, p4aGe: object.p4aGe, p4Temp: object.p4Temp,
 
-            //Cost analysis.
-            txtCost: txtCost
+                //Motor data.
+                ampDraw:    object.hasOwnProperty("ampDraw") ? object.ampDraw : undefined,
+                cost:       object.hasOwnProperty("cost")    ? object.cost    : undefined,
+                rpmDriver:  object.rpmDriver,
+                rpmDriven:  object.rpmDriven,
+                beltTemp:   object.beltTemp,
+                highestUe:  object.highestUe,
+                highestSnd: object.highestSnd,
+
+                //Cost analysis.
+                txtCost: txtCost
+            }
+        }
+        else
+        {
+            obj =
+            {
+                //Object info.
+                num:      this.entryNum,
+                type:     Bam.MEAS,
+                title:    "",
+                comments: "",
+
+                //Bearing data.
+                p1hVel: "", p1hGe: "", p1vVel: "", p1vGe: "", p1aVel: "", p1aGe: "", p1Temp: "",
+                p2hVel: "", p2hGe: "", p2vVel: "", p2vGe: "", p2aVel: "", p2aGe: "", p2Temp: "",
+                p3hVel: "", p3hGe: "", p3vVel: "", p3vGe: "", p3aVel: "", p3aGe: "", p3Temp: "",
+                p4hVel: "", p4hGe: "", p4vVel: "", p4vGe: "", p4aVel: "", p4aGe: "", p4Temp: "",
+
+                //Motor data.
+                ampDraw:    undefined,
+                cost:       undefined,
+                rpmDriver:  "",
+                rpmDriven:  "",
+                beltTemp:   "",
+                highestUe:  "",
+                highestSnd: "",
+
+                //Cost analysis.
+                txtCost: txtCost
+            }
         }
 
         /************************************ Event Listeners ************************************/
@@ -1182,6 +1223,51 @@ class Bam
         txtHighestUe.addEventListener("keyup", () => obj.highestUe = txtHighestUe.value);    //Highest ultrasound event listener.
         txtHighestSnd.addEventListener("keyup", () => obj.highestSnd = txtHighestSnd.value); //Highest audible noise event listener.
         txtBeltTemp.addEventListener("keyup", () => obj.beltTemp = txtBeltTemp.value);       //Belt temperature event listener.
+
+        /******************************** Update Existing Objects ********************************/
+
+        //Add values to elements if object exists.
+        if(object)
+        {
+            txtTitle.value      = obj.title;
+            txtComments.value   = obj.comments;
+            txtp1hVel.value     = obj.p1hVel;
+            txtp1hGe.value      = obj.p1hGe;
+            txtp1vVel.value     = obj.p1vVel;
+            txtp1vGe.value      = obj.p1vGe;
+            txtp1aVel.value     = obj.p1aVel;
+            txtp1aGe.value      = obj.p1aGe;
+            txtp1Temp.value     = obj.p1Temp;
+            txtp2hVel.value     = obj.p2hVel;
+            txtp2hGe.value      = obj.p2hGe;
+            txtp2vVel.value     = obj.p2vVel;
+            txtp2vGe.value      = obj.p2vGe;
+            txtp2aVel.value     = obj.p2aVel;
+            txtp2aGe.value      = obj.p2aGe;
+            txtp2Temp.value     = obj.p2Temp;
+            txtp3hVel.value     = obj.p3hVel;
+            txtp3hGe.value      = obj.p3hGe;
+            txtp3vVel.value     = obj.p3vVel;
+            txtp3vGe.value      = obj.p3vGe;
+            txtp3aVel.value     = obj.p3aVel;
+            txtp3aGe.value      = obj.p3aGe;
+            txtp3Temp.value     = obj.p3Temp;
+            txtp4hVel.value     = obj.p4hVel;
+            txtp4hGe.value      = obj.p4hGe;
+            txtp4vVel.value     = obj.p4vVel;
+            txtp4vGe.value      = obj.p4vGe;
+            txtp4aVel.value     = obj.p4aVel;
+            txtp4aGe.value      = obj.p4aGe;
+            txtp4Temp.value     = obj.p4Temp;
+            txtDvrRpm.value     = obj.rpmDriver;
+            txtDvnRpm.value     = obj.rpmDriven;
+            txtHighestUe.value  = obj.highestUe;
+            txtHighestSnd.value = obj.highestSnd;
+            txtBeltTemp.value   = obj.beltTemp;
+            txtAmpDraw.value    = obj.ampDraw;
+
+            txtAmpDraw.dispatchEvent(new Event("focusout"));
+        }
 
         /*********************************** History Addition ************************************/
 
@@ -1473,6 +1559,14 @@ class Bam
             this.history = [];
             this.parentDiv.innerHTML = "";
 
+            //Load cost data.
+            let costKwh = dataArray[0].hasOwnProperty("costKwh") ? dataArray[0].costKwh : undefined;
+            let voltage = dataArray[0].hasOwnProperty("motorVoltage") ? dataArray[0].motorVoltage : undefined;
+            let multiplier = dataArray[0].hasOwnProperty("usageMultiplier") ? dataArray[0].usageMultiplier : undefined;
+            let period = dataArray[0].hasOwnProperty("timePeriod") ? dataArray[0].timePeriod : Bam.MONTHLY;
+            this.changeCostData(costKwh, voltage, multiplier, period);
+        
+            //Iterate through data objects and load.
             for(let i = 1; i < dataArray.length; i++)
             {
                 switch(dataArray[i].type)
@@ -1488,28 +1582,10 @@ class Bam
                     break;
                 }
             }
+
+            //Update cost text.
+            this.updateCosts();
         };
-    }
-
-
-
-
-
-
-
-    print()
-    {
-        //console.log("Generate PDF");
-
-        for(let i = 0; i < this.history.length; i++)
-        {
-            console.log(this.history[i]);
-        }
-
-        console.log("Time period: " + this.timePeriod);
-        console.log("Cost kWh: " + this.costKwh);
-        console.log("Motor Voltage: " + this.motorVoltage);
-        console.log("Usage Multiplier: " + this.usageMultiplier);
     }
 
     //Update cost analysis functions.
@@ -1536,4 +1612,32 @@ class Bam
         this.usageMultiplier = num;
         this.updateCosts();
     }
+
+
+
+
+
+
+
+
+
+
+
+
+    print()
+    {
+        //console.log("Generate PDF");
+
+        for(let i = 0; i < this.history.length; i++)
+        {
+            console.log(this.history[i]);
+        }
+
+        console.log("Time period: " + this.timePeriod);
+        console.log("Cost kWh: " + this.costKwh);
+        console.log("Motor Voltage: " + this.motorVoltage);
+        console.log("Usage Multiplier: " + this.usageMultiplier);
+    }
+
+    
 }

@@ -18,8 +18,45 @@ let drivenLevel = new Level(document.getElementById("driven-level"), {bubbleColo
 let driverLevel = new Level(document.getElementById("driver-level"));
 let plot = new BeltPlot(document.getElementById("plot"), {backgroundImg: document.getElementById("blank")});
 
+//Callback function for updating cost data.
+let changeCostData = (costKwh, voltage, mult, period) =>
+{
+    //Get references to cost data HTML elements.
+    let txtCostKwh = document.getElementById("kwh");
+    let txtVoltage = document.getElementById("volt");
+    let txtMult    = document.getElementById("mult");
+    let radWeek    = document.getElementById("weekly-radio");
+    let radMonth   = document.getElementById("monthly-radio");
+    let radYear    = document.getElementById("yearly-radio");
+
+    //Update text on the screen.
+    isNaN(costKwh) ? txtCostKwh.value = "" : txtCostKwh.value = costKwh;
+    isNaN(voltage) ? txtVoltage.value = "" : txtVoltage.value = voltage;
+    isNaN(mult)    ? txtMult.value    = "" : txtMult.value    = mult;
+
+    //Update radio buttons.
+    switch(period)
+    {
+        case Bam.WEEKLY:
+            radWeek.checked = true;
+        break;
+        case Bam.YEARLY:
+            radYear.checked = true;
+        break;
+        default:
+            radMonth.checked = true;
+        break;
+    }
+    
+    //Update data in the belt alignment manager.
+    bam.updateKwh(costKwh);
+    bam.updateVolts(voltage);
+    bam.updateMultiplier(mult);
+    bam.updateTime(period);
+}
+
 //Creat belt alignment manager.
-let bam = new Bam(document.getElementById("multi"));
+let bam = new Bam(document.getElementById("multi"), changeCostData);
 
 //Make sure everthing resets on a page refresh.
 document.getElementById("driven-bubble-hi").checked = true;
