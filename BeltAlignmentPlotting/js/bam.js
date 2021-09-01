@@ -5,6 +5,7 @@ class Bam
 {
     static get ADJ()     {return 0}
     static get MEAS()    {return 1}
+    static get COST()    {return 2}
     static get WEEKLY()  {return 0}
     static get MONTHLY() {return 1}
     static get YEARLY()  {return 2}
@@ -34,6 +35,8 @@ class Bam
 
     addAdjustment(object)
     {
+        if(object) this.entryNum = object.num;
+
         /************************************* HTML Creation *************************************/
 
         //Create main div.
@@ -244,36 +247,117 @@ class Bam
         /********************************** JSON Instantiation ***********************************/
 
         //Create object of relevant stuff for the history array.
-        let obj =
+        let obj = {};
+
+        if(object)
         {
-            //Object info.
-            num:                this.entryNum,
-            type:               Bam.ADJ,
-            title:              "",
-            comments:           "",
+            obj = {
+                //Object info.
+                num:                this.entryNum,
+                type:               Bam.ADJ,
+                title:              object.hasOwnProperty("title") ? object.title : "",
+                comments:           object.hasOwnProperty("comments") ? object.comments : "",
 
-            //Inputs.
-            driverFeetDistance: undefined,
-            drivenFeetDistance: undefined,
-            driverTicks:        undefined,
-            drivenTicks:        undefined,
-            driverBubbleHi:     true,
-            drivenBubbleHi:     true,
+                //Inputs.
+                driverFeetDistance: object.hasOwnProperty("driverFeetDistance") ? object.driverFeetDistance : undefined,
+                drivenFeetDistance: object.hasOwnProperty("drivenFeetDistance") ? object.drivenFeetDistance : undefined,
+                driverTicks:        object.hasOwnProperty("driverTicks") ? object.driverTicks : undefined,
+                drivenTicks:        object.hasOwnProperty("drivenTicks") ? object.drivenTicks : undefined,
+                driverBubbleHi:     object.hasOwnProperty("driverBubbleHi") ? object.driverBubbleHi : true,
+                drivenBubbleHi:     object.hasOwnProperty("drivenBubbleHi") ? object.drivenBubbleHi : true,
 
-            //Outputs.
-            driverToLevel:      undefined,
-            drivenToLevel:      undefined,
-            driverToDriven:     undefined,
-            drivenToDriver:     undefined,
+                //Outputs.
+                driverToLevel:      object.hasOwnProperty("driverToLevel") ? object.driverToLevel : undefined,
+                drivenToLevel:      object.hasOwnProperty("drivenToLevel") ? object.drivenToLevel : undefined,
+                driverToDriven:     object.hasOwnProperty("driverToDriven") ? object.driverToDriven : undefined,
+                drivenToDriver:     object.hasOwnProperty("drivenToDriver") ? object.drivenToDriver : undefined,
             
-            //Canvas variables.
-            drivenLevel:        drivenLevel,
-            driverLevel:        driverLevel,
-            txtDrivenToLevel:   txtDrivenToLevel,
-            txtDriverToLevel:   txtDriverToLevel,
-            txtOptimalMoves:    txtOptimalMoves,
-            plot:               plot,
-            plotHidden:         false
+                //Canvas variables.
+                drivenLevel:        drivenLevel,
+                driverLevel:        driverLevel,
+                txtDrivenToLevel:   txtDrivenToLevel,
+                txtDriverToLevel:   txtDriverToLevel,
+                txtOptimalMoves:    txtOptimalMoves,
+                plot:               plot,
+                plotHidden:         object.hasOwnProperty("plotHidden") ? object.plotHidden : false
+            }
+        }
+        else
+        {
+            obj = {
+                //Object info.
+                num:                this.entryNum,
+                type:               Bam.ADJ,
+                title:              "",
+                comments:           "",
+
+                //Inputs.
+                driverFeetDistance: undefined,
+                drivenFeetDistance: undefined,
+                driverTicks:        undefined,
+                drivenTicks:        undefined,
+                driverBubbleHi:     true,
+                drivenBubbleHi:     true,
+
+                //Outputs.
+                driverToLevel:      undefined,
+                drivenToLevel:      undefined,
+                driverToDriven:     undefined,
+                drivenToDriver:     undefined,
+            
+                //Canvas variables.
+                drivenLevel:        drivenLevel,
+                driverLevel:        driverLevel,
+                txtDrivenToLevel:   txtDrivenToLevel,
+                txtDriverToLevel:   txtDriverToLevel,
+                txtOptimalMoves:    txtOptimalMoves,
+                plot:               plot,
+                plotHidden:         false
+            }
+        }
+
+        //Add values to elements if object exists.
+        if(object)
+        {
+            //Title and comments.
+            txtTitle.value    = obj.title;
+            txtComments.value = obj.comments;
+
+            //Driver and driven feet distance.
+            txtDriverDistance.value = isNaN(obj.driverFeetDistance) ? "" : obj.driverFeetDistance;
+            txtDrivenDistance.value = isNaN(obj.drivenFeetDistance) ? "" : obj.drivenFeetDistance;
+
+            //Bubble up/bubble down radio buttons.
+            obj.drivenBubbleHi ? radio1.checked = true : radio2.checked = true;
+            obj.driverBubbleHi ? radio3.checked = true : radio4.checked = true;
+
+            //Bubble tick marks.
+            txtDriverBubble.value = isNaN(obj.driverTicks) ? "" : obj.driverTicks;
+            txtDrivenBubble.value = isNaN(obj.drivenTicks) ? "" : obj.drivenTicks;
+
+            //Bubble canvases.
+            let signedDrivenBubble = obj.drivenBubbleHi ? obj.drivenTicks : -obj.drivenTicks;
+            obj.drivenLevel.bubbleDraw(signedDrivenBubble);
+            let signedDriverBubble = obj.driverBubbleHi ? obj.driverTicks : -obj.driverTicks;
+            obj.driverLevel.bubbleDraw(signedDriverBubble);
+
+            //Line up/line down text.
+            let lineText = "Line down ";
+            if(!obj.drivenBubbleHi) lineText = "Line up ";
+            pDrivenLine.innerHTML = lineText + ((obj.drivenTicks === undefined) ? "???" : obj.drivenTicks.toFixed(2));
+            lineText = "Line down ";
+            if(!obj.driverBubbleHi) lineText = "Line up ";
+            pDriverLine.innerHTML = lineText + ((obj.driverTicks === undefined) ? "???" : obj.driverTicks.toFixed(2));
+
+            //Plot and output.
+            this.updatePlot(obj);
+
+            //Hide/show button.
+            if(obj.plotHidden)
+            {
+                hideBtn.innerHTML = "Show Plot";
+                divPlot.style.display = "none";
+            }
         }
 
         /************************************ Event Listeners ************************************/
@@ -1099,32 +1183,12 @@ class Bam
         txtHighestSnd.addEventListener("keyup", () => obj.highestSnd = txtHighestSnd.value); //Highest audible noise event listener.
         txtBeltTemp.addEventListener("keyup", () => obj.beltTemp = txtBeltTemp.value);       //Belt temperature event listener.
 
-
-
-
-
-
-
-
         /*********************************** History Addition ************************************/
 
         //Add object data to history.
         this.history = [...this.history, obj];
         this.entryNum++;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     updatePlot(obj)
     {
@@ -1305,30 +1369,133 @@ class Bam
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
     saveData()
     {
-        console.log("Save Data");
+        //Store the cost data in an object.
+        let costObj =
+        {
+            type:            Bam.COST,
+            costKwh:         this.costKwh,
+            motorVoltage:    this.motorVoltage,
+            usageMultiplier: this.usageMultiplier,
+            timePeriod:      this.timePeriod
+        }
+
+        let histCopy = [costObj];
+        
+
+        //Iterate through the copy of the history array and keep only the data.
+        for(let i = 0; i < this.history.length; i++)
+        {
+            switch(this.history[i].type)
+            {
+                case Bam.ADJ:
+                    let adjObj =
+                    {
+                        num:                this.history[i].num,
+                        type:               Bam.ADJ,
+                        title:              this.history[i].title,
+                        comments:           this.history[i].comments,
+                        driverFeetDistance: this.history[i].driverFeetDistance,
+                        drivenFeetDistance: this.history[i].drivenFeetDistance,
+                        driverTicks:        this.history[i].driverTicks,
+                        drivenTicks:        this.history[i].drivenTicks,
+                        driverBubbleHi:     this.history[i].driverBubbleHi,
+                        drivenBubbleHi:     this.history[i].drivenBubbleHi,
+                        driverToLevel:      this.history[i].driverToLevel,
+                        drivenToLevel:      this.history[i].drivenToLevel,
+                        driverToDriven:     this.history[i].driverToDriven,
+                        drivenToDriver:     this.history[i].drivenToDriver,
+                        plotHidden:         this.history[i].plotHidden
+                    }
+                    histCopy = [...histCopy, adjObj];
+                break;
+                case Bam.MEAS:
+                    let measObj =
+                    {
+                        num:        this.history[i].num,
+                        type:       Bam.MEAS,
+                        title:      this.history[i].title,
+                        comments:   this.history[i].comments,
+                        p1hVel:     this.history[i].p1hVel, p1hGe: this.history[i].p1hGe, p1vVel: this.history[i].p1vVel, p1vGe: this.history[i].p1vGe,
+                        p1aVel:     this.history[i].p1aVel, p1aGe: this.history[i].p1aGe, p1Temp: this.history[i].p1Temp,
+                        p2hVel:     this.history[i].p2hVel, p2hGe: this.history[i].p2hGe, p2vVel: this.history[i].p2vVel, p2vGe: this.history[i].p2vGe,
+                        p2aVel:     this.history[i].p2aVel, p2aGe: this.history[i].p2aGe, p2Temp: this.history[i].p2Temp,
+                        p3hVel:     this.history[i].p3hVel, p3hGe: this.history[i].p3hGe, p3vVel: this.history[i].p3vVel, p3vGe: this.history[i].p3vGe,
+                        p3aVel:     this.history[i].p3aVel, p3aGe: this.history[i].p3aGe, p3Temp: this.history[i].p3Temp,
+                        p4hVel:     this.history[i].p4hVel, p4hGe: this.history[i].p4hGe, p4vVel: this.history[i].p4vVel, p4vGe: this.history[i].p4vGe,
+                        p4aVel:     this.history[i].p4aVel, p4aGe: this.history[i].p4aGe, p4Temp: this.history[i].p4Temp,
+                        ampDraw:    this.history[i].ampDraw,
+                        cost:       this.history[i].cost,
+                        rpmDriver:  this.history[i].rpmDriver,
+                        rpmDriven:  this.history[i].rpmDriven,
+                        beltTemp:   this.history[i].beltTemp,
+                        highestUe:  this.history[i].highestUe,
+                        highestSnd: this.history[i].highestSnd,
+                    }
+                    histCopy = [...histCopy, measObj];
+                break;
+                case Bam.COST:
+                    //Nothing to do here.
+                break;
+                default:
+                    console.log("Unknown object type");
+                break;
+            }            
+        }
+
+        const a = document.createElement('a');
+        const file = new Blob([JSON.stringify(histCopy)], {type : 'text/html'});
+  
+        a.href= URL.createObjectURL(file);
+        a.download = "beltData.dat";
+        a.click();
+
+	    URL.revokeObjectURL(a.href);
     }
 
-    loadData()
+    //Read data from file.
+    loadData(e)
     {
-        console.log("Load Data");
+        let file = e.files[0];
+        let reader = new FileReader();
+
+        reader.readAsText(file);
+        reader.onerror = () => console.log(reader.error);
+
+        //Get contents of file.
+        reader.onload = () =>
+        {
+            //Convert contents to an array of objects.
+            let dataArray = JSON.parse(reader.result);
+
+            //Clear out old data.
+            this.history = [];
+            this.parentDiv.innerHTML = "";
+
+            for(let i = 1; i < dataArray.length; i++)
+            {
+                switch(dataArray[i].type)
+                {
+                    case Bam.ADJ:
+                        this.addAdjustment(dataArray[i]);
+                    break;
+                    case Bam.MEAS:
+                        this.addMeasurement(dataArray[i]);
+                    break;
+                    default:
+                        console.log("Unknown object type");
+                    break;
+                }
+            }
+        };
     }
+
+
+
+
+
+
 
     print()
     {

@@ -319,7 +319,7 @@ let checkCalc = () =>
 let addAdjustment  = ()  => bam.addAdjustment();
 let addMeasurement = ()  => bam.addMeasurement();
 let saveData       = ()  => bam.saveData();
-let loadData       = ()  => bam.loadData();
+let loadData       = (e)  => bam.loadData(e);
 let print          = ()  => bam.print();
 let updateTime     = (x) => bam.updateTime(x);
 
