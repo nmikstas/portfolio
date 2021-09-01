@@ -3,8 +3,11 @@
 //Belt alignment manager.
 class Bam
 {
-    static get ADJ() {return 0}
-    static get MEAS() {return 1}
+    static get ADJ()     {return 0}
+    static get MEAS()    {return 1}
+    static get WEEKLY()  {return 0}
+    static get MONTHLY() {return 1}
+    static get YEARLY()  {return 2}
 
     constructor
     (
@@ -15,6 +18,12 @@ class Bam
 
         this.history = []; //Array of adjustment and measurement objects.
         this.entryNum = 0; //Unique entry number into history array.
+
+        //Cost analysis data.
+        this.costKwh         = undefined;
+        this.motorVoltage    = undefined;
+        this.usageMultiplier = undefined;
+        this.timePeriod      = Bam.MONTHLY;
     }
 
     clearData()
@@ -452,6 +461,7 @@ class Bam
         this.history = [...this.history, obj];
         this.entryNum++;
     }
+
     addMeasurement(object)
     {
         /************************************* HTML Creation *************************************/
@@ -863,16 +873,76 @@ class Bam
         txtp4Temp.setAttribute("id", "p4-temp" + this.entryNum);
 
         //Motor data.
+        let div1m = document.createElement("div");
+        div1m.classList.add("belt-border", "mb-1", "mx-1", "row");
 
+        //Column 1.
+        let div2m = document.createElement("div");
+        div2m.classList.add("col-md-3");
+        let label1m = document.createElement("label");
+        label1m.setAttribute("for", "amp-draw" + this.entryNum);
+        label1m.innerHTML = "Amp Draw(.01 to 1000)";
+        let txtAmpDraw = document.createElement("input");
+        txtAmpDraw.classList.add("form-control", "position-input");
+        txtAmpDraw.setAttribute("maxlength", 6);
+        txtAmpDraw.setAttribute("id", "amp-draw" + this.entryNum);
+        let label2m = document.createElement("label");
+        label2m.setAttribute("for", "motor-cost" + this.entryNum);
+        label2m.innerHTML = "Motor Operation Cost";
+        let txtCost = document.createElement("h4");
+        txtCost.setAttribute("id", "motor-cost" + this.entryNum);
+        txtCost.style.textAlign = "left";
+        txtCost.innerHTML = "???";
 
+        //Column 2.
+        let div2m2 = document.createElement("div");
+        div2m2.classList.add("col-md-3");
+        let label1m2 = document.createElement("label");
+        label1m2.setAttribute("for", "driver-rpm" + this.entryNum);
+        label1m2.innerHTML = "Driver RPM";
+        let txtDvrRpm = document.createElement("input");
+        txtDvrRpm.classList.add("form-control", "position-input");
+        txtDvrRpm.setAttribute("maxlength", 6);
+        txtDvrRpm.setAttribute("id", "driver-rpm" + this.entryNum);
+        let label2m2 = document.createElement("label");
+        label2m2.setAttribute("for", "driven-rpm" + this.entryNum);
+        label2m2.innerHTML = "Driven RPM";
+        let txtDvnRpm = document.createElement("input");
+        txtDvnRpm.classList.add("form-control", "position-input");
+        txtDvnRpm.setAttribute("maxlength", 6);
+        txtDvnRpm.setAttribute("id", "driven-rpm" + this.entryNum);
 
+        //Column 3.
+        let div2m3 = document.createElement("div");
+        div2m3.classList.add("col-md-3");
+        let label1m3 = document.createElement("label");
+        label1m3.setAttribute("for", "highest-ue" + this.entryNum);
+        label1m3.innerHTML = "Highest UE(dB)";
+        let txtHighestUe = document.createElement("input");
+        txtHighestUe.classList.add("form-control", "position-input");
+        txtHighestUe.setAttribute("maxlength", 6);
+        txtHighestUe.setAttribute("id", "highest-ue" + this.entryNum);
+        let label2m3 = document.createElement("label");
+        label2m3.setAttribute("for", "highest-snd" + this.entryNum);
+        label2m3.innerHTML = "Highest Sound(DB)";
+        let txtHighestSnd = document.createElement("input");
+        txtHighestSnd.classList.add("form-control", "position-input");
+        txtHighestSnd.setAttribute("maxlength", 6);
+        txtHighestSnd.setAttribute("id", "highest-snd" + this.entryNum);
 
-
-
-
+        //Column 4.
+        let div2m4 = document.createElement("div");
+        div2m4.classList.add("col-md-3");
+        let label1m4 = document.createElement("label");
+        label1m4.setAttribute("for", "belt-temp" + this.entryNum);
+        label1m4.innerHTML = "Belt Temperature";
+        let txtBeltTemp = document.createElement("input");
+        txtBeltTemp.classList.add("form-control", "position-input");
+        txtBeltTemp.setAttribute("maxlength", 6);
+        txtBeltTemp.setAttribute("id", "belt-temp" + this.entryNum);
 
         //Add everything together.
-        this.appendChildren(mainDiv, [delBtn, label1, txtTitle, label2, txtComments, div1]);
+        this.appendChildren(mainDiv, [delBtn, label1, txtTitle, label2, txtComments, div1, div1m]);
         this.appendChildren(div1, [div2, div3, div4, div5]);
         this.appendChildren(div2, [h1, div6]);
         this.appendChildren(div6, [p1, div7, p2, div10, p3, div13, div16, label9, txtp1Temp]);
@@ -918,13 +988,11 @@ class Bam
         this.appendChildren(div13000, [div14000, div15000]);
         this.appendChildren(div14000, [label7000, txtp4aVel]);
         this.appendChildren(div15000, [label8000, txtp4aGe]);
-        
-
-
-
-
-
-
+        this.appendChildren(div1m, [div2m, div2m2, div2m3, div2m4]);
+        this.appendChildren(div2m, [label1m, txtAmpDraw, label2m, txtCost]);
+        this.appendChildren(div2m2, [label1m2, txtDvrRpm, label2m2, txtDvnRpm]);
+        this.appendChildren(div2m3, [label1m3, txtHighestUe, label2m3, txtHighestSnd]);
+        this.appendChildren(div2m4, [label1m4, txtBeltTemp]);
         this.parentDiv.prepend(mainDiv);
 
         /********************************** JSON Instantiation ***********************************/
@@ -951,11 +1019,15 @@ class Bam
             rpmDriven:  "",
             beltTemp:   "",
             highestUe:  "",
-            highestSnd: ""
+            highestSnd: "",
+
+            //Cost analysis.
+            txtCost: txtCost
         }
 
         /************************************ Event Listeners ************************************/
 
+        //Delete button event listener.
         delBtn.addEventListener("click", () =>
         {
             let num = parseInt(delBtn.getAttribute("num"));
@@ -974,42 +1046,58 @@ class Bam
             }
         });
 
-        txtTitle.addEventListener("keyup", () => obj.title = txtTitle.value);          //Title event listener.
-        txtComments.addEventListener("keyup", () => obj.comments = txtComments.value); //Comments event listener.
-        txtp1hVel.addEventListener("keyup", () => obj.p1hVel = txtp1hVel.value);       //Position 1, horizontal vel event listener.
-        txtp1hGe.addEventListener("keyup", () => obj.p1hGe = txtp1hGe.value);          //Position 1, horizontal gE event listener.
-        txtp1vVel.addEventListener("keyup", () => obj.p1vVel = txtp1vVel.value);       //Position 1, vertical vel event listener.
-        txtp1vGe.addEventListener("keyup", () => obj.p1vGe = txtp1vGe.value);          //Position 1, vertical gE event listener.
-        txtp1aVel.addEventListener("keyup", () => obj.p1aVel = txtp1aVel.value);       //Position 1, axial vel event listener.
-        txtp1aGe.addEventListener("keyup", () => obj.p1aGe = txtp1aGe.value);          //Position 1, axial gE event listener.
-        txtp1Temp.addEventListener("keyup", () => obj.p1Temp = txtp1Temp.value);       //Position 1, bearing temperature event listener.
-        txtp2hVel.addEventListener("keyup", () => obj.p2hVel = txtp2hVel.value);       //Position 2, horizontal vel event listener.
-        txtp2hGe.addEventListener("keyup", () => obj.p2hGe = txtp2hGe.value);          //Position 2, horizontal gE event listener.
-        txtp2vVel.addEventListener("keyup", () => obj.p2vVel = txtp2vVel.value);       //Position 2, vertical vel event listener.
-        txtp2vGe.addEventListener("keyup", () => obj.p2vGe = txtp2vGe.value);          //Position 2, vertical gE event listener.
-        txtp2aVel.addEventListener("keyup", () => obj.p2aVel = txtp2aVel.value);       //Position 2, axial vel event listener.
-        txtp2aGe.addEventListener("keyup", () => obj.p2aGe = txtp2aGe.value);          //Position 2, axial gE event listener.
-        txtp2Temp.addEventListener("keyup", () => obj.p2Temp = txtp2Temp.value);       //Position 2, bearing temperature event listener.
-        txtp3hVel.addEventListener("keyup", () => obj.p3hVel = txtp3hVel.value);       //Position 3, horizontal vel event listener.
-        txtp3hGe.addEventListener("keyup", () => obj.p3hGe = txtp3hGe.value);          //Position 3, horizontal gE event listener.
-        txtp3vVel.addEventListener("keyup", () => obj.p3vVel = txtp3vVel.value);       //Position 3, vertical vel event listener.
-        txtp3vGe.addEventListener("keyup", () => obj.p3vGe = txtp3vGe.value);          //Position 3, vertical gE event listener.
-        txtp3aVel.addEventListener("keyup", () => obj.p3aVel = txtp3aVel.value);       //Position 3, axial vel event listener.
-        txtp3aGe.addEventListener("keyup", () => obj.p3aGe = txtp3aGe.value);          //Position 3, axial gE event listener.
-        txtp3Temp.addEventListener("keyup", () => obj.p3Temp = txtp3Temp.value);       //Position 3, bearing temperature event listener.
-        txtp4hVel.addEventListener("keyup", () => obj.p4hVel = txtp4hVel.value);       //Position 4, horizontal vel event listener.
-        txtp4hGe.addEventListener("keyup", () => obj.p4hGe = txtp4hGe.value);          //Position 4, horizontal gE event listener.
-        txtp4vVel.addEventListener("keyup", () => obj.p4vVel = txtp4vVel.value);       //Position 4, vertical vel event listener.
-        txtp4vGe.addEventListener("keyup", () => obj.p4vGe = txtp4vGe.value);          //Position 4, vertical gE event listener.
-        txtp4aVel.addEventListener("keyup", () => obj.p4aVel = txtp4aVel.value);       //Position 4, axial vel event listener.
-        txtp4aGe.addEventListener("keyup", () => obj.p4aGe = txtp4aGe.value);          //Position 4, axial gE event listener.
-        txtp4Temp.addEventListener("keyup", () => obj.p4Temp = txtp4Temp.value);       //Position 4, bearing temperature event listener.
+        //Amp draw text box event listeners.
+        txtAmpDraw.addEventListener("keyup", (e) =>
+        {
+            let isValid, didValidate, num;
+            [isValid, didValidate, num] = this.isNumKey(e, txtAmpDraw, .01, 1000);
+            if(didValidate) obj.ampDraw = isValid ? num : undefined;
+            this.updateCosts();
+        });
 
+        txtAmpDraw.addEventListener("focusout", () =>
+        {
+            let isValid, num;
+            [isValid, num] = this.valNumber(txtAmpDraw, .01, 1000);
+            obj.ampDraw = isValid ? num : undefined;
+            this.updateCosts();
+        });
 
-
-
-
-
+        txtTitle.addEventListener("keyup", () => obj.title = txtTitle.value);                //Title event listener.
+        txtComments.addEventListener("keyup", () => obj.comments = txtComments.value);       //Comments event listener.
+        txtp1hVel.addEventListener("keyup", () => obj.p1hVel = txtp1hVel.value);             //Position 1, horizontal vel event listener.
+        txtp1hGe.addEventListener("keyup", () => obj.p1hGe = txtp1hGe.value);                //Position 1, horizontal gE event listener.
+        txtp1vVel.addEventListener("keyup", () => obj.p1vVel = txtp1vVel.value);             //Position 1, vertical vel event listener.
+        txtp1vGe.addEventListener("keyup", () => obj.p1vGe = txtp1vGe.value);                //Position 1, vertical gE event listener.
+        txtp1aVel.addEventListener("keyup", () => obj.p1aVel = txtp1aVel.value);             //Position 1, axial vel event listener.
+        txtp1aGe.addEventListener("keyup", () => obj.p1aGe = txtp1aGe.value);                //Position 1, axial gE event listener.
+        txtp1Temp.addEventListener("keyup", () => obj.p1Temp = txtp1Temp.value);             //Position 1, bearing temperature event listener.
+        txtp2hVel.addEventListener("keyup", () => obj.p2hVel = txtp2hVel.value);             //Position 2, horizontal vel event listener.
+        txtp2hGe.addEventListener("keyup", () => obj.p2hGe = txtp2hGe.value);                //Position 2, horizontal gE event listener.
+        txtp2vVel.addEventListener("keyup", () => obj.p2vVel = txtp2vVel.value);             //Position 2, vertical vel event listener.
+        txtp2vGe.addEventListener("keyup", () => obj.p2vGe = txtp2vGe.value);                //Position 2, vertical gE event listener.
+        txtp2aVel.addEventListener("keyup", () => obj.p2aVel = txtp2aVel.value);             //Position 2, axial vel event listener.
+        txtp2aGe.addEventListener("keyup", () => obj.p2aGe = txtp2aGe.value);                //Position 2, axial gE event listener.
+        txtp2Temp.addEventListener("keyup", () => obj.p2Temp = txtp2Temp.value);             //Position 2, bearing temperature event listener.
+        txtp3hVel.addEventListener("keyup", () => obj.p3hVel = txtp3hVel.value);             //Position 3, horizontal vel event listener.
+        txtp3hGe.addEventListener("keyup", () => obj.p3hGe = txtp3hGe.value);                //Position 3, horizontal gE event listener.
+        txtp3vVel.addEventListener("keyup", () => obj.p3vVel = txtp3vVel.value);             //Position 3, vertical vel event listener.
+        txtp3vGe.addEventListener("keyup", () => obj.p3vGe = txtp3vGe.value);                //Position 3, vertical gE event listener.
+        txtp3aVel.addEventListener("keyup", () => obj.p3aVel = txtp3aVel.value);             //Position 3, axial vel event listener.
+        txtp3aGe.addEventListener("keyup", () => obj.p3aGe = txtp3aGe.value);                //Position 3, axial gE event listener.
+        txtp3Temp.addEventListener("keyup", () => obj.p3Temp = txtp3Temp.value);             //Position 3, bearing temperature event listener.
+        txtp4hVel.addEventListener("keyup", () => obj.p4hVel = txtp4hVel.value);             //Position 4, horizontal vel event listener.
+        txtp4hGe.addEventListener("keyup", () => obj.p4hGe = txtp4hGe.value);                //Position 4, horizontal gE event listener.
+        txtp4vVel.addEventListener("keyup", () => obj.p4vVel = txtp4vVel.value);             //Position 4, vertical vel event listener.
+        txtp4vGe.addEventListener("keyup", () => obj.p4vGe = txtp4vGe.value);                //Position 4, vertical gE event listener.
+        txtp4aVel.addEventListener("keyup", () => obj.p4aVel = txtp4aVel.value);             //Position 4, axial vel event listener.
+        txtp4aGe.addEventListener("keyup", () => obj.p4aGe = txtp4aGe.value);                //Position 4, axial gE event listener.
+        txtp4Temp.addEventListener("keyup", () => obj.p4Temp = txtp4Temp.value);             //Position 4, bearing temperature event listener.
+        txtDvrRpm.addEventListener("keyup", () => obj.rpmDriver = txtDvrRpm.value);          //Driver RPM event listener.
+        txtDvnRpm.addEventListener("keyup", () => obj.rpmDriven = txtDvnRpm.value);          //Driver RPM event listener.
+        txtHighestUe.addEventListener("keyup", () => obj.highestUe = txtHighestUe.value);    //Highest ultrasound event listener.
+        txtHighestSnd.addEventListener("keyup", () => obj.highestSnd = txtHighestSnd.value); //Highest audible noise event listener.
+        txtBeltTemp.addEventListener("keyup", () => obj.beltTemp = txtBeltTemp.value);       //Belt temperature event listener.
 
 
 
@@ -1154,43 +1242,83 @@ class Bam
         }
     }
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    print()
+    //Update the cost on all the entries.
+    updateCosts()
     {
-        //console.log("Generate PDF");
+        let isBaseDataValid = true;
 
-        for(let i = 0; i < this.history.length; i++)
+        if(isNaN(this.costKwh) || isNaN(this.motorVoltage) || isNaN(this.usageMultiplier))
         {
-            console.log(this.history[i]);
+            isBaseDataValid = false;
+        }
+
+        //Update measurements with valid amp draw numbers.
+        if(isBaseDataValid)
+        {
+            for(let i = 0; i < this.history.length; i++)
+            {
+                if(this.history[i].type === Bam.MEAS && this.history[i].ampDraw !== undefined)
+                {
+                    let kiloWatts = Math.sqrt(3) * this.history[i].ampDraw * this.motorVoltage / 1000.0;
+                    let hours, txtTimePeriod;
+
+                    switch(this.timePeriod)
+                    {
+                        case Bam.WEEKLY:
+                            hours = 24 * 7;
+                            txtTimePeriod = " per week"
+                        break;
+                        case Bam.MONTHLY:
+                            hours = 730.5;
+                            txtTimePeriod = " per month"
+                        break;
+                        case Bam.YEARLY:
+                            hours = 365.25 * 24;
+                            txtTimePeriod = " per year"
+                        break;
+                        default:
+                            console.log("Invalid time period.");
+                            return;
+                    }
+
+                    let kwh = kiloWatts * hours;
+                    let cost = kwh * this.usageMultiplier * this.costKwh;
+                    this.history[i].cost = cost;
+                    this.history[i].txtCost.innerHTML = "$" + cost.toFixed(2) + txtTimePeriod;
+                }
+                else if(this.history[i].type === Bam.MEAS && this.history[i].ampDraw === undefined)
+                {
+                    this.history[i].txtCost.innerHTML = "???";
+                }
+            }
+        }
+        //Invalidate all cost values.
+        else
+        {
+            for(let i = 0; i < this.history.length; i++)
+            {
+                if(this.history[i].type === Bam.MEAS)
+                {
+                    this.history[i].txtCost.innerHTML = "???";
+                }
+            }
         }
     }
 
-    updateTime(x)
-    {
-        console.log("Update Time: " + x);
-    }
 
-    updateKwh(num)
-    {
-        console.log("Update KWh: " + num);
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
     saveData()
     {
@@ -1202,13 +1330,43 @@ class Bam
         console.log("Load Data");
     }
 
+    print()
+    {
+        //console.log("Generate PDF");
+
+        for(let i = 0; i < this.history.length; i++)
+        {
+            console.log(this.history[i]);
+        }
+
+        console.log("Time period: " + this.timePeriod);
+        console.log("Cost kWh: " + this.costKwh);
+        console.log("Motor Voltage: " + this.motorVoltage);
+        console.log("Usage Multiplier: " + this.usageMultiplier);
+    }
+
+    //Update cost analysis functions.
+    updateTime(x)
+    {
+        this.timePeriod = x;
+        this.updateCosts();
+    }
+
+    updateKwh(num)
+    {
+        this.costKwh = num;
+        this.updateCosts();
+    }
+    
     updateVolts(num)
     {
-        console.log("Update Volts: " + num);
+        this.motorVoltage = num;
+        this.updateCosts();
     }
 
     updateMultiplier(num)
     {
-        console.log("Update Multiplier: " + num);
+        this.usageMultiplier = num;
+        this.updateCosts();
     }
 }

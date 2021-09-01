@@ -316,32 +316,10 @@ let checkCalc = () =>
     }
 }
 
-let addAdjustment = () =>
-{
-    bam.addAdjustment();
-}
+let addAdjustment  = ()  => bam.addAdjustment();
+let addMeasurement = ()  => bam.addMeasurement();
+let saveData       = ()  => bam.saveData();
+let loadData       = ()  => bam.loadData();
+let print          = ()  => bam.print();
+let updateTime     = (x) => bam.updateTime(x);
 
-let addMeasurement = () =>
-{
-    bam.addMeasurement();
-}
-
-let saveData = () =>
-{
-    bam.saveData();
-}
-
-let loadData = () =>
-{
-    bam.loadData();
-}
-
-let print = () =>
-{
-    bam.print();
-}
-
-let updateTime = (x) =>
-{
-    bam.updateTime(x);
-}
