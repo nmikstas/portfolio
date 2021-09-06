@@ -25,6 +25,11 @@ input
     max-width: calc(100% - 50px);
 }
 
+.input-full
+{
+    max-width: 100%;
+}
+
 .center
 {
     text-align: center;
@@ -59,4 +64,11 @@ input
 .align
 {
     text-align: center;
+}
+
+#print-body
+{
+    max-width: 500px;
+    background-color: #ffffff;
+    background-image: none;
 }

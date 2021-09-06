@@ -29,6 +29,8 @@ class Bam
         this.motorVoltage    = undefined;
         this.usageMultiplier = undefined;
         this.timePeriod      = Bam.MONTHLY;
+        this.reportTitle     = "";
+        this.reportComments  = "";
     }
 
     clearData()
@@ -1139,6 +1141,7 @@ class Bam
                 //Motor data.
                 ampDraw:    undefined,
                 cost:       undefined,
+                costString: "",
                 rpmDriver:  "",
                 rpmDriven:  "",
                 beltTemp:   "",
@@ -1435,10 +1438,13 @@ class Bam
                     let cost = kwh * this.usageMultiplier * this.costKwh;
                     this.history[i].cost = cost;
                     this.history[i].txtCost.innerHTML = "$" + cost.toFixed(2) + txtTimePeriod;
+                    this.history[i].costString = "$" + cost.toFixed(2) + txtTimePeriod;
                 }
                 else if(this.history[i].type === Bam.MEAS && this.history[i].ampDraw === undefined)
                 {
                     this.history[i].txtCost.innerHTML = "???";
+                    this.history[i].costString = "";
+                    this.history[i].cost = undefined;
                 }
             }
         }
@@ -1450,6 +1456,8 @@ class Bam
                 if(this.history[i].type === Bam.MEAS)
                 {
                     this.history[i].txtCost.innerHTML = "???";
+                    this.history[i].costString = "";
+                    this.history[i].cost = undefined;
                 }
             }
         }
@@ -1464,12 +1472,13 @@ class Bam
             costKwh:         this.costKwh,
             motorVoltage:    this.motorVoltage,
             usageMultiplier: this.usageMultiplier,
-            timePeriod:      this.timePeriod
+            timePeriod:      this.timePeriod,
+            reportTitle:     this.reportTitle,
+            reportComments:  this.reportComments
         }
 
         let histCopy = [costObj];
         
-
         //Iterate through the copy of the history array and keep only the data.
         for(let i = 0; i < this.history.length; i++)
         {
@@ -1559,12 +1568,16 @@ class Bam
             this.history = [];
             this.parentDiv.innerHTML = "";
 
+            //Load report title and comments.
+            this.reportTitle = dataArray[0].reportTitle;
+            this.reportComments = dataArray[0].reportComments;
+
             //Load cost data.
             let costKwh = dataArray[0].hasOwnProperty("costKwh") ? dataArray[0].costKwh : undefined;
             let voltage = dataArray[0].hasOwnProperty("motorVoltage") ? dataArray[0].motorVoltage : undefined;
             let multiplier = dataArray[0].hasOwnProperty("usageMultiplier") ? dataArray[0].usageMultiplier : undefined;
             let period = dataArray[0].hasOwnProperty("timePeriod") ? dataArray[0].timePeriod : Bam.MONTHLY;
-            this.changeCostData(costKwh, voltage, multiplier, period);
+            this.changeCostData(costKwh, voltage, multiplier, period, this.reportTitle, this.reportComments);
         
             //Iterate through data objects and load.
             for(let i = 1; i < dataArray.length; i++)
@@ -1613,31 +1626,95 @@ class Bam
         this.updateCosts();
     }
 
+    updateTitle(text)
+    {
+        this.reportTitle = text;
+    }
 
-
-
-
-
-
-
-
-
-
+    updateComments(text)
+    {
+        this.reportComments = text;
+    }
 
     print()
     {
-        //console.log("Generate PDF");
-
-        for(let i = 0; i < this.history.length; i++)
+        //Store the cost data in an object.
+        let costObj =
         {
-            console.log(this.history[i]);
+            type:            Bam.COST,
+            costKwh:         this.costKwh,
+            motorVoltage:    this.motorVoltage,
+            usageMultiplier: this.usageMultiplier,
+            timePeriod:      this.timePeriod,
+            title:           this.reportTitle,
+            comments:        this.reportComments
         }
 
-        console.log("Time period: " + this.timePeriod);
-        console.log("Cost kWh: " + this.costKwh);
-        console.log("Motor Voltage: " + this.motorVoltage);
-        console.log("Usage Multiplier: " + this.usageMultiplier);
-    }
+        let histCopy = [costObj];
+        
+        //Iterate through the copy of the history array and keep only the data.
+        for(let i = 0; i < this.history.length; i++)
+        {
+            switch(this.history[i].type)
+            {
+                case Bam.ADJ:
+                    let adjObj =
+                    {
+                        num:                this.history[i].num,
+                        type:               Bam.ADJ,
+                        title:              this.history[i].title,
+                        comments:           this.history[i].comments,
+                        driverFeetDistance: this.history[i].driverFeetDistance,
+                        drivenFeetDistance: this.history[i].drivenFeetDistance,
+                        driverTicks:        this.history[i].driverTicks,
+                        drivenTicks:        this.history[i].drivenTicks,
+                        driverBubbleHi:     this.history[i].driverBubbleHi,
+                        drivenBubbleHi:     this.history[i].drivenBubbleHi,
+                        driverToLevel:      this.history[i].driverToLevel,
+                        drivenToLevel:      this.history[i].drivenToLevel,
+                        driverToDriven:     this.history[i].driverToDriven,
+                        drivenToDriver:     this.history[i].drivenToDriver,
+                        plotHidden:         this.history[i].plotHidden
+                    }
+                    histCopy = [...histCopy, adjObj];
+                break;
+                case Bam.MEAS:
+                    let measObj =
+                    {
+                        num:        this.history[i].num,
+                        type:       Bam.MEAS,
+                        title:      this.history[i].title,
+                        comments:   this.history[i].comments,
+                        p1hVel:     this.history[i].p1hVel, p1hGe: this.history[i].p1hGe, p1vVel: this.history[i].p1vVel, p1vGe: this.history[i].p1vGe,
+                        p1aVel:     this.history[i].p1aVel, p1aGe: this.history[i].p1aGe, p1Temp: this.history[i].p1Temp,
+                        p2hVel:     this.history[i].p2hVel, p2hGe: this.history[i].p2hGe, p2vVel: this.history[i].p2vVel, p2vGe: this.history[i].p2vGe,
+                        p2aVel:     this.history[i].p2aVel, p2aGe: this.history[i].p2aGe, p2Temp: this.history[i].p2Temp,
+                        p3hVel:     this.history[i].p3hVel, p3hGe: this.history[i].p3hGe, p3vVel: this.history[i].p3vVel, p3vGe: this.history[i].p3vGe,
+                        p3aVel:     this.history[i].p3aVel, p3aGe: this.history[i].p3aGe, p3Temp: this.history[i].p3Temp,
+                        p4hVel:     this.history[i].p4hVel, p4hGe: this.history[i].p4hGe, p4vVel: this.history[i].p4vVel, p4vGe: this.history[i].p4vGe,
+                        p4aVel:     this.history[i].p4aVel, p4aGe: this.history[i].p4aGe, p4Temp: this.history[i].p4Temp,
+                        ampDraw:    this.history[i].ampDraw,
+                        cost:       this.history[i].cost,
+                        costString: this.history[i].costString,
+                        rpmDriver:  this.history[i].rpmDriver,
+                        rpmDriven:  this.history[i].rpmDriven,
+                        beltTemp:   this.history[i].beltTemp,
+                        highestUe:  this.history[i].highestUe,
+                        highestSnd: this.history[i].highestSnd,
+                    }
+                    histCopy = [...histCopy, measObj];
+                break;
+                case Bam.COST:
+                    //Nothing to do here.
+                break;
+                default:
+                    console.log("Unknown object type");
+                break;
+            }            
+        }
 
-    
+        //Send belt alignment data to the new window.
+        sessionStorage.setItem("beltAlignmentArray", JSON.stringify(histCopy));
+        window.open("./beltAlignmentPrint.html");
+    }
 }

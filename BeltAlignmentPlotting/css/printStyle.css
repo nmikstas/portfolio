@@ -1,0 +1,103 @@
+body, html
+{
+    height: 100%;
+    width: 1000px;
+    background-image: none;
+    font-size: 16px;
+    overflow: visible;
+    margin: 1rem 1rem 1rem 1rem;
+}
+
+h1
+{
+    text-align: center;
+}
+
+h3
+{
+    font-weight: bold;
+}
+
+h4
+{
+    font-weight: bold;
+    margin-top: 1.0rem;
+}
+
+p
+{
+    margin-top: 1.0rem;
+    font-size: 1.25rem;
+}
+
+.center-div
+{
+    text-align: center;
+}
+
+.motor-image
+{
+    max-width: 50%;
+}
+
+.bubble-canvas
+{
+    max-width: 50px;
+    margin: 0 auto;
+}
+
+.child-center
+{
+    text-align: center;
+}
+
+.output
+{
+    font-size: 1.0rem;
+}
+
+.title
+{
+    background-color: #e6e6e6;
+    padding-bottom: 1rem;
+    padding-top: .5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-radius: 10px;
+    margin-top: 1rem;
+}
+
+.divider
+{
+    border-bottom: 3px solid #666666;
+    min-height: 2px;
+    margin: 1.0rem;
+}
+
+.cost-result
+{
+    background-color: rgb(213, 233, 255);
+    font-weight: bold;
+}
+
+.belt-border
+{
+    border-style: solid;
+    border-color: #707070;
+    border-width: 5px;
+    border-radius: 5px;
+}
+
+@media print
+{
+    *{
+        color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .pagebreak
+    {
+        break-after: always;
+    }
+}
+    

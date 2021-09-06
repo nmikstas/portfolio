@@ -176,6 +176,10 @@
             <div id="advanced-use">
                 <div class="row">
                     <div class="col-md-12 belt-border">
+                        <label for="report-title">Report Title (80 characters max)</label>
+                        <input type="text" id="report-title" class="form-control input-full" maxlength="80" onkeyup="updateTitle(this)">
+                        <label for="report-comments">Report Comments (1024 characters max)</label>
+                        <textarea id="report-comments" class="form-control" rows="2" maxlength="1024" onkeyup="updateComments(this)"></textarea>
                         <h3>Cost Data</h3>
                         <div class="divider"></div>
 

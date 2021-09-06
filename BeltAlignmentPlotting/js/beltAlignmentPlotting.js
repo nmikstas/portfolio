@@ -19,7 +19,7 @@ let driverLevel = new Level(document.getElementById("driver-level"));
 let plot = new BeltPlot(document.getElementById("plot"), {backgroundImg: document.getElementById("blank")});
 
 //Callback function for updating cost data.
-let changeCostData = (costKwh, voltage, mult, period) =>
+let changeCostData = (costKwh, voltage, mult, period, title, comments) =>
 {
     //Get references to cost data HTML elements.
     let txtCostKwh = document.getElementById("kwh");
@@ -28,6 +28,10 @@ let changeCostData = (costKwh, voltage, mult, period) =>
     let radWeek    = document.getElementById("weekly-radio");
     let radMonth   = document.getElementById("monthly-radio");
     let radYear    = document.getElementById("yearly-radio");
+    
+    //Add report title and comments.
+    document.getElementById("report-title").value    = title;
+    document.getElementById("report-comments").value = comments;
 
     //Update text on the screen.
     isNaN(costKwh) ? txtCostKwh.value = "" : txtCostKwh.value = costKwh;
@@ -55,7 +59,7 @@ let changeCostData = (costKwh, voltage, mult, period) =>
     bam.updateTime(period);
 }
 
-//Creat belt alignment manager.
+//Create belt alignment manager.
 let bam = new Bam(document.getElementById("multi"), changeCostData);
 
 //Make sure everthing resets on a page refresh.
@@ -71,6 +75,8 @@ document.getElementById("monthly-radio").checked = true;
 document.getElementById("kwh").value = "";
 document.getElementById("volt").value = "";
 document.getElementById("mult").value = "";
+document.getElementById("report-title").value = "";
+document.getElementById("report-comments").value = "";
 document.getElementById("advanced-use").style.display = "none";
 bam.clearData();
 
@@ -267,6 +273,8 @@ let clearData = () =>
         document.getElementById("kwh").value = "";
         document.getElementById("volt").value = "";
         document.getElementById("mult").value = "";
+        document.getElementById("report-title").value = "";
+        document.getElementById("report-comments").value = "";
         document.getElementById("multi").innerHTML = "";
         bam.clearData();
         return;
@@ -353,10 +361,11 @@ let checkCalc = () =>
     }
 }
 
-let addAdjustment  = ()  => bam.addAdjustment();
-let addMeasurement = ()  => bam.addMeasurement();
-let saveData       = ()  => bam.saveData();
-let loadData       = (e)  => bam.loadData(e);
-let print          = ()  => bam.print();
-let updateTime     = (x) => bam.updateTime(x);
-
+let updateTitle    = (obj) => bam.updateTitle(obj.value);
+let updateComments = (obj) => bam.updateComments(obj.value);
+let addAdjustment  = ()    => bam.addAdjustment();
+let addMeasurement = ()    => bam.addMeasurement();
+let saveData       = ()    => bam.saveData();
+let loadData       = (e)   => bam.loadData(e);
+let print          = ()    => bam.print();
+let updateTime     = (x)   => bam.updateTime(x);
