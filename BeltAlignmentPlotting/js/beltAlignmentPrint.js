@@ -321,4 +321,3 @@ for(let i = baa.length - 1; i > 0; i--)
 }
 
 window.print();
-console.log(baa);
