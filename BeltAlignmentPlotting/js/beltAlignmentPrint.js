@@ -257,11 +257,6 @@ let addMeasurement = (obj, num) =>
         "</div>" +
     "</div>";
 
-    let time;
-
-    
-
-
     let readingsDiv = document.createElement("div");
     readingsDiv.classList.add("row", "belt-border");
     readingsDiv.innerHTML =
@@ -287,16 +282,6 @@ let addMeasurement = (obj, num) =>
         "<p><b>Belt Temperature</b></p>" +
         "<p>" + obj.beltTemp + "</p>" +
     "</div>";
-    
-    /*
-    ampDraw:    this.history[i].ampDraw,
-    cost:       this.history[i].cost,
-    rpmDriver:  this.history[i].rpmDriver,
-    rpmDriven:  this.history[i].rpmDriven,
-    beltTemp:   this.history[i].beltTemp,
-    highestUe:  this.history[i].highestUe,
-    highestSnd: this.history[i].highestSnd,
-    */
 
     body.appendChild(measBlock);
     measBlock.appendChild(bearingsDiv);

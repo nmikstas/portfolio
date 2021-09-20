@@ -162,7 +162,7 @@
                         </div>
                     </div>
                     <div class="col-md-4 belt-border">
-                        <h3>Option 2 (Option 3)</h2>
+                        <h3 id="options">Option 2</h2>
                         <div class="divider"></div>
                         <p id="optimal-moves" class="align">???</p>
                     </div>
@@ -213,7 +213,7 @@
                         <button type="button" id="adj-btn" class="btn btn-outline-primary mb-2 mt-3" onclick="addAdjustment()">Add Adjustment</button>
                         <button type="button" id="meas-btn" class="btn btn-outline-primary mb-2 mt-3" onclick="addMeasurement()">Add Measurement</button>
                         <button type="button" id="save-btn" class="btn btn-outline-primary mb-2 mt-3" onclick="saveData()">Save Data</button>
-                        <label class="btn btn-outline-primary mb-2 mt-3"> Load Data <input type="file" accept="text/plain" onchange="loadData(this)" hidden></label>
+                        <label class="btn btn-outline-primary mb-2 mt-3"> Load Data <input type="file" accept=".dat" onchange="loadData(this)" hidden></label>
                         
                         <!--<button type="button" id="load-btn" class="btn btn-outline-primary mb-2 mt-3" onclick="loadData()">Load Data</button>-->
                         <button type="button" id="pdf-btn" class="btn btn-outline-primary mb-2 mt-3" onclick="print()">Print</button>

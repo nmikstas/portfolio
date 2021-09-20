@@ -201,8 +201,9 @@ class Bam
         txtDriverToLevel.innerHTML = "???";
         let div21 = document.createElement("div");
         div21.classList.add("col-md-4", "belt-border");
-        let h6 = document.createElement("h3");
-        h6.innerHTML = "Option 2 (Option 3)";
+        let options = document.createElement("h3");
+        options.setAttribute("id", "options" + this.entryNum);
+        options.innerHTML = "Option 2";
         let div22 = document.createElement("div");
         div22.classList.add("divider", "mx-3");
         let txtOptimalMoves = document.createElement("p");
@@ -238,7 +239,7 @@ class Bam
         this.appendChildren(div14, [div15, div20]);
         this.appendChildren(div15, [h4, txtDrivenToLevel]);
         this.appendChildren(div20, [h5, txtDriverToLevel]);
-        this.appendChildren(div21, [h6, div22, txtOptimalMoves]);
+        this.appendChildren(div21, [options, div22, txtOptimalMoves]);
         div16.appendChild(div17);
         div17.appendChild(hideBtn);
         div18.appendChild(divPlot);
@@ -257,7 +258,8 @@ class Bam
 
         if(object)
         {
-            obj = {
+            obj =
+            {
                 //Object info.
                 num:                this.entryNum,
                 type:               Bam.ADJ,
@@ -290,7 +292,8 @@ class Bam
         }
         else
         {
-            obj = {
+            obj =
+            {
                 //Object info.
                 num:                this.entryNum,
                 type:               Bam.ADJ,
@@ -599,7 +602,7 @@ class Bam
         //Horizontal data.
         let p1 = document.createElement("p");
         p1.classList.add("center", "mb-0");
-        p1.innerHTML = "Horizontal"
+        p1.innerHTML = "Horizontal (X)"
         let div7 = document.createElement("div");
         div7.classList.add("row");
         let div8 = document.createElement("div");
@@ -624,7 +627,7 @@ class Bam
         //Vertical data.
         let p2 = document.createElement("p");
         p2.classList.add("center", "mb-0");
-        p2.innerHTML = "Vertical"
+        p2.innerHTML = "Vertical (Y)"
         let div10 = document.createElement("div");
         div10.classList.add("row");
         let div11 = document.createElement("div");
@@ -649,7 +652,7 @@ class Bam
         //Axial data.
         let p3 = document.createElement("p");
         p3.classList.add("center", "mb-0");
-        p3.innerHTML = "Axial"
+        p3.innerHTML = "Axial (Z)"
         let div13 = document.createElement("div");
         div13.classList.add("row");
         let div14 = document.createElement("div");
@@ -693,7 +696,7 @@ class Bam
         //Horizontal data.
         let p10 = document.createElement("p");
         p10.classList.add("center", "mb-0");
-        p10.innerHTML = "Horizontal"
+        p10.innerHTML = "Horizontal (X)"
         let div70 = document.createElement("div");
         div70.classList.add("row");
         let div80 = document.createElement("div");
@@ -718,7 +721,7 @@ class Bam
         //Vertical data.
         let p20 = document.createElement("p");
         p20.classList.add("center", "mb-0");
-        p20.innerHTML = "Vertical"
+        p20.innerHTML = "Vertical (Y)"
         let div100 = document.createElement("div");
         div100.classList.add("row");
         let div110 = document.createElement("div");
@@ -743,7 +746,7 @@ class Bam
         //Axial data.
         let p30 = document.createElement("p");
         p30.classList.add("center", "mb-0");
-        p30.innerHTML = "Axial"
+        p30.innerHTML = "Axial (Z)"
         let div130 = document.createElement("div");
         div130.classList.add("row");
         let div140 = document.createElement("div");
@@ -787,7 +790,7 @@ class Bam
         //Horizontal data.
         let p100 = document.createElement("p");
         p100.classList.add("center", "mb-0");
-        p100.innerHTML = "Horizontal"
+        p100.innerHTML = "Horizontal (X)"
         let div700 = document.createElement("div");
         div700.classList.add("row");
         let div800 = document.createElement("div");
@@ -812,7 +815,7 @@ class Bam
         //Vertical data.
         let p200 = document.createElement("p");
         p200.classList.add("center", "mb-0");
-        p200.innerHTML = "Vertical"
+        p200.innerHTML = "Vertical (Y)"
         let div1000 = document.createElement("div");
         div1000.classList.add("row");
         let div1100 = document.createElement("div");
@@ -837,7 +840,7 @@ class Bam
         //Axial data.
         let p300 = document.createElement("p");
         p300.classList.add("center", "mb-0");
-        p300.innerHTML = "Axial"
+        p300.innerHTML = "Axial (Z)"
         let div1300 = document.createElement("div");
         div1300.classList.add("row");
         let div1400 = document.createElement("div");
@@ -881,7 +884,7 @@ class Bam
         //Horizontal data.
         let p1000 = document.createElement("p");
         p1000.classList.add("center", "mb-0");
-        p1000.innerHTML = "Horizontal"
+        p1000.innerHTML = "Horizontal (X)"
         let div7000 = document.createElement("div");
         div7000.classList.add("row");
         let div8000 = document.createElement("div");
@@ -906,7 +909,7 @@ class Bam
         //Vertical data.
         let p2000 = document.createElement("p");
         p2000.classList.add("center", "mb-0");
-        p2000.innerHTML = "Vertical"
+        p2000.innerHTML = "Vertical (Y)"
         let div10000 = document.createElement("div");
         div10000.classList.add("row");
         let div11000 = document.createElement("div");
@@ -931,7 +934,7 @@ class Bam
         //Axial data.
         let p3000 = document.createElement("p");
         p3000.classList.add("center", "mb-0");
-        p3000.innerHTML = "Axial"
+        p3000.innerHTML = "Axial (Z)"
         let div13000 = document.createElement("div");
         div13000.classList.add("row");
         let div14000 = document.createElement("div");
@@ -1303,6 +1306,15 @@ class Bam
             let optimalCount = 0;
             obj.txtOptimalMoves.innerHTML = "";
 
+            if(obj.driverToDriven !== undefined && obj.drivenToDriver !== undefined)
+            {
+                document.getElementById("options" + obj.num).innerHTML = "Option 2 (Option 3)";
+            }
+            else
+            {
+                document.getElementById("options" + obj.num).innerHTML = "Option 2";
+            }
+
             if(obj.driverToDriven !== undefined)
             {
                 optimalCount++;
@@ -1311,8 +1323,9 @@ class Bam
 
             if(obj.drivenToDriver !== undefined)
             {
-                if(optimalCount > 0) obj.txtOptimalMoves.innerHTML += "<br>";
+                if(optimalCount > 0) obj.txtOptimalMoves.innerHTML += "<br>(";
                 obj.txtOptimalMoves.innerHTML += "Driven to Driver: " + obj.drivenToDriver + " mils";
+                if(optimalCount > 0) obj.txtOptimalMoves.innerHTML += ")";
             }  
         }
         else

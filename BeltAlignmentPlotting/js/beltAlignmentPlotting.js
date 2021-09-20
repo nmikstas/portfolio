@@ -78,6 +78,7 @@ document.getElementById("mult").value = "";
 document.getElementById("report-title").value = "";
 document.getElementById("report-comments").value = "";
 document.getElementById("advanced-use").style.display = "none";
+document.getElementById("options").innerHTML = "Option 2";
 bam.clearData();
 
 //Change between basic and advanced mode.
@@ -299,6 +300,7 @@ let clearData = () =>
     document.getElementById("driven-bubble").style.backgroundColor = "#ffffff";
     document.getElementById("driven-line").innerHTML = "Line down ???";
     document.getElementById("driver-line").innerHTML = "Line down ???";
+    document.getElementById("options").innerHTML = "Option 2";
 
     driverLevel.bubbleDraw(undefined);
     drivenLevel.bubbleDraw(undefined);
@@ -343,6 +345,15 @@ let checkCalc = () =>
         let optimalCount = 0;
         document.getElementById("optimal-moves").innerHTML = "";
 
+        if(driverToDriven !== undefined && drivenToDriver !== undefined)
+        {
+            document.getElementById("options").innerHTML = "Option 2 (Option 3)";
+        }
+        else
+        {
+            document.getElementById("options").innerHTML = "Option 2";
+        }
+
         if(driverToDriven !== undefined)
         {
             optimalCount++;
@@ -351,8 +362,9 @@ let checkCalc = () =>
 
         if(drivenToDriver !== undefined)
         {
-            if(optimalCount > 0) document.getElementById("optimal-moves").innerHTML += "<br>";
+            if(optimalCount > 0)document.getElementById("optimal-moves").innerHTML += "<br>(";
             document.getElementById("optimal-moves").innerHTML += "Driven to Driver: " + drivenToDriver + " mils";
+            if(optimalCount > 0)document.getElementById("optimal-moves").innerHTML += ")";
         }  
     }
     else
