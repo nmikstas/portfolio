@@ -200,11 +200,11 @@ let addMeasurement = (obj, num) =>
     "<div class='col-md-3'>" +
         "<h4 class='child-center'>Position 1</h4>" +
         "<div class='belt-border row px-1'>"+
-            "<div class='col-md-12'><p class='px-1'><b>Horizontal</b></p></div>" +
+            "<div class='col-md-12'><p class='px-1'><b>Horizontal (X)</b></p></div>" +
             "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p1hVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p1hGe + "</p></div>" +
-            "<div class='col-md-12'><p class='px-1'><b>Vertical</b></p></div>" +
+            "<div class='col-md-12'><p class='px-1'><b>Vertical (Y)</b></p></div>" +
             "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p1vVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p1vGe + "</p></div>" +
-            "<div class='col-md-12'><p class='px-1'><b>Axial</b></p></div>" +
+            "<div class='col-md-12'><p class='px-1'><b>Axial (Z)</b></p></div>" +
             "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p1aVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p1aGe + "</p></div>" +
             "<div class='col-md-12 divider mx-0'></div>" +
             "<div class='col-md-12'><p class='px-1'><b>Temperature</b></p></div>" +
@@ -215,11 +215,11 @@ let addMeasurement = (obj, num) =>
     "<div class='col-md-3'>" +
         "<h4 class='child-center'>Position 2</h4>" +
         "<div class='belt-border row px-1'>"+
-            "<div class='col-md-12'><p class='px-1'><b>Horizontal</b></p></div>" +
+            "<div class='col-md-12'><p class='px-1'><b>Horizontal (X)</b></p></div>" +
             "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p2hVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p2hGe + "</p></div>" +
-            "<div class='col-md-12'><p class='px-1'><b>Vertical</b></p></div>" +
+            "<div class='col-md-12'><p class='px-1'><b>Vertical (Y)</b></p></div>" +
             "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p2vVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p2vGe + "</p></div>" +
-            "<div class='col-md-12'><p class='px-1'><b>Axial</b></p></div>" +
+            "<div class='col-md-12'><p class='px-1'><b>Axial (Z)</b></p></div>" +
             "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p2aVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p2aGe + "</p></div>" +
             "<div class='col-md-12 divider mx-0'></div>" +
             "<div class='col-md-12'><p class='px-1'><b>Temperature</b></p></div>" +
@@ -230,11 +230,11 @@ let addMeasurement = (obj, num) =>
     "<div class='col-md-3'>" +
         "<h4 class='child-center'>Position 3</h4>" +
         "<div class='belt-border row px-1'>"+
-            "<div class='col-md-12'><p class='px-1'><b>Horizontal</b></p></div>" +
+            "<div class='col-md-12'><p class='px-1'><b>Horizontal (X)</b></p></div>" +
             "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p3hVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p3hGe + "</p></div>" +
-            "<div class='col-md-12'><p class='px-1'><b>Vertical</b></p></div>" +
+            "<div class='col-md-12'><p class='px-1'><b>Vertical (Y)</b></p></div>" +
             "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p3vVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p3vGe + "</p></div>" +
-            "<div class='col-md-12'><p class='px-1'><b>Axial</b></p></div>" +
+            "<div class='col-md-12'><p class='px-1'><b>Axial (Z)</b></p></div>" +
             "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p3aVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p3aGe + "</p></div>" +
             "<div class='col-md-12 divider mx-0'></div>" +
             "<div class='col-md-12'><p class='px-1'><b>Temperature</b></p></div>" +
@@ -245,11 +245,11 @@ let addMeasurement = (obj, num) =>
     "<div class='col-md-3'>" +
         "<h4 class='child-center'>Position 4</h4>" +
         "<div class='belt-border row px-1'>"+
-            "<div class='col-md-12'><p class='px-1'><b>Horizontal</b></p></div>" +
+            "<div class='col-md-12'><p class='px-1'><b>Horizontal (X)</b></p></div>" +
             "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p4hVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p4hGe + "</p></div>" +
-            "<div class='col-md-12'><p class='px-1'><b>Vertical</b></p></div>" +
+            "<div class='col-md-12'><p class='px-1'><b>Vertical (Y)</b></p></div>" +
             "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p4vVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p4vGe + "</p></div>" +
-            "<div class='col-md-12'><p class='px-1'><b>Axial</b></p></div>" +
+            "<div class='col-md-12'><p class='px-1'><b>Axial (Z)</b></p></div>" +
             "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p4aVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p4aGe + "</p></div>" +
             "<div class='col-md-12 divider mx-0'></div>" +
             "<div class='col-md-12'><p class='px-1'><b>Temperature</b></p></div>" +
