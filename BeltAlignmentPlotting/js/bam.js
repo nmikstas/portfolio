@@ -203,7 +203,7 @@ class Bam
         div21.classList.add("col-md-4", "belt-border");
         let options = document.createElement("h3");
         options.setAttribute("id", "options" + this.entryNum);
-        options.innerHTML = "Option 2";
+        options.innerHTML = "Option 2 (Option 3)";
         let div22 = document.createElement("div");
         div22.classList.add("divider", "mx-3");
         let txtOptimalMoves = document.createElement("p");
@@ -1312,7 +1312,7 @@ class Bam
             }
             else
             {
-                document.getElementById("options" + obj.num).innerHTML = "Option 2";
+                document.getElementById("options" + obj.num).innerHTML = "Option 2 (Option 3)";
             }
 
             if(obj.driverToDriven !== undefined)
