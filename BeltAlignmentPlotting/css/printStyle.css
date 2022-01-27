@@ -88,8 +88,55 @@ p
     border-radius: 5px;
 }
 
+.tenth
+{
+    display: inline-block;
+    width: 10%;
+}
+
+.fifth
+{
+    display: inline-block;
+    width: 20%;
+}
+
+.quarter
+{
+    display: inline-block;
+    width: 25%;
+}
+
+.third
+{
+    display: inline-block;
+    width: 33.33333%;
+}
+
+.fourty-percent
+{
+    display: inline-block;
+    width: 40%;
+}
+
+.half
+{
+    display: inline-block;
+    width: 50%;
+}
+
+.whole
+{
+    display: inline-block;
+    width: 100%;
+}
+
 @media print
 {
+    @page
+    {
+        margin-right: 0, auto;
+    }
+
     *{
         color-adjust: exact;
         -webkit-print-color-adjust: exact;

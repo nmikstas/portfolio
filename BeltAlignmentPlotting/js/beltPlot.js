@@ -202,6 +202,9 @@ class BeltPlot
             this.dvrToDvn = undefined;
             this.dvnToDvr = undefined;
 
+            //Added later. Always show all moves.
+            numOptimalMoves = 2;
+
             //Calculate the optimal moves.
             if(numOptimalMoves === 2)
             {

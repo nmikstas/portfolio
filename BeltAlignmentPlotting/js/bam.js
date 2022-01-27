@@ -1563,7 +1563,7 @@ class Bam
     }
 
     //Read data from file.
-    loadData(e)
+    loadData(e, kwh, volt, mult)
     {
         let file = e.files[0];
         let reader = new FileReader();
@@ -1574,6 +1574,11 @@ class Bam
         //Get contents of file.
         reader.onload = () =>
         {
+            //Clear any colors indicating errors.
+            kwh.style.backgroundColor = "";
+            volt.style.backgroundColor = "";
+            mult.style.backgroundColor = "";
+
             //Convert contents to an array of objects.
             let dataArray = JSON.parse(reader.result);
 

@@ -373,11 +373,18 @@ let checkCalc = () =>
     }
 }
 
+let loadData       = (e) => 
+{
+    let kwh = document.getElementById("kwh");
+    let volt = document.getElementById("volt");
+    let mult = document.getElementById("mult");
+    bam.loadData(e, kwh, volt, mult);
+}
+
 let updateTitle    = (obj) => bam.updateTitle(obj.value);
 let updateComments = (obj) => bam.updateComments(obj.value);
 let addAdjustment  = ()    => bam.addAdjustment();
 let addMeasurement = ()    => bam.addMeasurement();
 let saveData       = ()    => bam.saveData();
-let loadData       = (e)   => bam.loadData(e);
 let print          = ()    => bam.print();
 let updateTime     = (x)   => bam.updateTime(x);

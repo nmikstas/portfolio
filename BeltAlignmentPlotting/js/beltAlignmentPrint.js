@@ -41,20 +41,20 @@ switch(baa[0].timePeriod)
 costTitleDiv.appendChild(costTitleH);
 body.appendChild(costTitleDiv);
 let costDiv = document.createElement("div");
-costDiv.classList.add("row", "center-div", "pagebreak");
+costDiv.classList.add("center-div", "pagebreak");
 costDiv.innerHTML = 
-"<div class='col-md-3'>" +
+"<span class='quarter'>" +
 "<p><b>Cost per KWh</b><br/>" + baa[0].costKwh + "</p>" +
-"</div>" +
-"<div class='col-md-3'>" +
+"</span>" +
+"<span class='quarter'>" +
 "<p><b>Motor Voltage</b><br/>" + baa[0].motorVoltage + "</p>" +
-"</div>" +
-"<div class='col-md-3'>" +
+"</span>" +
+"<span class='quarter'>" +
 "<p><b>Usage Multiplier</b><br/>" + baa[0].usageMultiplier + "</p>" +
-"</div>" +
-"<div class='col-md-3'>" +
+"</span>" +
+"<span class='quarter'>" +
 "<p><b>Time Period</b><br/>" + timePeriod + "</p>" +
-"</div>";
+"</span>";
 body.appendChild(costDiv);
 
 //Add adjustment block to page.
@@ -72,25 +72,23 @@ let addAdjustment = (obj, num) =>
     "<p>" + obj.comments + "</p>";
 
     let bubbleDiv = document.createElement("div");
-    bubbleDiv.classList.add("row");
-    let pad1Div = document.createElement("div");
-    pad1Div.classList.add("col-md-1");
+    let pad1Div = document.createElement("span");
+    pad1Div.classList.add("fifth");
 
     //Driven bubble.
-    let drivenInfoDiv = document.createElement("div");
-    drivenInfoDiv.classList.add("col-md-4", "belt-border", "center-div");
+    let drivenInfoDiv = document.createElement("span");
+    drivenInfoDiv.classList.add("quarter", "belt-border", "center-div");
     drivenInfoDiv.innerHTML = "<p class='m-0 p-0'><b>Driven</b><p>" + "<p class='output m-0 p-0'><b>Foot Distance (A): </b>" +
         obj.drivenFeetDistance + " Inches<br/>" + bubble + obj.drivenTicks + " Ticks</p>";
     let drivenCanvasDiv = document.createElement("div");
     drivenCanvasDiv.classList.add("bubble-canvas");
 
-    //Padding between driven and driver.
-    let pad2Div = document.createElement("div");
-    pad2Div.classList.add("col-md-2");
+    let pad2Div = document.createElement("span");
+    pad2Div.classList.add("tenth");
 
     //Driver bubble.
-    let driverInfoDiv = document.createElement("div");
-    driverInfoDiv.classList.add("col-md-4", "belt-border", "center-div");
+    let driverInfoDiv = document.createElement("span");
+    driverInfoDiv.classList.add("quarter", "belt-border", "center-div");
     driverInfoDiv.innerHTML = "<p class='m-0 p-0'><b>Driver</b><p>" + "<p class='output m-0 p-0'><b>Foot Distance (B): </b>" +
         obj.driverFeetDistance + " Inches<br/>" + bubble + obj.driverTicks + " Ticks</p>";
     let driverCanvasDiv = document.createElement("div");
@@ -165,13 +163,11 @@ let addAdjustment = (obj, num) =>
         "<p class='output'>???</p>";
     }
 
-    //Create output calculations section.
-    let outputDiv = document.createElement("div");
-    outputDiv.classList.add("row");
+    let outputDiv = document.createElement("span");
     outputDiv.innerHTML =
-    "<div class='col-md-6 center-div my-2'>" + option1 + "</div>" +
-    "<div class='col-md-3 center-div my-2'>" + option2 + "</div>" +
-    "<div class='col-md-3 center-div my-2'>" + option3 + "</div>";
+    "<span class='half center-div my-2'>" + option1 + "</span>" +
+    "<span class='quarter center-div my-2'>" + option2 + "</span>" +
+    "<span class='quarter center-div my-2'>" + option3 + "</span>";
 
     adjBlock.appendChild(outputDiv);
 
@@ -195,93 +191,93 @@ let addMeasurement = (obj, num) =>
     "<p>" + obj.comments + "</p>";
 
     let bearingsDiv = document.createElement("div");
-    bearingsDiv.classList.add("row");
+    //bearingsDiv.classList.add("row");
     bearingsDiv.innerHTML =
-    "<div class='col-md-3'>" +
+    "<span class='quarter'>" +
         "<h4 class='child-center'>Position 1</h4>" +
-        "<div class='belt-border row px-1'>"+
-            "<div class='col-md-12'><p class='px-1'><b>Horizontal (X)</b></p></div>" +
-            "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p1hVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p1hGe + "</p></div>" +
-            "<div class='col-md-12'><p class='px-1'><b>Vertical (Y)</b></p></div>" +
-            "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p1vVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p1vGe + "</p></div>" +
-            "<div class='col-md-12'><p class='px-1'><b>Axial (Z)</b></p></div>" +
-            "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p1aVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p1aGe + "</p></div>" +
-            "<div class='col-md-12 divider mx-0'></div>" +
-            "<div class='col-md-12'><p class='px-1'><b>Temperature</b></p></div>" +
-            "<div class='col-md-12'><p class='px-1'>" + obj.p1Temp + "</p></div>" +
+        "<div class='belt-border px-1'>"+
+            "<div class='whole'><p class='px-1'><b>Horizontal (X)</b></p></div>" +
+            "<span class='half'><p class='px-1'>Vel: " + obj.p1hVel + "</p></span><span class='half'><p>gE: " + obj.p1hGe + "</p></span>" +
+            "<div class='whole'><p class='px-1'><b>Vertical (Y)</b></p></div>" +
+            "<span class='half'><p class='px-1'>Vel: " + obj.p1vVel + "</p></span><span class='half'><p>gE: " + obj.p1vGe + "</p></span>" +
+            "<div class='whole'><p class='px-1'><b>Axial (Z)</b></p></div>" +
+            "<span class='half'><p class='px-1'>Vel: " + obj.p1aVel + "</p></span><span class='half'><p>gE: " + obj.p1aGe + "</p></span>" +
+            "<div class='whole divider mx-0'></div>" +
+            "<div class='whole'><p class='px-1'><b>Temperature</b></p></div>" +
+            "<div class='whole'><p class='px-1'>" + obj.p1Temp + "</p></div>" +
         "</div>" +
-    "</div>" +
+    "</span>" +
     
-    "<div class='col-md-3'>" +
+    "<span class='quarter'>" +
         "<h4 class='child-center'>Position 2</h4>" +
-        "<div class='belt-border row px-1'>"+
-            "<div class='col-md-12'><p class='px-1'><b>Horizontal (X)</b></p></div>" +
-            "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p2hVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p2hGe + "</p></div>" +
-            "<div class='col-md-12'><p class='px-1'><b>Vertical (Y)</b></p></div>" +
-            "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p2vVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p2vGe + "</p></div>" +
-            "<div class='col-md-12'><p class='px-1'><b>Axial (Z)</b></p></div>" +
-            "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p2aVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p2aGe + "</p></div>" +
-            "<div class='col-md-12 divider mx-0'></div>" +
-            "<div class='col-md-12'><p class='px-1'><b>Temperature</b></p></div>" +
-            "<div class='col-md-12'><p class='px-1'>" + obj.p2Temp + "</p></div>" +
+        "<div class='belt-border px-1'>"+
+            "<div class='whole'><p class='px-1'><b>Horizontal (X)</b></p></div>" +
+            "<span class='half'><p class='px-1'>Vel: " + obj.p2hVel + "</p></span><span class='half'><p>gE: " + obj.p2hGe + "</p></span>" +
+            "<div class='whole'><p class='px-1'><b>Vertical (Y)</b></p></div>" +
+            "<span class='half'><p class='px-1'>Vel: " + obj.p2vVel + "</p></span><span class='half'><p>gE: " + obj.p2vGe + "</p></span>" +
+            "<div class='whole'><p class='px-1'><b>Axial (Z)</b></p></div>" +
+            "<span class='half'><p class='px-1'>Vel: " + obj.p2aVel + "</p></span><span class='half'><p>gE: " + obj.p2aGe + "</p></span>" +
+            "<div class='whole divider mx-0'></div>" +
+            "<div class='whole'><p class='px-1'><b>Temperature</b></p></div>" +
+            "<div class='whole'><p class='px-1'>" + obj.p2Temp + "</p></div>" +
         "</div>" +
-    "</div>" +
+    "</span>" +
 
-    "<div class='col-md-3'>" +
+    "<span class='quarter'>" +
         "<h4 class='child-center'>Position 3</h4>" +
-        "<div class='belt-border row px-1'>"+
-            "<div class='col-md-12'><p class='px-1'><b>Horizontal (X)</b></p></div>" +
-            "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p3hVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p3hGe + "</p></div>" +
-            "<div class='col-md-12'><p class='px-1'><b>Vertical (Y)</b></p></div>" +
-            "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p3vVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p3vGe + "</p></div>" +
-            "<div class='col-md-12'><p class='px-1'><b>Axial (Z)</b></p></div>" +
-            "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p3aVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p3aGe + "</p></div>" +
-            "<div class='col-md-12 divider mx-0'></div>" +
-            "<div class='col-md-12'><p class='px-1'><b>Temperature</b></p></div>" +
-            "<div class='col-md-12'><p class='px-1'>" + obj.p3Temp + "</p></div>" +
+        "<div class='belt-border px-1'>"+
+            "<div class='whole'><p class='px-1'><b>Horizontal (X)</b></p></div>" +
+            "<span class='half'><p class='px-1'>Vel: " + obj.p3hVel + "</p></span><span class='half'><p>gE: " + obj.p3hGe + "</p></span>" +
+            "<div class='whole'><p class='px-1'><b>Vertical (Y)</b></p></div>" +
+            "<span class='half'><p class='px-1'>Vel: " + obj.p3vVel + "</p></span><span class='half'><p>gE: " + obj.p3vGe + "</p></span>" +
+            "<div class='whole'><p class='px-1'><b>Axial (Z)</b></p></div>" +
+            "<span class='half'><p class='px-1'>Vel: " + obj.p3aVel + "</p></span><span class='half'><p>gE: " + obj.p3aGe + "</p></span>" +
+            "<div class='whole divider mx-0'></div>" +
+            "<div class='whole'><p class='px-1'><b>Temperature</b></p></div>" +
+            "<div class='whole'><p class='px-1'>" + obj.p3Temp + "</p></div>" +
         "</div>" +
-    "</div>" +
+    "</span>" +
     
-    "<div class='col-md-3'>" +
+    "<span class='quarter'>" +
         "<h4 class='child-center'>Position 4</h4>" +
-        "<div class='belt-border row px-1'>"+
-            "<div class='col-md-12'><p class='px-1'><b>Horizontal (X)</b></p></div>" +
-            "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p4hVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p4hGe + "</p></div>" +
-            "<div class='col-md-12'><p class='px-1'><b>Vertical (Y)</b></p></div>" +
-            "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p4vVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p4vGe + "</p></div>" +
-            "<div class='col-md-12'><p class='px-1'><b>Axial (Z)</b></p></div>" +
-            "<div class='col-md-6'><p class='px-1'>Vel: " + obj.p4aVel + "</p></div><div class='col-md-6'><p>gE: " + obj.p4aGe + "</p></div>" +
-            "<div class='col-md-12 divider mx-0'></div>" +
-            "<div class='col-md-12'><p class='px-1'><b>Temperature</b></p></div>" +
-            "<div class='col-md-12'><p class='px-1'>" + obj.p4Temp + "</p></div>" +
+        "<div class='belt-border px-1'>"+
+            "<div class='whole'><p class='px-1'><b>Horizontal (X)</b></p></div>" +
+            "<span class='half'><p class='px-1'>Vel: " + obj.p4hVel + "</p></span><span class='half'><p>gE: " + obj.p4hGe + "</p></span>" +
+            "<div class='whole'><p class='px-1'><b>Vertical (Y)</b></p></div>" +
+            "<span class='half'><p class='px-1'>Vel: " + obj.p4vVel + "</p></span><span class='half'><p>gE: " + obj.p4vGe + "</p></span>" +
+            "<div class='whole'><p class='px-1'><b>Axial (Z)</b></p></div>" +
+            "<span class='half'><p class='px-1'>Vel: " + obj.p4aVel + "</p></span><span class='half'><p>gE: " + obj.p4aGe + "</p></span>" +
+            "<div class='whole divider mx-0'></div>" +
+            "<div class='whole'><p class='px-1'><b>Temperature</b></p></div>" +
+            "<div class='whole'><p class='px-1'>" + obj.p4Temp + "</p></div>" +
         "</div>" +
-    "</div>";
+    "</span>";
 
     let readingsDiv = document.createElement("div");
-    readingsDiv.classList.add("row", "belt-border");
+    readingsDiv.classList.add("belt-border");
     readingsDiv.innerHTML =
-    "<div class='col-md-3'>" +
+    "<span class='quarter'>" +
         "<p><b>Amp Draw(A)</b></p>" +
         "<p>" + obj.ampDraw + "</p>" +
         "<p><b>Cost</b></p>" +
         "<p class='cost-result'>" + obj.costString + "</p>" +
-    "</div>" +
-    "<div class='col-md-3'>" +
+    "</span>" +
+    "<span class='quarter'>" +
         "<p><b>Driver RPM</b></p>" +
         "<p>" + obj.rpmDriver + "</p>" +
         "<p><b>Driven RPM</b></p>" +
         "<p>" + obj.rpmDriven + "</p>" +
-    "</div>" +
-    "<div class='col-md-3'>" +
+    "</span>" +
+    "<span class='quarter'>" +
         "<p><b>Highest UE(dB)</b></p>" +
         "<p>" + obj.highestUe + "</p>" +
         "<p><b>Highest Sound(DB)</b></p>" +
         "<p>" + obj.highestSnd + "</p>" +
-    "</div>" +
-    "<div class='col-md-3'>" +
+    "</span>" +
+    "<span class='quarter'>" +
         "<p><b>Belt Temperature</b></p>" +
         "<p>" + obj.beltTemp + "</p>" +
-    "</div>";
+    "</span>";
 
     body.appendChild(measBlock);
     measBlock.appendChild(bearingsDiv);
