@@ -319,41 +319,61 @@ class Target
 
 /******************************************* Top Level *******************************************/
 //Get references to the target canvas and its parent container.
-var farmerCanv  = document.getElementById("farmer-canv");
-var farmerA     = document.getElementById("farmer-a");
+
+//Spotlight projects.
+var ntntCanv    = document.getElementById("ntnt-canv");
+var ntntA       = document.getElementById("ntnt-a");
+var yassCanv    = document.getElementById("yass-canv");
+var yassA       = document.getElementById("yass-a");
+var pickerCanv  = document.getElementById("picker-canv");
+var pickerA     = document.getElementById("picker-a");
+
+//Full stack projects.
+var weatherCanv = document.getElementById("weather-canv");
+var weatherA    = document.getElementById("weather-a");
+var googleCanv  = document.getElementById("google-canv");
+var googleA     = document.getElementById("google-a");
+var burger2Canv = document.getElementById("burger2-canv");
+var burger2A    = document.getElementById("burger2-a");
+
+//Client side projects.
+var beltCanv    = document.getElementById("belt-canv");
+var beltA       = document.getElementById("belt-a");
+var shaftCanv   = document.getElementById("shaft-canv");
+var shaftA      = document.getElementById("shaft-a");
+var nt3dCanv    = document.getElementById("nt3d-canv");
+var nt3dA       = document.getElementById("nt3d-a");
+var nt2dCanv    = document.getElementById("nt2d-canv");
+var nt2dA       = document.getElementById("nt2d-a");
 var hangmanCanv = document.getElementById("hangman-canv");
 var hangmanA    = document.getElementById("hangman-a");
 var crystalCanv = document.getElementById("crystal-canv");
 var crystalA    = document.getElementById("crystal-a");
 var quizCanv    = document.getElementById("quiz-canv");
 var quizA       = document.getElementById("quiz-a");
-var nt3dCanv    = document.getElementById("nt3d-canv");
-var nt3dA       = document.getElementById("nt3d-a");
-var nt2dCanv    = document.getElementById("nt2d-canv");
-var nt2dA       = document.getElementById("nt2d-a");
-var weatherCanv = document.getElementById("weather-canv");
-var weatherA    = document.getElementById("weather-a");
-var yassCanv    = document.getElementById("yass-canv");
-var yassA       = document.getElementById("yass-a");
-var burger2Canv = document.getElementById("burger2-canv");
-var burger2A    = document.getElementById("burger2-a");
-var ntntCanv    = document.getElementById("ntnt-canv");
-var ntntA       = document.getElementById("ntnt-a");
-var googleCanv  = document.getElementById("google-canv");
-var googleA     = document.getElementById("google-a");
-var pickerCanv  = document.getElementById("picker-canv");
-var pickerA     = document.getElementById("picker-a");
+var clickyCanv  = document.getElementById("clicky-canv");
+var clickyA     = document.getElementById("clicky-a");
+var farmerCanv  = document.getElementById("farmer-canv");
+var farmerA     = document.getElementById("farmer-a");
 
 //Create object to paint target on a canvas.
-new Target(farmerCanv,  farmerA,  .20, Target.ANIM_MOVE);
-new Target(hangmanCanv, hangmanA, .95, Target.ANIM_STATIC);
-new Target(crystalCanv, crystalA, .20, Target.ANIM_MOVE);
-new Target(quizCanv,    quizA,    .95, Target.ANIM_STATIC);
+//Spotlight projects.
+new Target(ntntCanv,    ntntA,    .20, Target.ANIM_MOVE);
+new Target(yassCanv,    yassA,    .95, Target.ANIM_STATIC);
+new Target(pickerCanv,  pickerA,  .20, Target.ANIM_MOVE);
+
+//Full stack projects.
+new Target(weatherCanv, weatherA, .95, Target.ANIM_STATIC);
+new Target(googleCanv,  googleA,  .20, Target.ANIM_MOVE);
+new Target(burger2Canv, burger2A, .95, Target.ANIM_STATIC);
+
+//Client side projects.
+new Target(beltCanv,    beltA,    .20, Target.ANIM_MOVE);
+new Target(shaftCanv,   shaftA,   .95, Target.ANIM_STATIC);
 new Target(nt3dCanv,    nt3dA,    .20, Target.ANIM_MOVE);
 new Target(nt2dCanv,    nt2dA,    .95, Target.ANIM_STATIC);
-new Target(weatherCanv, weatherA, .95, Target.ANIM_STATIC);
-new Target(burger2Canv, burger2A, .20, Target.ANIM_MOVE);
-new Target(yassCanv,    yassA,    .95, Target.ANIM_STATIC);
-new Target(ntntCanv,    ntntA,    .20, Target.ANIM_MOVE);
-new Target(googleCanv,  googleA,  .95, Target.ANIM_STATIC);
-new Target(pickerCanv,  pickerA,  .20, Target.ANIM_MOVE);
+new Target(hangmanCanv, hangmanA, .20, Target.ANIM_MOVE);
+new Target(crystalCanv, crystalA, .95, Target.ANIM_STATIC);
+new Target(quizCanv,    quizA,    .20, Target.ANIM_MOVE);
+new Target(clickyCanv,  clickyA,  .95, Target.ANIM_STATIC);
+new Target(farmerCanv,  farmerA,  .20, Target.ANIM_MOVE);
