@@ -30,7 +30,6 @@
 .title
 {
     font-size: 4vh;
-    padding-top: 1.5vh;
     color: rgb(54, 56, 156);
 }
 
@@ -85,6 +84,7 @@
 {
     color: rgb(54, 56, 156);
     font-size: 2vh;
+    margin-bottom: 0;
 }
 
 #settings-modal
@@ -115,7 +115,7 @@
     background-color: rgba(0,0,0,0.4);
 }
 
-.modal-content
+.mod-content
 {
     background-color: #fefefe;
     margin: auto;
@@ -123,13 +123,13 @@
     border-radius: 1vh;
     width: 80%;
 }
-  
+
 .close
 {
     color: #aaaaaa;
-    float: right;
-    font-size: 28px;
+    font-size: 2.5rem;
     font-weight: bold;
+    float: right;
 }
   
 .close:hover,
@@ -144,4 +144,5 @@
 {
     text-align: center;
     font-size: 1.5rem;
+    margin-top: .5rem;
 }

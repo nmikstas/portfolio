@@ -8,6 +8,9 @@ let numWords = 3;
 let minLength = 6;
 let numTries = 6;
 
+//Main game object;
+let gameObject;
+
 //This can possibly be used for giving a heavier bias to words starting 
 //with certain letters by putting those letters in this array multiple times.
 const alphabet =
@@ -304,7 +307,8 @@ let getGameObject = (rows, columns, numWords, minLength, numTries) =>
 let printGameObject = (go) =>
 {
     console.log("------------------ Game Object ------------------");
-    console.log("Rows: %s, Columns: %s, NumWords: %s,\nMinLength: %s, NumTries: %s", go.rows, go.columns, go.numWords, go.minLength, go.numTries);
+    console.log("Rows: %s, Columns: %s, NumWords: %s,\nMinLength: %s, NumTries: %s", 
+                go.rows, go.columns, go.numWords, go.minLength, go.numTries);
     
     console.log("Letter Array:");
     for(let i = 0; i < go.letterArray.length; i++)
@@ -391,6 +395,5 @@ help.addEventListener("click", () =>
 
 
 
-let gameObject = getGameObject(rows, columns, numWords, minLength, numTries);
-
+gameObject = getGameObject(rows, columns, numWords, minLength, numTries);
 if(debug)printGameObject(gameObject);
