@@ -296,12 +296,6 @@ let getGameObject = (rows, columns, numWords, minLength, numTries) =>
     }
 }
 
-
-
-/********************************** Game Presentation Functions **********************************/
-
-
-
 /************************************* Game Control Functions ************************************/
 
 let printGameObject = (go) =>
@@ -378,6 +372,7 @@ closeBtn[1].addEventListener("click", () =>
 const settings = document.getElementById("settings");
 settings.addEventListener("click", () =>
 {
+    setSelections(rows, columns, numWords, minLength, numTries);
     let modal = document.getElementById("settings-modal");
     modal.style.display = "block";
 });
@@ -390,6 +385,45 @@ help.addEventListener("click", () =>
     modal.style.display = "block";
 });
 
+//Event listener that updates the game settings.
+const settingsBtn = document.getElementById("settings-btn");
+settingsBtn.addEventListener("click", () =>
+{
+
+    
+
+
+});
+
+//Set the selections in the game settings modal.
+let setSelections = (rows, columns, numWords, minLength, numTries) =>
+{
+    let minRows = 3;
+    let minColumns = 12;
+    let minWords = 1;
+    let minLen = 2;
+    let minTries = 2;
+
+    let selRows = document.getElementById("sel-rows");
+    let selColumns = document.getElementById("sel-columns");
+    let selWords = document.getElementById("sel-words");
+    let selLength = document.getElementById("sel-length");
+    let selTries = document.getElementById("sel-tries");
+
+    selRows.selectedIndex = rows - minRows;
+    selColumns.selectedIndex = columns - minColumns;
+    selWords.selectedIndex = numWords - minWords;
+    selLength.selectedIndex = minLength - minLen;
+    selTries.selectedIndex = numTries - minTries;
+}
+
+
+
+
+/********************************** Game Presentation Functions **********************************/
+
+
+
 
 /******************************************* Game Code *******************************************/
 
@@ -397,3 +431,4 @@ help.addEventListener("click", () =>
 
 gameObject = getGameObject(rows, columns, numWords, minLength, numTries);
 if(debug)printGameObject(gameObject);
+

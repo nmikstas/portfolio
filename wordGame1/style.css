@@ -44,6 +44,7 @@
 {
     background-color: rgb(36, 38, 146, .2);
     cursor: pointer;
+    border-radius: 50%;
 }
 
 .help-icon
@@ -57,6 +58,7 @@
 {
     background-color: rgb(36, 38, 146, .2);
     cursor: pointer;
+    border-radius: 50%;
 }
 
 .footer
@@ -143,6 +145,12 @@
 .text-title
 {
     text-align: center;
-    font-size: 1.5rem;
+    font-size: 2rem;
     margin-top: .5rem;
+    font-weight: bold;
+}
+
+.settings-text
+{
+    font-size: 1.5rem;
 }
