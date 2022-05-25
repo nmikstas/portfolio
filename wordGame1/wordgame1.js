@@ -16,6 +16,15 @@ let gameObject;
 //Array of letter columns.
 let columnArray = new Array(0);
 
+//Slider variables.
+let isDown = false;
+let startY;
+let scrollOffset;
+let scrollDiv;
+let letterDiv;
+let mouseX;
+let mouseY;
+
 //This can possibly be used for giving a heavier bias to words starting 
 //with certain letters by putting those letters in this array multiple times.
 const alphabet =
@@ -422,15 +431,26 @@ let redraw = () =>
         thisDiv.innerHTML = i;
         thisDiv.style.fontSize = "2.5vw";
         gameBody.appendChild(thisDiv);
+
+        thisDiv.addEventListener('mousedown', start);
+	    thisDiv.addEventListener('touchstart', start);
+
+	    thisDiv.addEventListener('mousemove', move);
+	    thisDiv.addEventListener('touchmove', move);
+
+	    thisDiv.addEventListener('mouseleave', end);
+	    thisDiv.addEventListener('mouseup', release);
+	    thisDiv.addEventListener('touchend', end);
     }
 
     //Calculate column height.
     for(let i = 0; i < columns; i++)
     {
-        let thisColHeight = columnArray[i].clientHeight;
+        let thisColHeight = columnArray[i].clientHeight + 1;
         let thisColLetters = transLetterArray[i].length;
         let newHeight = thisColLetters * thisColHeight;
         columnArray[i].style.height = newHeight + "px";
+        console.log(thisColHeight)
     }
 
     //Now go back in and fill the columns with the letters.
@@ -457,6 +477,59 @@ let redraw = () =>
 }
 
 /**************************************** Event Listeners ****************************************/
+
+const end = (e) =>
+{
+    if(!isDown) return;
+
+    let yTop = scrollDiv.getBoundingClientRect().y;
+    let yBottom = scrollDiv.getBoundingClientRect().height + yTop;
+
+    if(mouseY > yBottom || mouseY < yTop)
+    {
+        isDown = false;
+        letterDiv.style.cursor = "pointer";
+    }
+}
+
+const release = (e) =>
+{
+    isDown = false;
+    letterDiv.style.cursor = "pointer";
+}
+
+const start = (e) =>
+{
+    isDown = true;
+    scrollDiv = e.target.parentNode;
+    letterDiv = e.target;
+    letterDiv.style.cursor = "grab";
+    startY = e.pageY || e.touches[0].pageY - scrollDiv.offsetTop;
+    scrollOffset = scrollDiv.scrollTop;	
+}
+
+const move = (e) =>
+{
+    if(!isDown) return;
+
+    e.preventDefault();
+    
+    const y = e.pageY || e.touches[0].pageY - scrollDiv.offsetTop;
+    const dist = (y - startY);
+    scrollDiv.scrollTop = scrollOffset - dist;
+}
+
+document.addEventListener("mousemove", (event) => 
+{
+    mouseX = event.clientX;
+    mouseY = event.clientY;
+    if(!isDown && letterDiv)letterDiv.style.cursor = "pointer";
+});
+
+document.addEventListener("mouseup", (event) => 
+{
+    isDown = false;
+});
 
 //Event listener that closes modals if clicked outside of modal.
 window.onclick = (event) =>
