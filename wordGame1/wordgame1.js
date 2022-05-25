@@ -1,3 +1,5 @@
+"use strict";
+
 //Print debug info.
 let debug = true;
 
@@ -10,6 +12,9 @@ let numTries = 6;
 
 //Main game object;
 let gameObject;
+
+//Array of letter columns.
+let columnArray = new Array(0);
 
 //This can possibly be used for giving a heavier bias to words starting 
 //with certain letters by putting those letters in this array multiple times.
@@ -112,7 +117,7 @@ let getWord = (wordLength, startingLetter) =>
     //Attempt to find a word that starts with the given letter and has the given length.
     while(tries < 100 && !success)
     {
-        wordIndex = Math.floor(Math.random() * numWords);
+        let wordIndex = Math.floor(Math.random() * numWords);
         let potentialWord = wordArray[arrayIndex][wordIndex];
         if(potentialWord.length === wordLength)
         {
@@ -342,6 +347,117 @@ let printGameObject = (go) =>
     console.log(colLocks, ...colNum);
 }
 
+let resetGame = () =>
+{
+    gameObject = getGameObject(rows, columns, numWords, minLength, numTries);
+    if(debug)printGameObject(gameObject);
+}
+
+//Set the selections in the game settings modal.
+let setSelections = (rows, columns, numWords, minLength, numTries) =>
+{
+    const minRows = 3;
+    const minColumns = 12;
+    const minWords = 1;
+    const minLen = 2;
+    const minTries = 2;
+
+    let selRows = document.getElementById("sel-rows");
+    let selColumns = document.getElementById("sel-columns");
+    let selWords = document.getElementById("sel-words");
+    let selLength = document.getElementById("sel-length");
+    let selTries = document.getElementById("sel-tries");
+
+    selRows.selectedIndex = rows - minRows;
+    selColumns.selectedIndex = columns - minColumns;
+    selWords.selectedIndex = numWords - minWords;
+    selLength.selectedIndex = minLength - minLen;
+    selTries.selectedIndex = numTries - minTries;
+}
+
+/********************************** Game Presentation Functions **********************************/
+
+let redraw = () =>
+{
+    columnArray.length = 0;
+
+    //Get critical dimension info about the game body element.
+    let gameBody = document.getElementById("game-body");
+    let gameWidth = gameBody.clientWidth;
+    let gameHeight = gameBody.clientHeight;
+    
+    //Update the number of tries remaining.
+    let triesRemaining = document.getElementById("remain-span");
+    triesRemaining.innerHTML = "Tries Remaining: " + numTries;
+
+    let limitingFactor = (gameWidth > gameHeight) ? gameHeight : gameWidth;
+
+    //Need to transpose the letter array.
+    let transLetterArray = new Array(columns);
+    for(let i = 0; i < transLetterArray.length; i++)
+    {
+        transLetterArray[i] = new Array(0);
+    }
+
+    for(let i = 0; i < gameObject.letterArray.length; i++)
+    {
+        for(let j = 0; j < gameObject.letterArray[i].length; j++)
+        {
+            if(gameObject.letterArray[i][j] !== " ")
+            {
+                transLetterArray[j].push(gameObject.letterArray[i][j]);
+            }
+        }
+    }
+
+    //Clear out the game body div.
+    gameBody.innerHTML = "";
+
+    //Generate the column divs.
+    for(let i = 0; i < columns; i++)
+    {
+        let thisDiv = document.createElement("div");
+        columnArray.push(thisDiv);
+        thisDiv.classList.add("column-div");
+        thisDiv.innerHTML = i;
+        thisDiv.style.fontSize = "2.5vw";
+        gameBody.appendChild(thisDiv);
+    }
+
+    //Calculate column height.
+    for(let i = 0; i < columns; i++)
+    {
+        let thisColHeight = columnArray[i].clientHeight;
+        let thisColLetters = transLetterArray[i].length;
+        let newHeight = thisColLetters * thisColHeight;
+        columnArray[i].style.height = newHeight + "px";
+    }
+
+    //Now go back in and fill the columns with the letters.
+    for(let i = 0; i < columns; i++)
+    {
+        columnArray[i].innerHTML = "";
+
+        //Push 3 copies into the array for scrolling.
+        for(let j = 0; j < 3; j++)
+        {
+            for(let k = 0; k < transLetterArray[i].length; k++)
+            {
+                let thisDiv = document.createElement("div");
+                columnArray[i].appendChild(thisDiv);
+                thisDiv.classList.add("letter-div");
+                thisDiv.innerHTML = transLetterArray[i][k];
+                thisDiv.style.fontSize = "2.5vw";
+            }
+        }
+    }
+
+    
+    
+}
+
+/**************************************** Event Listeners ****************************************/
+
 //Event listener that closes modals if clicked outside of modal.
 window.onclick = (event) =>
 {
@@ -375,6 +491,9 @@ settings.addEventListener("click", () =>
     setSelections(rows, columns, numWords, minLength, numTries);
     let modal = document.getElementById("settings-modal");
     modal.style.display = "block";
+    document.getElementById("sel-columns").style.borderColor = "";
+    document.getElementById("sel-words").style.borderColor = "";
+    document.getElementById("sel-length").style.borderColor = "";
 });
 
 //Event listener that brings up the help modal.
@@ -389,46 +508,44 @@ help.addEventListener("click", () =>
 const settingsBtn = document.getElementById("settings-btn");
 settingsBtn.addEventListener("click", () =>
 {
+    //Get values of all the text boxes.
+    const setRows = parseInt(document.getElementById("sel-rows").value);
+    const setColumns = parseInt(document.getElementById("sel-columns").value);
+    const setWords = parseInt(document.getElementById("sel-words").value);
+    const setLength = parseInt(document.getElementById("sel-length").value);
+    const setTries = parseInt(document.getElementById("sel-tries").value);
 
+    //Calculate to see if user values are valid.
+    const remainder = setColumns + setWords * (1 - setLength) - 1;
+
+    if(remainder < 0)
+    {
+        document.getElementById("sel-columns").style.borderColor = "rgb(255, 0, 0)";
+        document.getElementById("sel-words").style.borderColor = "rgb(255, 0, 0)";
+        document.getElementById("sel-length").style.borderColor = "rgb(255, 0, 0)";
+        return;
+    }
     
+    //User entered values are correct. Update game variables and recalculate everything.
+    settingsModal.style.display = "none";
+    rows = setRows;
+    columns = setColumns;
+    numWords = setWords;
+    minLength = setLength;
+    numTries = setTries;
 
-
+    resetGame();
+    redraw();
 });
 
-//Set the selections in the game settings modal.
-let setSelections = (rows, columns, numWords, minLength, numTries) =>
+//Resize window event listener.
+const resize = window.addEventListener("resize", () =>
 {
-    let minRows = 3;
-    let minColumns = 12;
-    let minWords = 1;
-    let minLen = 2;
-    let minTries = 2;
-
-    let selRows = document.getElementById("sel-rows");
-    let selColumns = document.getElementById("sel-columns");
-    let selWords = document.getElementById("sel-words");
-    let selLength = document.getElementById("sel-length");
-    let selTries = document.getElementById("sel-tries");
-
-    selRows.selectedIndex = rows - minRows;
-    selColumns.selectedIndex = columns - minColumns;
-    selWords.selectedIndex = numWords - minWords;
-    selLength.selectedIndex = minLength - minLen;
-    selTries.selectedIndex = numTries - minTries;
-}
-
-
-
-
-/********************************** Game Presentation Functions **********************************/
-
-
-
+    redraw();
+});
 
 /******************************************* Game Code *******************************************/
 
-
-
-gameObject = getGameObject(rows, columns, numWords, minLength, numTries);
-if(debug)printGameObject(gameObject);
+resetGame();
+redraw();
 

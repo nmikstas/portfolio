@@ -154,3 +154,51 @@
 {
     font-size: 1.5rem;
 }
+
+#game-body
+{
+    position: absolute;
+    width: 100%;
+    height: 79vh;
+    top: 7vh;
+    padding-top: .25vh;
+    text-align: center;
+}
+
+#game-control
+{
+    position: absolute;
+    display: flex;
+    width: 100%;
+    height: 7vh;
+    top: 86vh;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+}
+
+#remain-span
+{
+    margin-left: 2.5vw;
+    margin-bottom: 0;
+    font-size: 3vh;
+    font-weight: bold;
+}
+
+.column-div
+{
+    display: inline-block;
+    border: .1vw;
+    width: 4vw;
+    border-style: solid;
+    margin-right: .25vw;
+    border-radius: .25vw;
+    text-align: center;
+    overflow: hidden;
+}
+
+.letter-div
+{
+    margin: 0;
+    padding: 0;
+}
