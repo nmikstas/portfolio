@@ -25,6 +25,18 @@ let letterDiv;
 let mouseX;
 let mouseY;
 
+//Column swap variables.
+let singleClick = false;
+let colIndex1 = undefined;
+let colIndex2 = undefined;
+let tempIndex;
+
+//Animation variables.
+let animActive = false;
+let animIndexArray = new Array(0);
+let animState = 0;
+let animTimer;
+
 //This can possibly be used for giving a heavier bias to words starting 
 //with certain letters by putting those letters in this array multiple times.
 const alphabet =
@@ -312,7 +324,7 @@ let getGameObject = (rows, columns, numWords, minLength, numTries) =>
 
 /************************************* Game Control Functions ************************************/
 
-let printGameObject = (go) =>
+const printGameObject = (go) =>
 {
     console.log("------------------ Game Object ------------------");
     console.log("Rows: %s, Columns: %s, NumWords: %s,\nMinLength: %s, NumTries: %s", 
@@ -343,7 +355,7 @@ let printGameObject = (go) =>
     let letLocks = "";
     for(let i = 0; i < go.columns; i++)
     {
-        letLocks += ("%s" + (go.locksArray[i].letter ? "T " : "F ")); 
+        letLocks += ("%s" + (go.locksArray[i].letter ? "T " : "F "));
     }
     console.log(letLocks, ...colNum);
 
@@ -356,14 +368,14 @@ let printGameObject = (go) =>
     console.log(colLocks, ...colNum);
 }
 
-let resetGame = () =>
+const resetGame = () =>
 {
     gameObject = getGameObject(rows, columns, numWords, minLength, numTries);
     if(debug)printGameObject(gameObject);
 }
 
 //Set the selections in the game settings modal.
-let setSelections = (rows, columns, numWords, minLength, numTries) =>
+const setSelections = (rows, columns, numWords, minLength, numTries) =>
 {
     const minRows = 3;
     const minColumns = 12;
@@ -384,9 +396,79 @@ let setSelections = (rows, columns, numWords, minLength, numTries) =>
     selTries.selectedIndex = numTries - minTries;
 }
 
+//Column swap timer expired. Indicate single click did not happen.
+const checkColumnSwap = () =>
+{
+    singleClick = false;
+}
+
+const columnSwap = () =>
+{
+    //Save the temp index.
+    if(colIndex1 === undefined)
+    {
+        colIndex1 = tempIndex;
+    }
+    else if(colIndex2 === undefined)
+    {
+        colIndex2 = tempIndex;
+    }
+    
+    if(colIndex1 !== undefined && colIndex2 === undefined)
+    {
+        if(gameObject.locksArray[colIndex1].column)
+        {
+            //Locked. Indicate it can't move and cancel.
+            animIndexArray.push(colIndex1);
+            doShakeAnimations();
+            colIndex1 = undefined;
+            colIndex2 = undefined;
+        }
+        else
+        {
+            columnArray[colIndex1].style.transform = "scale(1.1, 1.05)";
+            columnArray[colIndex1].style.transitionDuration = ".15s";
+            columnArray[colIndex1].style.backgroundColor = "rgb(231, 165, 43)";
+        }
+    }
+    else if(colIndex1 !== undefined && colIndex2 !== undefined)
+    {
+        if(gameObject.locksArray[colIndex2].column)
+        {
+            //Locked. Indicate it can't move and cancel.
+            columnArray[colIndex1].style.backgroundColor = "rgba(0, 0, 0, 0)";
+            columnArray[colIndex1].style.transform = "scale(1.0, 1.0)";
+            columnArray[colIndex1].style.transitionDuration = ".15s";
+            animIndexArray.push(colIndex1);
+            animIndexArray.push(colIndex2);
+            doShakeAnimations();
+            colIndex1 = undefined;
+            colIndex2 = undefined;
+        }
+        else if(colIndex1 === colIndex2)
+        {
+            //Cancel selection.
+            columnArray[colIndex1].style.transform = "scale(1.0, 1.0)";
+            columnArray[colIndex1].style.transitionDuration = ".15s";
+            columnArray[colIndex1].style.backgroundColor = "rgba(0, 0, 0, 0)";
+            colIndex1 = undefined;
+            colIndex2 = undefined;
+        }
+        else
+        {
+            //Swap columns.
+            animIndexArray.push(colIndex1);
+            animIndexArray.push(colIndex2);
+            doSwapAnimations();
+            colIndex1 = undefined;
+            colIndex2 = undefined;
+        }
+    }
+}
+
 /********************************** Game Presentation Functions **********************************/
 
-let redraw = () =>
+const redraw = () =>
 {
     columnArray.length = 0;
 
@@ -430,27 +512,34 @@ let redraw = () =>
         thisDiv.classList.add("column-div");
         thisDiv.innerHTML = i;
         thisDiv.style.fontSize = "2.5vw";
+        thisDiv.setAttribute("index", i);
         gameBody.appendChild(thisDiv);
 
-        thisDiv.addEventListener('mousedown', start);
-	    thisDiv.addEventListener('touchstart', start);
+        if(gameObject.locksArray[i].column)
+        {
+            thisDiv.style.backgroundColor = "rgb(157, 188, 255)";
+        }
 
-	    thisDiv.addEventListener('mousemove', move);
-	    thisDiv.addEventListener('touchmove', move);
+        thisDiv.addEventListener("mousedown", start);
+	    thisDiv.addEventListener("touchstart", start);
 
-	    thisDiv.addEventListener('mouseleave', end);
-	    thisDiv.addEventListener('mouseup', release);
-	    thisDiv.addEventListener('touchend', end);
+	    thisDiv.addEventListener("mousemove", move);
+	    thisDiv.addEventListener("touchmove", move);
+
+	    thisDiv.addEventListener("mouseleave", end);
+	    thisDiv.addEventListener("mouseup", release);
+	    thisDiv.addEventListener("touchend", end);
     }
+
+    //Get the exact letter height. Need to subtract 2. Border, perhaps?
+    let letterHeight = parseFloat(columnArray[0].getBoundingClientRect().height) - 2;
 
     //Calculate column height.
     for(let i = 0; i < columns; i++)
     {
-        let thisColHeight = columnArray[i].clientHeight + 1;
         let thisColLetters = transLetterArray[i].length;
-        let newHeight = thisColLetters * thisColHeight;
+        let newHeight = thisColLetters * letterHeight;
         columnArray[i].style.height = newHeight + "px";
-        console.log(thisColHeight)
     }
 
     //Now go back in and fill the columns with the letters.
@@ -472,14 +561,117 @@ let redraw = () =>
         }
     }
 
-    
-    
+    //Calculate scroll offset.
+    let scrollOffset = letterHeight * transLetterArray[0].length;
+    for(let i = 0; i < columns; i++)
+    {
+        columnArray[i].scrollTop = scrollOffset;     
+    }
+}
+
+//Swaps columns whose indexes are in the animation index array.
+const doSwapAnimations = () =>
+{
+    switch(animState)
+    {
+        case 0:
+            animActive = true;
+            clearTimeout(animTimer);
+            if(animIndexArray.length === 2)
+            {
+                let xpos0 = parseFloat(columnArray[animIndexArray[0]].getBoundingClientRect().x);
+                let xpos1 = parseFloat(columnArray[animIndexArray[1]].getBoundingClientRect().x);
+                let xdiff = xpos0 - xpos1;
+
+                columnArray[animIndexArray[0]].style.backgroundColor = "rgba(0, 0, 0, 0)";
+                columnArray[animIndexArray[0]].style.transform = "translate(" + (-xdiff) + "px)";
+                columnArray[animIndexArray[0]].style.transitionDuration = ".25s";
+
+                columnArray[animIndexArray[1]].style.backgroundColor = "rgba(0, 0, 0, 0)";
+                columnArray[animIndexArray[1]].style.transform = "translate(" + xdiff + "px)";
+                columnArray[animIndexArray[1]].style.transitionDuration = ".25s";
+            }
+            animTimer = setTimeout(doSwapAnimations, 250);
+            animState++;
+        break;
+
+        default:
+            //Swap columns in the letter array.
+            for(let i = 0; i < gameObject.letterArray.length; i++)
+            {
+                [gameObject.letterArray[i][animIndexArray[0]], gameObject.letterArray[i][animIndexArray[1]]] = 
+                [gameObject.letterArray[i][animIndexArray[1]], gameObject.letterArray[i][animIndexArray[0]]];
+            }
+
+            //Swap items in the column order.
+            [gameObject.columnArray[animIndexArray[0]], gameObject.columnArray[animIndexArray[1]]] =
+            [gameObject.columnArray[animIndexArray[1]], gameObject.columnArray[animIndexArray[0]]];
+
+            //Swap items in the locks array.
+            [gameObject.locksArray[animIndexArray[0]], gameObject.locksArray[animIndexArray[1]]] =
+            [gameObject.locksArray[animIndexArray[1]], gameObject.locksArray[animIndexArray[0]]];
+
+            if(debug)printGameObject(gameObject);
+            redraw();
+            animActive = false;
+            clearTimeout(animTimer);
+            animState = 0;
+            animIndexArray.length = 0;
+        break;
+    }
+}
+
+//Shake columns whose indexes are in the animation index array.
+const doShakeAnimations = () =>
+{
+    switch(animState)
+    {
+        case 0:
+            animActive = true;
+            clearTimeout(animTimer);
+            for(let i = 0; i < animIndexArray.length; i++)
+            {
+                columnArray[animIndexArray[i]].style.transform = "translate(-1vh)";
+                columnArray[animIndexArray[i]].style.transitionDuration = ".075s";
+            }
+            animTimer = setTimeout(doShakeAnimations, 75);
+            animState++;
+        break;
+        
+        case 1:
+            for(let i = 0; i < animIndexArray.length; i++)
+            {
+                columnArray[animIndexArray[i]].style.transform = "translate(1vh)";
+                columnArray[animIndexArray[i]].style.transitionDuration = ".1s";
+            }
+            animTimer = setTimeout(doShakeAnimations, 100);
+            animState++;
+        break;
+
+        case 2:
+            for(let i = 0; i < animIndexArray.length; i++)
+            {
+                columnArray[animIndexArray[i]].style.transform = "translate(0vh)";
+                columnArray[animIndexArray[i]].style.transitionDuration = ".075s";
+            }
+            animTimer = setTimeout(doShakeAnimations, 75);
+            animState++;
+        break;
+
+        default:
+            animActive = false;
+            clearTimeout(animTimer);
+            animState = 0;
+            animIndexArray.length = 0;
+        break;
+    }
 }
 
 /**************************************** Event Listeners ****************************************/
 
 const end = (e) =>
 {
+    if(animActive) return;
     if(!isDown) return;
 
     let yTop = scrollDiv.getBoundingClientRect().y;
@@ -494,22 +686,35 @@ const end = (e) =>
 
 const release = (e) =>
 {
+    if(animActive) return;
     isDown = false;
     letterDiv.style.cursor = "pointer";
+
+    //Check if there was a quick click, indicating a column swap is desired.
+    if(singleClick)columnSwap();
 }
 
 const start = (e) =>
 {
+    if(animActive) return;
+    //Set a timer to check for a column swap(single fast click).
+    setTimeout(checkColumnSwap, 150);
+    singleClick = true; 
+    
     isDown = true;
     scrollDiv = e.target.parentNode;
     letterDiv = e.target;
     letterDiv.style.cursor = "grab";
     startY = e.pageY || e.touches[0].pageY - scrollDiv.offsetTop;
-    scrollOffset = scrollDiv.scrollTop;	
+    scrollOffset = scrollDiv.scrollTop;
+
+    //Get the index of the clicked column for column swapping purposes.
+    tempIndex = parseInt(scrollDiv.getAttribute("index"));
 }
 
 const move = (e) =>
 {
+    if(animActive) return;
     if(!isDown) return;
 
     e.preventDefault();
@@ -521,6 +726,7 @@ const move = (e) =>
 
 document.addEventListener("mousemove", (event) => 
 {
+    if(animActive) return;
     mouseX = event.clientX;
     mouseY = event.clientY;
     if(!isDown && letterDiv)letterDiv.style.cursor = "pointer";
@@ -528,6 +734,7 @@ document.addEventListener("mousemove", (event) =>
 
 document.addEventListener("mouseup", (event) => 
 {
+    if(animActive) return;
     isDown = false;
 });
 
@@ -620,5 +827,7 @@ const resize = window.addEventListener("resize", () =>
 /******************************************* Game Code *******************************************/
 
 resetGame();
+gameObject.locksArray[5].column = true;
+gameObject.locksArray[3].letter = true;
 redraw();
 

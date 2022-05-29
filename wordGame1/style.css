@@ -6,6 +6,11 @@
     overflow: hidden;
 }
 
+.pal-select
+{
+    background-color: rgb(231, 165, 43);
+}
+
 .header
 {
     position: absolute;
