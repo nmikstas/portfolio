@@ -332,26 +332,164 @@ let getGameObject = (rows, columns, numWords, minLength, numTries) =>
 
 const evaluate = () =>
 {
-    
+    animActive = true;
+    document.getElementById("go-btn").removeEventListener("click", evaluate);
+    evalColumnLocks();
+}
 
+//-------------------- Column Lock Evaluations --------------------
+let columnOpacity = 0;
+let colLocksAnimArray = new Array(0);
 
+const evalColumnLocks = () =>
+{
+    columnOpacity = 0;
+    colLocksAnimArray.length = 0;
 
+    //Check for column locks.
+    for(let i = 0; i < columns; i++)
+    {
+        if(gameObject.columnArray[i] === i)
+        {
+            //Only include new columns.
+            if(!gameObject.locksArray[i].column)
+            {
+                gameObject.locksArray[i].column = true;
+                colLocksAnimArray.push(columnArray[i]);
+            }
+        }
+    }
 
+    if(colLocksAnimArray.length > 0)
+    {
+        setTimeout(animColumnLocks, 20);
+    }
+    else
+    {
+        evalDoneColumn();
+    }
+}
 
+const animColumnLocks = () =>
+{
+    for(let i = 0; i < colLocksAnimArray.length; i++)
+    {
+        colLocksAnimArray[i].style.backgroundColor = "rgba(157, 188, 255, " + columnOpacity +")";
+    }
 
+    columnOpacity += .1;
 
+    if(columnOpacity > 1)
+    {
+        evalDoneColumn();
+    }
+    else
+    {
+        setTimeout(animColumnLocks, 20);
+    }
+}
 
+//-------------------- Completed Columns Evaluations --------------------
+let doneColAnimArray = new Array(0);
 
+const evalDoneColumn = () =>
+{
+    doneColAnimArray.length = 0;
 
+    //Check for column AND letter locks.
+    for(let i = 0; i < columns; i++)
+    {
+        //Check if column is locked and correct letter is on top.
+        if(gameObject.locksArray[i].column && gameObject.letterArray[0][i] === gameObject.winningRow[i])
+        {
+            //Only include new letters.
+            if(!gameObject.locksArray[i].letter)
+            {
+                gameObject.locksArray[i].letter = true;
+                doneColAnimArray.push(i);
+            }
+        }
+    }
 
+    if(doneColAnimArray.length === 0)
+    {
+        evalRightLetWrongCol();
+    }
+    else
+    {
+        //Cycle through the solved columns and remove all the letters except for the top one.
+        for(let i = 0; i < doneColAnimArray.length; i++)
+        {
+            //Set scroll offset to zero to make things easier.
+            columnArray[doneColAnimArray[i]].scrollTop = 0;
 
+            //Remove all letters except for the first one.
+            for(let j = 1; j < columnArray[doneColAnimArray[i]].childNodes.length; j++)
+            {
+                columnArray[doneColAnimArray[i]].childNodes[j].style.transform = "scale(0, 0)";
+                columnArray[doneColAnimArray[i]].childNodes[j].style.transitionDuration = ".5s";
+            }
+        }
 
+        setTimeout(animDoneColumn, 500);
+    }
+}
 
+const animDoneColumn = () =>
+{
+    //Transition background color to green.
+    for(let i = 0; i < doneColAnimArray.length; i++)
+    {
+        columnArray[doneColAnimArray[i]].style.backgroundColor = "rgb(169, 255, 158)";
+        columnArray[doneColAnimArray[i]].style.transitionDuration = ".5s";
+        columnArray[doneColAnimArray[i]].style.height = letterHeight + "px";
+    }
+   
+    setTimeout(evalRightLetWrongCol, 500);
+}
 
+//-------------------- Right Letter Wrong Column Evaluations --------------------
 
+const evalRightLetWrongCol = () =>
+{
+    evalFinished();
+}
 
+const animRightLetWrongCol = () =>
+{
 
-    
+}
+
+//-------------------- Used Letter Evaluations --------------------
+
+const evalUsedLetters = () =>
+{
+
+}
+
+const animUsedLetters = () =>
+{
+
+}
+
+//-------------------- Unused Letter Evaluations --------------------
+
+const evalUnusedLetters = () =>
+{
+
+}
+
+const animUnusedLetters = () =>
+{
+
+}
+
+//-------------------- Finished Evaluations --------------------
+const evalFinished = () =>
+{   
+    redraw();
+    animActive = false;
+    document.getElementById("go-btn").addEventListener("click", evaluate);
 }
 
 const printGameObject = (go) =>
@@ -465,7 +603,7 @@ const columnSwap = () =>
         {
             columnArray[colIndex1].style.transform = "scale(1.1, 1.05)";
             columnArray[colIndex1].style.transitionDuration = ".15s";
-            columnArray[colIndex1].style.backgroundColor = "rgb(231, 165, 43)";
+            columnArray[colIndex1].style.backgroundColor = "rgb(230, 230, 230)";
         }
     }
     else if(colIndex1 !== undefined && colIndex2 !== undefined)
@@ -1048,10 +1186,7 @@ document.getElementById("go-btn").addEventListener("touchstart", () =>
     isGo = true;
 });
 
-document.getElementById("go-btn").addEventListener("click", () =>
-{
-    evaluate();
-});
+document.getElementById("go-btn").addEventListener("click", evaluate);
 
 /******************************************* Game Code *******************************************/
 
