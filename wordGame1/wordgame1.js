@@ -37,6 +37,12 @@ let animIndexArray = new Array(0);
 let animState = 0;
 let animTimer;
 
+//Letter height in web presentation.
+let letterHeight = 0;
+
+//Go button pressed indicator.
+let isGo = false;
+
 //This can possibly be used for giving a heavier bias to words starting 
 //with certain letters by putting those letters in this array multiple times.
 const alphabet =
@@ -324,6 +330,30 @@ let getGameObject = (rows, columns, numWords, minLength, numTries) =>
 
 /************************************* Game Control Functions ************************************/
 
+const evaluate = () =>
+{
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+}
+
 const printGameObject = (go) =>
 {
     console.log("------------------ Game Object ------------------");
@@ -371,7 +401,6 @@ const printGameObject = (go) =>
 const resetGame = () =>
 {
     gameObject = getGameObject(rows, columns, numWords, minLength, numTries);
-    if(debug)printGameObject(gameObject);
 }
 
 //Set the selections in the game settings modal.
@@ -413,9 +442,17 @@ const columnSwap = () =>
     {
         colIndex2 = tempIndex;
     }
-    
+
     if(colIndex1 !== undefined && colIndex2 === undefined)
     {
+        //Accounts for a corner case where the border is clicked.
+        if(isNaN(colIndex1))
+        {
+            colIndex1 = undefined;
+            colIndex2 = undefined;
+            return;
+        }
+
         if(gameObject.locksArray[colIndex1].column)
         {
             //Locked. Indicate it can't move and cancel.
@@ -433,6 +470,14 @@ const columnSwap = () =>
     }
     else if(colIndex1 !== undefined && colIndex2 !== undefined)
     {
+        //Accounts for a corner case where the border is clicked.
+        if(isNaN(colIndex2))
+        {
+            colIndex1 = undefined;
+            colIndex2 = undefined;
+            return;
+        }
+
         if(gameObject.locksArray[colIndex2].column)
         {
             //Locked. Indicate it can't move and cancel.
@@ -466,6 +511,144 @@ const columnSwap = () =>
     }
 }
 
+//Take all the blanks out of the columns and put them at the bottom.
+const updateColumns = () =>
+{
+    for(let i = 0; i < columns; i++)
+    {
+        let letterCount = 0;
+        let tempArray = new Array(0);
+
+        //Take all the valid letters out of the current column and push them into the temp array.
+        for(let j = 0; j < rows; j++)
+        {
+            if(gameObject.letterArray[j][i] !== " ")
+            {
+                tempArray.push(gameObject.letterArray[j][i]);
+                letterCount++;
+            }
+        }
+
+        //Replace the letters in the letter array with the consolidated version.
+        for(let j = 0; j < rows; j++)
+        {
+            gameObject.letterArray[j][i] = " ";
+        }
+
+        for(let j = 0; j < tempArray.length; j++)
+        {
+            gameObject.letterArray[j][i] = tempArray[j];
+        }
+
+        //Update the letters remaining array.
+        gameObject.remainArray[i] = letterCount;
+
+        //Update the letter lock indicator, if necessary.
+        if(letterCount === 1)
+        {
+            gameObject.locksArray[i].letter = true;
+        }
+    }
+}
+
+//This will allow for easier testing and verify things stay valid.
+const checkLetterLock = () =>
+{
+    for(let i = 0; i < columns; i++)
+    {
+        if(gameObject.locksArray[i].letter)
+        {
+            //Get the correct final letter for the current column.
+            let finalLetter = gameObject.winningRow[gameObject.columnArray[i]];
+
+            for(let j = 0; j < rows; j++)
+            {
+                gameObject.letterArray[j][i] = (j === 0) ? finalLetter : " ";
+            }
+        }
+    }
+}
+
+//Update the rotation of the column after a user has clicked and dragged it.
+const updateColumnDrag = () =>
+{
+    if(isGo)
+    {
+        isGo = false;
+        return;
+    }
+
+    if(animActive) return;
+    if(singleClick) return;
+
+    for(let i = 0; i < columns; i++)
+    {
+        //Get number of letters remaining in current column.
+        let lettersRemaining = gameObject.remainArray[i];
+
+        //Get the scroll offset for current column.
+        let thisScrollOffset = columnArray[i].scrollTop;
+
+        //Caclulate the scroll offset for the first character.
+        let zeroScroll = Math.floor(letterHeight * lettersRemaining);
+
+        //Calculate how many letters away from zero scroll.
+        let lettersOffset = Math.round((thisScrollOffset - zeroScroll) / letterHeight) % lettersRemaining;
+    
+        //Get the remaining letters from the current column.
+        let tempArray = new Array(0);
+        let reformedArray = new Array(0);
+        for(let j = 0; j < rows; j++)
+        {
+            if(gameObject.letterArray[j][i] !== " ")
+            {
+                tempArray.push(gameObject.letterArray[j][i]);
+            }
+        }
+
+        //Update the column order.
+        if(lettersOffset > 0)
+        {
+            for(let j = lettersOffset; j < tempArray.length; j++)
+            {
+                reformedArray.push(tempArray[j]);
+            }
+
+            for(let j = 0; j < lettersOffset; j++)
+            {
+                reformedArray.push(tempArray[j]);
+            }
+
+            for(let j = 0; j < reformedArray.length; j++)
+            {
+                gameObject.letterArray[j][i] = reformedArray[j];
+            }
+        }
+
+        if(lettersOffset < 0)
+        {
+            for(let j = tempArray.length + lettersOffset; j < tempArray.length; j++)
+            {
+                reformedArray.push(tempArray[j]);
+            }
+
+            for(let j = 0; j < tempArray.length + lettersOffset; j++)
+            {
+                reformedArray.push(tempArray[j]);
+            }
+
+            for(let j = 0; j < reformedArray.length; j++)
+            {
+                gameObject.letterArray[j][i] = reformedArray[j];
+            }
+        }
+    }
+
+    //Show the results.
+    if(debug)printGameObject(gameObject);
+    redraw();
+}
+
 /********************************** Game Presentation Functions **********************************/
 
 const redraw = () =>
@@ -482,6 +665,12 @@ const redraw = () =>
     triesRemaining.innerHTML = "Tries Remaining: " + numTries;
 
     let limitingFactor = (gameWidth > gameHeight) ? gameHeight : gameWidth;
+
+    //Consolidate columns.
+    updateColumns();
+
+    //Check for letter lock only.
+    checkLetterLock();
 
     //Need to transpose the letter array.
     let transLetterArray = new Array(columns);
@@ -507,6 +696,7 @@ const redraw = () =>
     //Generate the column divs.
     for(let i = 0; i < columns; i++)
     {
+        //Else draw whole column.
         let thisDiv = document.createElement("div");
         columnArray.push(thisDiv);
         thisDiv.classList.add("column-div");
@@ -515,24 +705,34 @@ const redraw = () =>
         thisDiv.setAttribute("index", i);
         gameBody.appendChild(thisDiv);
 
-        if(gameObject.locksArray[i].column)
+        thisDiv.addEventListener("mousedown", start);
+	    thisDiv.addEventListener("touchstart", start);
+
+        if(!gameObject.locksArray[i].letter)
+        {
+            thisDiv.addEventListener("mousemove", move);
+            thisDiv.addEventListener("touchmove", move);
+            thisDiv.addEventListener("mouseleave", end);
+        }
+	    
+	    thisDiv.addEventListener("mouseup", release);
+	    thisDiv.addEventListener("touchend", end);
+
+        //Check for column lock only.
+        if(gameObject.locksArray[i].column && !gameObject.locksArray[i].letter)
         {
             thisDiv.style.backgroundColor = "rgb(157, 188, 255)";
         }
 
-        thisDiv.addEventListener("mousedown", start);
-	    thisDiv.addEventListener("touchstart", start);
-
-	    thisDiv.addEventListener("mousemove", move);
-	    thisDiv.addEventListener("touchmove", move);
-
-	    thisDiv.addEventListener("mouseleave", end);
-	    thisDiv.addEventListener("mouseup", release);
-	    thisDiv.addEventListener("touchend", end);
+        //Check for word lock and column lock.
+        if(gameObject.locksArray[i].column && gameObject.locksArray[i].letter)
+        {
+            thisDiv.style.backgroundColor = "rgb(169, 255, 158)";
+        }
     }
 
     //Get the exact letter height. Need to subtract 2. Border, perhaps?
-    let letterHeight = parseFloat(columnArray[0].getBoundingClientRect().height) - 2;
+    letterHeight = parseFloat(columnArray[0].getBoundingClientRect().height) - 2;
 
     //Calculate column height.
     for(let i = 0; i < columns; i++)
@@ -547,8 +747,11 @@ const redraw = () =>
     {
         columnArray[i].innerHTML = "";
 
+        //Only put one copy of letter in box if it is letter locked.
+        let repeats = (gameObject.locksArray[i].letter) ? 1 : 3;
+
         //Push 3 copies into the array for scrolling.
-        for(let j = 0; j < 3; j++)
+        for(let j = 0; j < repeats; j++)
         {
             for(let k = 0; k < transLetterArray[i].length; k++)
             {
@@ -562,9 +765,9 @@ const redraw = () =>
     }
 
     //Calculate scroll offset.
-    let scrollOffset = letterHeight * transLetterArray[0].length;
     for(let i = 0; i < columns; i++)
     {
+        let scrollOffset = letterHeight * gameObject.remainArray[i];
         columnArray[i].scrollTop = scrollOffset;     
     }
 }
@@ -610,6 +813,10 @@ const doSwapAnimations = () =>
             //Swap items in the locks array.
             [gameObject.locksArray[animIndexArray[0]], gameObject.locksArray[animIndexArray[1]]] =
             [gameObject.locksArray[animIndexArray[1]], gameObject.locksArray[animIndexArray[0]]];
+
+            //Swap items in letters remaining array.
+            [gameObject.remainArray[animIndexArray[0]], gameObject.remainArray[animIndexArray[1]]] =
+            [gameObject.remainArray[animIndexArray[1]], gameObject.remainArray[animIndexArray[0]]];
 
             if(debug)printGameObject(gameObject);
             redraw();
@@ -697,10 +904,10 @@ const release = (e) =>
 const start = (e) =>
 {
     if(animActive) return;
+
     //Set a timer to check for a column swap(single fast click).
     setTimeout(checkColumnSwap, 150);
     singleClick = true; 
-    
     isDown = true;
     scrollDiv = e.target.parentNode;
     letterDiv = e.target;
@@ -714,6 +921,9 @@ const start = (e) =>
 
 const move = (e) =>
 {
+    //Exit if in middle of column swap.
+    if(colIndex1 !== undefined) return;
+
     if(animActive) return;
     if(!isDown) return;
 
@@ -824,10 +1034,28 @@ const resize = window.addEventListener("resize", () =>
     redraw();
 });
 
+//Check for column updates whenever the mouse button is released.
+window.addEventListener("mouseup", updateColumnDrag);
+
+//Event listeners for the "Go" button.
+document.getElementById("go-btn").addEventListener("mousedown", () =>
+{
+    isGo = true;
+});
+
+document.getElementById("go-btn").addEventListener("touchstart", () =>
+{
+    isGo = true;
+});
+
+document.getElementById("go-btn").addEventListener("click", () =>
+{
+    evaluate();
+});
+
 /******************************************* Game Code *******************************************/
 
 resetGame();
-gameObject.locksArray[5].column = true;
-gameObject.locksArray[3].letter = true;
 redraw();
+if(debug)printGameObject(gameObject);
 
