@@ -938,13 +938,13 @@ const doSwapAnimations = () =>
 
                 columnArray[animIndexArray[0]].style.backgroundColor = "rgba(0, 0, 0, 0)";
                 columnArray[animIndexArray[0]].style.transform = "translate(" + (-xdiff) + "px)";
-                columnArray[animIndexArray[0]].style.transitionDuration = ".25s";
+                columnArray[animIndexArray[0]].style.transitionDuration = ".5s";
 
                 columnArray[animIndexArray[1]].style.backgroundColor = "rgba(0, 0, 0, 0)";
                 columnArray[animIndexArray[1]].style.transform = "translate(" + xdiff + "px)";
-                columnArray[animIndexArray[1]].style.transitionDuration = ".25s";
+                columnArray[animIndexArray[1]].style.transitionDuration = ".5s";
             }
-            animTimer = setTimeout(doSwapAnimations, 250);
+            animTimer = setTimeout(doSwapAnimations, 500);
             animState++;
         break;
 
@@ -1212,6 +1212,23 @@ document.getElementById("go-btn").addEventListener("click", evaluate);
 /******************************************* Game Code *******************************************/
 
 resetGame();
+
+//Setup for chain swap algorithm testing.
+gameObject.letterArray[0] = ["A", "W", "C", "D", "E", "F", "G", "H", "I", "J", "X", "L", "M", "N", "O", "P", "Q", "R", "S", "T"];
+gameObject.letterArray[1] = ["C", "D", "E", "A", "F", "B", "H", "J", "G", "I", "O", "N", "L", "K", "M", "T", "S", "Q", "P", "R"];
+gameObject.letterArray[2] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[3] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[4] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[5] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[6] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[7] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[8] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[9] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+
+gameObject.columnArray    = [ 2,   3,   4,   0,   5,   1,   7,   9,   6,   8,   14,  13,  11,  10,  12,  19,  18,  16,  15,  17];
+
+gameObject.winningRow     = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T"];
+
 redraw();
 if(debug)printGameObject(gameObject);
 
