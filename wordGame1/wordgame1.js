@@ -374,19 +374,11 @@ const animColumnLocks = () =>
 {
     for(let i = 0; i < colLocksAnimArray.length; i++)
     {
-        colLocksAnimArray[i].style.backgroundColor = "rgba(157, 188, 255, " + columnOpacity +")";
+        colLocksAnimArray[i].style.backgroundColor = "rgb(157, 188, 255)";
+        colLocksAnimArray[i].style.transitionDuration = ".3s";
     }
 
-    columnOpacity += .1;
-
-    if(columnOpacity > 1)
-    {
-        evalDoneColumn();
-    }
-    else
-    {
-        setTimeout(animColumnLocks, 20);
-    }
+    setTimeout(evalDoneColumn, 300);
 }
 
 //-------------------- Completed Columns Evaluations --------------------
@@ -452,10 +444,35 @@ const animDoneColumn = () =>
 
 const evalRightLetWrongCol = () =>
 {
-    evalFinished();
+    /*
+    let swap1 = columnArray[8].getBoundingClientRect().x;
+    let swap2 = columnArray[1].getBoundingClientRect().x;
+    let dx = swap1 - swap2;
+    console.log(swap1)
+    columnArray[1].style.transform = "translate(" + dx + "px)";
+    columnArray[8].style.transform = "translate(-" + dx + "px)";
+    columnArray[1].style.transitionDuration = ".5s";
+    columnArray[8].style.transitionDuration = ".5s";
+    */
+    
+    setTimeout(evalFinished, 500);
+    
 }
 
 const animRightLetWrongCol = () =>
+{
+    
+    
+}
+
+//-------------------- Unused Letter Evaluations --------------------
+
+const evalUnusedLetters = () =>
+{
+
+}
+
+const animUnusedLetters = () =>
 {
 
 }
@@ -468,18 +485,6 @@ const evalUsedLetters = () =>
 }
 
 const animUsedLetters = () =>
-{
-
-}
-
-//-------------------- Unused Letter Evaluations --------------------
-
-const evalUnusedLetters = () =>
-{
-
-}
-
-const animUnusedLetters = () =>
 {
 
 }
@@ -898,8 +903,15 @@ const redraw = () =>
                 thisDiv.classList.add("letter-div");
                 thisDiv.innerHTML = transLetterArray[i][k];
                 thisDiv.style.fontSize = "2.5vw";
+                thisDiv.style.height = letterHeight + "px"; //Explicitly assign letter div height for transition effect.
             }
         }
+    }
+
+    //Explicitly set the horizontal position of the columns for transition effects.
+    for(let i = 0; i < columns; i++)
+    {
+        columnArray[i].style.left = columnArray[i].getBoundingClientRect().x;
     }
 
     //Calculate scroll offset.
@@ -1036,7 +1048,16 @@ const release = (e) =>
     letterDiv.style.cursor = "pointer";
 
     //Check if there was a quick click, indicating a column swap is desired.
-    if(singleClick)columnSwap();
+    if(singleClick)
+    {
+        columnSwap();
+    }
+    //Cancel any column swap if second click was a long click.
+    else 
+    {
+        colIndex1 = undefined;
+        colIndex2 = undefined;
+    }
 }
 
 const start = (e) =>
