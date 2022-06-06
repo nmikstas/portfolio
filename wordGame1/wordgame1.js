@@ -438,7 +438,13 @@ const animDoneColumn = () =>
         columnArray[doneColAnimArray[i]].style.height = letterHeight + "px";
     }
    
+    setTimeout(animDoneColumnFinish, 500);
+}
+
+const animDoneColumnFinish = () =>
+{
     setTimeout(evalRightLetWrongCol, 500);
+    redraw();
 }
 
 //-------------------- Right Letter Wrong Column Evaluations --------------------
@@ -758,40 +764,115 @@ const evalUnusedLetters = () =>
         }
     }
 
-    if(debug)console.log("Unused Letters:");
-    if(debug)console.log(unusedLettersArray);
-
-
-
-
-
-    for(let i = 0; i < gameObject.letterArray.length; i++)
+    if(unusedLettersArray.length !== 0)
     {
-        for(let j = 0; j < gameObject.letterArray[i].length; j++)
+        if(debug)console.log("Unused Letters:");
+        if(debug)console.log(unusedLettersArray);
+
+        //Shrink unused letters away.
+        for(let i = 0; i < gameObject.columns; i++)
         {
-            if(unusedLettersArray.includes(gameObject.letterArray[i][j]))
+            //Only work on columns that have not already been solved
+            if(!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter)
             {
-                gameObject.letterArray[i][j] = " ";
+                //Reset scroll for animation effects.
+                columnArray[i].scrollTop = 0;
+
+                for(let j = 0; j < columnArray[i].childNodes.length; j++)
+                {
+                    let thisLetter = columnArray[i].childNodes[j].innerHTML;
+                    if(unusedLettersArray.includes(thisLetter))
+                    {
+                        columnArray[i].childNodes[j].style.transform = "scale(0, 0)";
+                        columnArray[i].childNodes[j].style.transitionDuration = ".5s";
+                    }
+                }
             }
+        }
+
+        //Remove letters from the game object.
+        for(let i = 0; i < gameObject.letterArray.length; i++)
+        {
+            for(let j = 0; j < gameObject.letterArray[i].length; j++)
+            {
+                if(unusedLettersArray.includes(gameObject.letterArray[i][j]))
+                {
+                    gameObject.letterArray[i][j] = " ";
+                }
+            }
+        }
+
+        setTimeout(() => animUnusedLetters(unusedLettersArray), 500);
+    }
+    else
+    {
+        evalUsedLetters();
+    }
+}
+
+const animUnusedLetters = (unusedLettersArray) =>
+{
+    //Move letters up in the columns to fill in any holes from removed letters.
+    for(let i = 0; i < gameObject.columns; i++)
+    {
+        let missingLetters = 0;
+
+        //Go through only the first repitition of letters.
+        for(let j = 0; j < gameObject.remainArray[i]; j++)
+        {
+            let thisLetter
+            try
+            {
+                thisLetter = columnArray[i].childNodes[j].innerHTML;
+            }
+            catch(error)
+            {
+                console.log("ERROR");
+                console.log("i: %s, j: %s, gameObject.remainArray[i]: %s, childNodes length: %s", 
+                             i, j, gameObject.remainArray[i], columnArray[i].childNodes.length)
+            }
+            
+            
+            if(unusedLettersArray.includes(thisLetter) && gameObject.remainArray[i] > 1)
+            {
+                //Letter has been removed.
+                missingLetters++;
+            }
+            else
+            {
+                //Letter is still present. Move it up, if necessary.
+                if(missingLetters)
+                {
+                    let dy = -missingLetters * letterHeight;
+                    columnArray[i].childNodes[j].style.transitionDuration = ".5s";
+                    columnArray[i].childNodes[j].style.transform = "translateY(" + dy + "px)";
+                }
+            }
+        }
+
+        //Resize column, if necessary.
+        if(missingLetters)
+        {
+            console.log("Column: %s, missingLetters: %s", i, missingLetters)
+            columnArray[i].style.transitionDuration = ".5s";
+            columnArray[i].style.height = ((gameObject.remainArray[i] - missingLetters) * letterHeight) + "px";
         }
     }
 
-
-    setTimeout(animUnusedLetters, 500);
+    setTimeout(animUnusedLettersFinish, 500);
 }
 
-const animUnusedLetters = () =>
+const animUnusedLettersFinish = () =>
 {
-
     redraw();
-    evalFinished();
+    setTimeout(evalUsedLetters, 500);
 }
 
 //-------------------- Used Letter Evaluations --------------------
 
 const evalUsedLetters = () =>
 {
-
+    evalFinished();
 }
 
 const animUsedLetters = () =>
@@ -1196,6 +1277,7 @@ const redraw = () =>
         if(gameObject.locksArray[i].column && gameObject.locksArray[i].letter)
         {
             thisDiv.style.backgroundColor = "rgb(169, 255, 158)";
+            gameObject.remainArray[i] = 1;
         }
     }
 
@@ -1540,19 +1622,21 @@ resetGame();
 
 //Setup for chain swap algorithm testing.
 gameObject.letterArray[0] = ["A", "W", "C", "D", "E", "F", "G", "H", "I", "J", "V", "L", "M", "N", "O", "P", "Q", "R", "S", "T"];
-gameObject.letterArray[1] = ["Z", "D", "Z", "A", "F", "B", "H", "J", "G", "I", "O", "N", "L", "K", "M", "T", "S", "Q", "P", "R"];
-gameObject.letterArray[2] = ["Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
-gameObject.letterArray[3] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[1] = [" ", "D", "Z", "A", "F", "B", "H", "J", "G", "I", "O", "N", "L", "K", "M", "T", "S", "Q", "P", "R"];
+gameObject.letterArray[2] = [" ", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[3] = [" ", "Z", "Z", "C", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
 gameObject.letterArray[4] = [" ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", " ", " ", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
-gameObject.letterArray[5] = ["Z", "Z", "E", "Z", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
-gameObject.letterArray[6] = ["C", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
-gameObject.letterArray[7] = ["Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
-gameObject.letterArray[8] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
-gameObject.letterArray[9] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[5] = [" ", "Z", "E", "Z", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[6] = [" ", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[7] = [" ", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[8] = [" ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[9] = [" ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
 
-gameObject.columnArray    = [ 2,   3,   4,   0,   5,   1,   7,   9,   6,   8,   14,  13,  11,  10,  12,  19,  18,  16,  15,  17];
+gameObject.columnArray    = [ 0,   3,   4,   2,   5,   1,   7,   9,   6,   8,   14,  13,  11,  10,  12,  19,  18,  16,  15,  17];
 
 gameObject.winningRow     = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T"];
+gameObject.locksArray[0].column = true;
+gameObject.locksArray[0].letter = true;
 
 redraw();
 if(debug)printGameObject(gameObject);
