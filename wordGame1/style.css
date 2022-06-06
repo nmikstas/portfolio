@@ -201,7 +201,12 @@
     border-radius: .25vw;
     text-align: center;
     overflow: hidden;
-    vertical-align: top;
+    vertical-align: top; 
+}
+
+.smooth-scroll
+{
+    scroll-behavior: smooth;
 }
 
 .letter-div

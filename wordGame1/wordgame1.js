@@ -36,6 +36,7 @@ let animActive = false;
 let animIndexArray = new Array(0);
 let animState = 0;
 let animTimer;
+let didSwap = false;
 
 //Letter height in web presentation.
 let letterHeight = 0;
@@ -444,37 +445,346 @@ const animDoneColumn = () =>
 
 const evalRightLetWrongCol = () =>
 {
-    /*
-    let swap1 = columnArray[8].getBoundingClientRect().x;
-    let swap2 = columnArray[1].getBoundingClientRect().x;
-    let dx = swap1 - swap2;
-    console.log(swap1)
-    columnArray[1].style.transform = "translate(" + dx + "px)";
-    columnArray[8].style.transform = "translate(-" + dx + "px)";
-    columnArray[1].style.transitionDuration = ".5s";
-    columnArray[8].style.transitionDuration = ".5s";
-    */
-    
-    setTimeout(evalFinished, 500);
-    
+    //Get array of the right letters but wrong columns.
+    let moveArray = new Array(0);
+
+    for(let i = 0; i < columns; i++)
+    {
+        if(gameObject.letterArray[0][i] === gameObject.winningRow[i] && !gameObject.locksArray[i].column)
+        {
+            let fromColumn;
+            //Find the destination column
+            for(let j = 0; j < gameObject.columnArray.length; j++)
+            {
+                if(gameObject.columnArray[j] === i)
+                {
+                    fromColumn = j;
+                }
+            }
+
+            let moveObj = {from: fromColumn, to: i};
+            moveArray.push([moveObj]);
+        }
+    }
+
+    if(moveArray.length === 0)
+    {
+        //No move chains were found, move to next step.
+        didSwap = false;
+        evalUnusedLetters();
+    }
+    else
+    {
+        //Move chains found. Process those chains.
+        didSwap = true;
+        let isModified = false;
+        do
+        {
+            isModified = false;
+            for(let i = 0; i < moveArray.length; i++)                //First dimension
+            {
+                for(let j = 0; j < moveArray.length; j++)            //First dimension
+                {
+                    for(let k = 0; k < moveArray[i].length; k++)     //Second dimension
+                    {
+                        for(let l = 0; l < moveArray[j].length; l++) //Second dimension
+                        {
+                            if(i !== j && (moveArray[i][k].from === moveArray[j][l].to || moveArray[i][k].to === moveArray[j][l].from))
+                            {
+                                let theseMoves = moveArray.splice(j, 1);                                
+                                moveArray[i] = [...moveArray[i], ...theseMoves[0]];
+                                isModified = true;
+                            }
+                            if(isModified) break;
+                        }
+                        if(isModified) break;
+                    }     
+                    if(isModified) break;
+                }
+                if(isModified) break;
+            }
+        }while(isModified);
+
+        if(debug)console.log("Word Chains:");
+        if(debug)console.log(moveArray);
+
+        //Move chains are now complete. Need to determine which are closed chains and which are open chains.
+        let closeArray = new Array(0);
+
+        //Loop through letter chains to find open chains. If open chain, close it with one additional move.
+        for(let i = 0; i < moveArray.length; i++)
+        {
+            let to, from;
+            let isOpenChain = false;
+            
+            for(let j = 0; j < moveArray[i].length; j++)
+            {
+                let isFound = false;
+                
+                for(let k = 0; k < moveArray[i].length; k++)
+                {
+                    if(moveArray[i][j].to === moveArray[i][k].from)
+                    {
+                        isFound = true;
+                    }
+                }
+
+                if(!isFound)
+                {
+                    from = moveArray[i][j].to;
+                    isOpenChain = true;
+                }
+            }
+
+            for(let j = 0; j < moveArray[i].length; j++)
+            {
+                let isFound = false;
+                
+                for(let k = 0; k < moveArray[i].length; k++)
+                {
+                    if(moveArray[i][j].from === moveArray[i][k].to)
+                    {
+                        isFound = true;
+                    }
+                }
+
+                if(!isFound)
+                {
+                    to = moveArray[i][j].from;
+                }
+            }
+
+            if(isOpenChain)
+            {
+                closeArray.push({from: from, to: to});
+            }
+        }
+
+        if(debug)console.log("Close Array:");
+        if(debug)console.log(closeArray);
+
+        //Flatten out the arrays and put them into a single array for ease of processing.
+        let moveChainArray = new Array(0);
+
+        for(let i = 0; i < moveArray.length; i++)
+        {
+            for(let j = 0; j < moveArray[i].length; j++)
+            {
+                moveChainArray.push({from: moveArray[i][j].from, to: moveArray[i][j].to, rotate: true});
+            }
+        }
+
+        for(let i = 0; i < closeArray.length; i++)
+        {
+            moveChainArray.push({from: closeArray[i].from, to: closeArray[i].to, rotate: false});
+        }
+
+        if(debug)console.log("Move Chain Array:");
+        if(debug)console.log(moveChainArray);
+
+        //Swap columns.
+        for(let i = 0; i < moveChainArray.length; i++)
+        {
+            let startPos = columnArray[moveChainArray[i].from].getBoundingClientRect().x;
+            let endPos = columnArray[moveChainArray[i].to].getBoundingClientRect().x;
+            let xDiff = endPos - startPos;
+            columnArray[moveChainArray[i].from].style.transform = "translate(" + xDiff + "px)";
+            columnArray[moveChainArray[i].from].style.transitionDuration = ".5s";
+        }
+
+        //Set smooth scrolling for all columns.
+        for(let i = 0; i < columnArray.length; i++)
+        {
+            columnArray[i].classList.add("smooth-scroll");
+        }
+
+        //Make an array of indexes to change to for rotation changes later.
+        let indexesArray = new Array(gameObject.columns);
+        for(let i = 0; i < indexesArray.length; i++)
+        {
+            indexesArray[i] = -1;
+        }
+
+        //Need to rotate letters to the proper position in the column.
+        for(let i = 0; i < moveChainArray.length; i++)
+        {
+            if(moveChainArray[i].rotate)
+            {
+                let index;
+                let letterToChangeTo = gameObject.winningRow[moveChainArray[i].to];
+                
+                //Find the index of the letter to rotate to.
+                for(let j = 0; j < gameObject.letterArray.length; j++)
+                {
+                    if(gameObject.letterArray[j][moveChainArray[i].from] === letterToChangeTo)
+                    {
+                        index = j;
+                        indexesArray[moveChainArray[i].from] = index;
+                    }
+
+                    columnArray[moveChainArray[i].from].scrollTop += letterHeight * index;
+                    //columnArray[moveChainArray[i].from].style.backgroundColor = "rgb(169, 255, 158)";
+                }
+            }
+        }
+
+        //Create a new version of the letter array and copy in all the changes.
+        let letterArray = new Array(gameObject.rows);
+        for(let i = 0; i < letterArray.length; i++)
+        {
+            letterArray[i] = [...gameObject.letterArray[i]];
+        }
+        
+        //Create a new version of the indexes array.
+        let indArray = [...indexesArray];
+
+        //create new version of the columns array.
+        let colArray = [...gameObject.columnArray];
+
+        //Create new version of the locks array.
+        let lckArray = [...gameObject.locksArray];
+
+        //Create a new version of the remaining letters array.
+        let remArray = [gameObject.remainArray];
+        
+        //Rearrange the order of all the newly formed arrays.
+        for(let i = 0; i < moveChainArray.length; i++)
+        {
+            for(let j = 0; j < gameObject.letterArray.length; j++)
+            {
+                letterArray[j][moveChainArray[i].to] = gameObject.letterArray[j][moveChainArray[i].from];
+            }
+
+            indArray[moveChainArray[i].to] = indexesArray[moveChainArray[i].from];
+            colArray[moveChainArray[i].to] = gameObject.columnArray[moveChainArray[i].from];
+            lckArray[moveChainArray[i].to] = gameObject.locksArray[moveChainArray[i].from];
+            remArray[moveChainArray[i].to] = gameObject.remainArray[moveChainArray[i].from];
+        }
+
+        //Now all the columns in the letter array need to be rotated to the proper indexes.
+        for(let i = 0; i < gameObject.columns; i++)
+        {
+            if(indArray[i] !== -1)
+            {
+                let rotatedArray = new Array(0);
+                for(let j = indArray[i]; j < remArray[i]; j++)
+                {
+                    rotatedArray.push(letterArray[j][i]);
+                }
+                for(let j = 0; j < indArray[i]; j++)
+                {
+                    rotatedArray.push(letterArray[j][i]);
+                }
+
+                //Copy rotated array back into the letter array.
+                for(let j = 0; j < rotatedArray.length; j++)
+                {
+                    letterArray[j][i] = rotatedArray[j];
+                }
+            }
+        }
+
+        //Update the game object!
+        for(let i = 0; i < gameObject.letterArray.length; i++)
+        {
+            gameObject.letterArray[i] = [...letterArray[i]];
+        }
+
+        gameObject.columnArray = [...colArray];
+        gameObject.locksArray = [...lckArray];
+        gameObject.remainArray = [...remArray];
+        
+        setTimeout(animRightLetWrongCol, 600);
+    } 
 }
 
 const animRightLetWrongCol = () =>
 {
-    
-    
+    //Set smooth scrolling for all columns.
+    for(let i = 0; i < columnArray.length; i++)
+    {
+        columnArray[i].classList.remove("smooth-scroll");
+    }
+
+    redraw();
+    if(didSwap)
+    {
+        evaluate();
+    }
+    else
+    {
+        evalUsedLetters();
+    }
 }
 
 //-------------------- Unused Letter Evaluations --------------------
 
 const evalUnusedLetters = () =>
 {
+    let unusedLettersArray = new Array(0);
 
+    //Create an ibject that holds all the instances of letters used in the solution.
+    let alphabetObj =
+    {
+        A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0, H: 0, I: 0, J: 0, K: 0, L: 0, M: 0,
+        N: 0, O: 0, P: 0, Q: 0, R: 0, S: 0, T: 0, U: 0, V: 0, W: 0, X: 0, Y: 0, Z: 0
+    }
+
+    //Keep track of what letters and how many are used in the solution.
+    for(let i = 0; i < gameObject.winningRow.length; i++)
+    {
+        alphabetObj[gameObject.winningRow[i]]++;
+    }
+
+    //Now subtract the solved letters from the alphabet object.
+    for(let i = 0; i < gameObject.letterArray[0].length; i++)
+    {
+        if(gameObject.locksArray[i].column && gameObject.locksArray[i].letter)
+        {
+            alphabetObj[gameObject.letterArray[0][i]]--;
+        }
+    }
+
+    //Now we can calculate an array of unused letters.
+    for(let i = 0; i < gameObject.letterArray[0].length; i++)
+    {
+        if(alphabetObj[gameObject.letterArray[0][i]] === 0 && (!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter))
+        {
+            let thisLetter = gameObject.letterArray[0][i];
+            if(!unusedLettersArray.includes(thisLetter))
+            {
+                unusedLettersArray.push(thisLetter);
+            }
+        }
+    }
+
+    if(debug)console.log("Unused Letters:");
+    if(debug)console.log(unusedLettersArray);
+
+
+
+
+
+    for(let i = 0; i < gameObject.letterArray.length; i++)
+    {
+        for(let j = 0; j < gameObject.letterArray[i].length; j++)
+        {
+            if(unusedLettersArray.includes(gameObject.letterArray[i][j]))
+            {
+                gameObject.letterArray[i][j] = " ";
+            }
+        }
+    }
+
+
+    setTimeout(animUnusedLetters, 500);
 }
 
 const animUnusedLetters = () =>
 {
 
+    redraw();
+    evalFinished();
 }
 
 //-------------------- Used Letter Evaluations --------------------
@@ -488,6 +798,21 @@ const animUsedLetters = () =>
 {
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //-------------------- Finished Evaluations --------------------
 const evalFinished = () =>
@@ -1214,16 +1539,16 @@ document.getElementById("go-btn").addEventListener("click", evaluate);
 resetGame();
 
 //Setup for chain swap algorithm testing.
-gameObject.letterArray[0] = ["A", "W", "C", "D", "E", "F", "G", "H", "I", "J", "X", "L", "M", "N", "O", "P", "Q", "R", "S", "T"];
-gameObject.letterArray[1] = ["C", "D", "E", "A", "F", "B", "H", "J", "G", "I", "O", "N", "L", "K", "M", "T", "S", "Q", "P", "R"];
-gameObject.letterArray[2] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
-gameObject.letterArray[3] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
-gameObject.letterArray[4] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
-gameObject.letterArray[5] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
-gameObject.letterArray[6] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
-gameObject.letterArray[7] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
-gameObject.letterArray[8] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
-gameObject.letterArray[9] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[0] = ["A", "W", "C", "D", "E", "F", "G", "H", "I", "J", "V", "L", "M", "N", "O", "P", "Q", "R", "S", "T"];
+gameObject.letterArray[1] = ["Z", "D", "Z", "A", "F", "B", "H", "J", "G", "I", "O", "N", "L", "K", "M", "T", "S", "Q", "P", "R"];
+gameObject.letterArray[2] = ["Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[3] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[4] = [" ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", " ", " ", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[5] = ["Z", "Z", "E", "Z", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[6] = ["C", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[7] = ["Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[8] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
+gameObject.letterArray[9] = ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
 
 gameObject.columnArray    = [ 2,   3,   4,   0,   5,   1,   7,   9,   6,   8,   14,  13,  11,  10,  12,  19,  18,  16,  15,  17];
 
@@ -1231,4 +1556,5 @@ gameObject.winningRow     = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "
 
 redraw();
 if(debug)printGameObject(gameObject);
+
 
