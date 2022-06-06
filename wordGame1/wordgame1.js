@@ -4,11 +4,11 @@
 let debug = true;
 
 //Initial state of game parameters.
-let rows = 10;
-let columns = 20;
-let numWords = 3;
-let minLength = 6;
-let numTries = 6;
+let rows = 5;
+let columns = 7;
+let numWords = 1;
+let minLength = 5;
+let numTries = 4;
 
 //Main game object;
 let gameObject;
@@ -37,6 +37,7 @@ let animIndexArray = new Array(0);
 let animState = 0;
 let animTimer;
 let didSwap = false;
+let removedLetters = false;
 
 //Letter height in web presentation.
 let letterHeight = 0;
@@ -79,7 +80,7 @@ const clrArr =
 let getWordLengths = (columns, numWords, minLength) =>
 {
     //Min/max columns: 12/20.
-    if(columns > 20 || columns < 12)
+    if(columns > 20 || columns < 5)
     {
         return -1;
     }
@@ -727,6 +728,7 @@ const animRightLetWrongCol = () =>
 
 const evalUnusedLetters = () =>
 {
+    removedLetters = false;
     let unusedLettersArray = new Array(0);
 
     //Create an ibject that holds all the instances of letters used in the solution.
@@ -853,9 +855,9 @@ const animUnusedLetters = (unusedLettersArray) =>
         //Resize column, if necessary.
         if(missingLetters)
         {
-            console.log("Column: %s, missingLetters: %s", i, missingLetters)
             columnArray[i].style.transitionDuration = ".5s";
             columnArray[i].style.height = ((gameObject.remainArray[i] - missingLetters) * letterHeight) + "px";
+            removedLetters = true;
         }
     }
 
@@ -865,7 +867,14 @@ const animUnusedLetters = (unusedLettersArray) =>
 const animUnusedLettersFinish = () =>
 {
     redraw();
-    setTimeout(evalUsedLetters, 500);
+    //if(removedLetters)
+    //{
+    //    evaluate();
+    //}
+    //else
+    //{   
+        setTimeout(evalUsedLetters, 500);
+    //}
 }
 
 //-------------------- Used Letter Evaluations --------------------
@@ -956,7 +965,7 @@ const resetGame = () =>
 const setSelections = (rows, columns, numWords, minLength, numTries) =>
 {
     const minRows = 3;
-    const minColumns = 12;
+    const minColumns = 5;
     const minWords = 1;
     const minLen = 2;
     const minTries = 2;
@@ -1619,25 +1628,6 @@ document.getElementById("go-btn").addEventListener("click", evaluate);
 /******************************************* Game Code *******************************************/
 
 resetGame();
-
-//Setup for chain swap algorithm testing.
-gameObject.letterArray[0] = ["A", "W", "C", "D", "E", "F", "G", "H", "I", "J", "V", "L", "M", "N", "O", "P", "Q", "R", "S", "T"];
-gameObject.letterArray[1] = [" ", "D", "Z", "A", "F", "B", "H", "J", "G", "I", "O", "N", "L", "K", "M", "T", "S", "Q", "P", "R"];
-gameObject.letterArray[2] = [" ", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
-gameObject.letterArray[3] = [" ", "Z", "Z", "C", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
-gameObject.letterArray[4] = [" ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", " ", " ", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
-gameObject.letterArray[5] = [" ", "Z", "E", "Z", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
-gameObject.letterArray[6] = [" ", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
-gameObject.letterArray[7] = [" ", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
-gameObject.letterArray[8] = [" ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
-gameObject.letterArray[9] = [" ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", " ", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"];
-
-gameObject.columnArray    = [ 0,   3,   4,   2,   5,   1,   7,   9,   6,   8,   14,  13,  11,  10,  12,  19,  18,  16,  15,  17];
-
-gameObject.winningRow     = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T"];
-gameObject.locksArray[0].column = true;
-gameObject.locksArray[0].letter = true;
-
 redraw();
 if(debug)printGameObject(gameObject);
 
