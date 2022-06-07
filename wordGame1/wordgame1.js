@@ -9,6 +9,7 @@ let columns = 7;
 let numWords = 1;
 let minLength = 5;
 let numTries = 4;
+let usedLettersArray = new Array(0);
 
 //Main game object;
 let gameObject;
@@ -54,32 +55,11 @@ const alphabet =
     "U", "V", "W", "X", "Y", "Z"
 ];
 
-//Constant color indexes.
-const BLACK   = 0;
-const ORANGE  = 1;
-const GREEN   = 2;
-const BLUE    = 3;
-const VIOLET  = 4;
-const WHITE   = 5;
-const DEFAULT = 6;
-
-//Array of colors
-const clrArr =
-[
-    "color:black",
-    "color:orange",
-    "color:green",
-    "color:blue",
-    "color:violet",
-    "color:white",
-    "color:default"
-];
-
 /************************************** Game Model Functions *************************************/
 
 let getWordLengths = (columns, numWords, minLength) =>
 {
-    //Min/max columns: 12/20.
+    //Min/max columns: 5/20.
     if(columns > 20 || columns < 5)
     {
         return -1;
@@ -434,6 +414,7 @@ const animDoneColumn = () =>
     //Transition background color to green.
     for(let i = 0; i < doneColAnimArray.length; i++)
     {
+        columnArray[doneColAnimArray[i]].style.fontWeight = "bold";
         columnArray[doneColAnimArray[i]].style.backgroundColor = "rgb(169, 255, 158)";
         columnArray[doneColAnimArray[i]].style.transitionDuration = ".5s";
         columnArray[doneColAnimArray[i]].style.height = letterHeight + "px";
@@ -444,8 +425,8 @@ const animDoneColumn = () =>
 
 const animDoneColumnFinish = () =>
 {
-    setTimeout(evalRightLetWrongCol, 500);
     redraw();
+    setTimeout(evalRightLetWrongCol, 500);
 }
 
 //-------------------- Right Letter Wrong Column Evaluations --------------------
@@ -478,7 +459,7 @@ const evalRightLetWrongCol = () =>
     {
         //No move chains were found, move to next step.
         didSwap = false;
-        evalUnusedLetters();
+        evalUsedLetters();
     }
     else
     {
@@ -630,7 +611,6 @@ const evalRightLetWrongCol = () =>
                     }
 
                     columnArray[moveChainArray[i].from].scrollTop += letterHeight * index;
-                    //columnArray[moveChainArray[i].from].style.backgroundColor = "rgb(169, 255, 158)";
                 }
             }
         }
@@ -724,6 +704,73 @@ const animRightLetWrongCol = () =>
     }
 }
 
+//-------------------- Used Letter Evaluations --------------------
+
+const evalUsedLetters = () =>
+{
+    let prevLength = usedLettersArray.length;
+
+    //Loop through the top row of letters and look for ones in the solution.
+    for(let i = 0; i < gameObject.columns; i++)
+    {
+        //Skip solved columns.
+        if(!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter)
+        {
+            let thisLetter = gameObject.letterArray[0][i];
+
+            //Loop through winning row and locks array to see if this a used letter not yet solved for.
+            for(let j = 0; j < gameObject.columns; j++)
+            {
+                //If letter appears in the winning row in an unlocked column, add it to the used letters array.
+                if((thisLetter === gameObject.winningRow[j]) && (!gameObject.locksArray[j].column || !gameObject.locksArray[j].letter))
+                {
+                    //Only add if its not already in there.
+                    if(!usedLettersArray.includes(thisLetter))
+                    {
+                        usedLettersArray.push(thisLetter);
+                    }
+                }
+            }
+        }
+    }
+
+    if(debug)console.log("Used Letters:");
+    if(debug)console.log(usedLettersArray);
+
+
+    //Run the used letters animation only if something has changed.
+    if(usedLettersArray.length !== prevLength)
+    {
+        //Cycle through all the letters on the screen and add an orange background to the used letters.
+        {
+            for(let i = 0; i < columnArray.length; i++)
+            {
+                for(let j = 0; j < columnArray[i].childNodes.length; j++)
+                {
+                    let thisLetter = columnArray[i].childNodes[j].innerHTML;
+                    if(usedLettersArray.includes(thisLetter) && (!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter))
+                    {
+                        columnArray[i].childNodes[j].style.fontWeight = "bold";
+                        columnArray[i].childNodes[j].style.transitionDuration = ".5s";
+                    }
+                }
+            }
+        }
+
+        setTimeout(animUsedLetters, 500);
+    }
+    else
+    {
+        evalUnusedLetters();
+    }
+}
+
+const animUsedLetters = () =>
+{
+    redraw();
+    evalUnusedLetters();
+}
+
 //-------------------- Unused Letter Evaluations --------------------
 
 const evalUnusedLetters = () =>
@@ -808,7 +855,7 @@ const evalUnusedLetters = () =>
     }
     else
     {
-        evalUsedLetters();
+        evalFinished();
     }
 }
 
@@ -867,42 +914,8 @@ const animUnusedLetters = (unusedLettersArray) =>
 const animUnusedLettersFinish = () =>
 {
     redraw();
-    //if(removedLetters)
-    //{
-    //    evaluate();
-    //}
-    //else
-    //{   
-        setTimeout(evalUsedLetters, 500);
-    //}
+    setTimeout(evalFinished, 500);
 }
-
-//-------------------- Used Letter Evaluations --------------------
-
-const evalUsedLetters = () =>
-{
-    evalFinished();
-}
-
-const animUsedLetters = () =>
-{
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //-------------------- Finished Evaluations --------------------
 const evalFinished = () =>
@@ -959,6 +972,7 @@ const printGameObject = (go) =>
 const resetGame = () =>
 {
     gameObject = getGameObject(rows, columns, numWords, minLength, numTries);
+    usedLettersArray.length = 0;
 }
 
 //Set the selections in the game settings modal.
@@ -1285,6 +1299,7 @@ const redraw = () =>
         //Check for word lock and column lock.
         if(gameObject.locksArray[i].column && gameObject.locksArray[i].letter)
         {
+            thisDiv.style.fontWeight = "bold";
             thisDiv.style.backgroundColor = "rgb(169, 255, 158)";
             gameObject.remainArray[i] = 1;
         }
@@ -1335,6 +1350,22 @@ const redraw = () =>
     {
         let scrollOffset = letterHeight * gameObject.remainArray[i];
         columnArray[i].scrollTop = scrollOffset;     
+    }
+
+    //Cycle through all the letters on the screen and add an orange background to the used letters.
+    {
+        for(let i = 0; i < columnArray.length; i++)
+        {
+            for(let j = 0; j < columnArray[i].childNodes.length; j++)
+            {
+                let thisLetter = columnArray[i].childNodes[j].innerHTML;
+                if(usedLettersArray.includes(thisLetter) && (!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter))
+                {
+                    columnArray[i].childNodes[j].style.fontWeight = "bold";
+                    columnArray[i].childNodes[j].style.transitionDuration = "0s";
+                }
+            }
+        }
     }
 }
 
@@ -1616,6 +1647,8 @@ window.addEventListener("mouseup", updateColumnDrag);
 document.getElementById("go-btn").addEventListener("mousedown", () =>
 {
     isGo = true;
+    colIndex1 = undefined;
+    colIndex2 = undefined;
 });
 
 document.getElementById("go-btn").addEventListener("touchstart", () =>
