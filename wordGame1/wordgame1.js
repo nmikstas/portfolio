@@ -767,7 +767,6 @@ const evalUsedLetters = () =>
 
 const animUsedLetters = () =>
 {
-    redraw();
     evalUnusedLetters();
 }
 
@@ -775,6 +774,8 @@ const animUsedLetters = () =>
 
 const evalUnusedLetters = () =>
 {
+    redraw();
+
     removedLetters = false;
     let unusedLettersArray = new Array(0);
 
@@ -786,13 +787,13 @@ const evalUnusedLetters = () =>
     }
 
     //Keep track of what letters and how many are used in the solution.
-    for(let i = 0; i < gameObject.winningRow.length; i++)
+    for(let i = 0; i < gameObject.columns; i++)
     {
         alphabetObj[gameObject.winningRow[i]]++;
     }
 
     //Now subtract the solved letters from the alphabet object.
-    for(let i = 0; i < gameObject.letterArray[0].length; i++)
+    for(let i = 0; i < gameObject.columns; i++)
     {
         if(gameObject.locksArray[i].column && gameObject.locksArray[i].letter)
         {
@@ -800,10 +801,12 @@ const evalUnusedLetters = () =>
         }
     }
 
+    console.log(alphabetObj)
+
     //Now we can calculate an array of unused letters.
-    for(let i = 0; i < gameObject.letterArray[0].length; i++)
+    for(let i = 0; i < gameObject.columns; i++)
     {
-        if(alphabetObj[gameObject.letterArray[0][i]] === 0 && (!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter))
+        if(alphabetObj[gameObject.letterArray[0][i]] === 0)
         {
             let thisLetter = gameObject.letterArray[0][i];
             if(!unusedLettersArray.includes(thisLetter))
@@ -812,6 +815,8 @@ const evalUnusedLetters = () =>
             }
         }
     }
+
+    console.log(unusedLettersArray)
 
     if(unusedLettersArray.length !== 0)
     {
