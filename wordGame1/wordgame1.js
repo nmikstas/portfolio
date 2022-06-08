@@ -1555,7 +1555,21 @@ document.addEventListener("mousemove", (event) =>
     if(!isDown && letterDiv)letterDiv.style.cursor = "pointer";
 });
 
+document.addEventListener("touchmove", (event) => 
+{
+    if(animActive) return;
+    mouseX = event.clientX;
+    mouseY = event.clientY;
+    if(!isDown && letterDiv)letterDiv.style.cursor = "pointer";
+});
+
 document.addEventListener("mouseup", (event) => 
+{
+    if(animActive) return;
+    isDown = false;
+});
+
+document.addEventListener("touchup", (event) => 
 {
     if(animActive) return;
     isDown = false;
