@@ -1290,10 +1290,12 @@ const redraw = () =>
             thisDiv.addEventListener("mousemove", move);
             thisDiv.addEventListener("touchmove", move);
             thisDiv.addEventListener("mouseleave", end);
+            thisDiv.addEventListener("touchleave", end);
         }
 	    
 	    thisDiv.addEventListener("mouseup", release);
-	    thisDiv.addEventListener("touchend", end);
+	    //thisDiv.addEventListener("touchend", end);
+        thisDiv.addEventListener("touchend", release);
 
         //Check for column lock only.
         if(gameObject.locksArray[i].column && !gameObject.locksArray[i].letter)
