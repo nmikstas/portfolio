@@ -1663,6 +1663,7 @@ const resize = window.addEventListener("resize", () =>
 
 //Check for column updates whenever the mouse button is released.
 window.addEventListener("mouseup", updateColumnDrag);
+window.addEventListener("touchup", updateColumnDrag);
 
 //Event listeners for the "Go" button.
 document.getElementById("go-btn").addEventListener("mousedown", () =>
