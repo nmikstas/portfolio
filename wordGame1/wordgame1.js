@@ -1558,8 +1558,8 @@ document.addEventListener("mousemove", (event) =>
 document.addEventListener("touchmove", (event) => 
 {
     if(animActive) return;
-    mouseX = event.clientX;
-    mouseY = event.clientY;
+    mouseX = event.touches[0].clientX;
+    mouseY = event.touches[0].clientY;
     if(!isDown && letterDiv)letterDiv.style.cursor = "pointer";
 });
 
