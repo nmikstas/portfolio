@@ -58,14 +58,23 @@ class GameGenerator1
         ];
 
         this.gameObject = this.generateGameObject();
-        if(this.debug)console.log("GameGenerator1:");
-        if(this.debug)GameGenerator1.printGameObject(this.gameObject);
-        return this.gameObject;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //                                      Class Functions                                      //
     ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    newGameObject(rows = this.rows, columns = this.columns, numWords = this.numWords,
+                minLength = this.minLength, numTries = this.numTries)
+    {
+        this.rows = rows;
+        this.columns = columns;
+        this.numWords = numWords;
+        this.minLength = minLength;
+        this.numTries = numTries;
+        this.gameObject = this.generateGameObject();
+        return this.gameObject;
+    }
 
     generateGameObject()
     {
@@ -368,50 +377,5 @@ class GameGenerator1
         }
 
         return letterArray;
-    }
-    
-    //Prints the game object.
-    static printGameObject(go)
-    {
-        console.log("------------------ Game Object ------------------");
-        console.log("Rows: %s, Columns: %s, NumWords: %s,\nMinLength: %s, NumTries: %s", 
-                    go.rows, go.columns, go.numWords, go.minLength, go.numTries);
-    
-        console.log("Letter Array:");
-        for(let i = 0; i < go.letterArray.length; i++)
-        {
-            console.log(...go.letterArray[i]);
-        }
-    
-        console.log("Winning Row:");
-        console.log(...go.winningRow);
-    
-        console.log("Column Order:");
-        console.log(...go.columnArray);
-    
-        console.log("Letters Remaining In Each Column:");
-        console.log(...go.remainArray);
-
-        let colNum = new Array(0);
-        for(let i = 0; i < go.columns; i++)
-        {
-            colNum.push(i + ":");
-        }
-
-        console.log("Letter Locks:");
-        let letLocks = "";
-        for(let i = 0; i < go.columns; i++)
-        {
-            letLocks += ("%s" + (go.locksArray[i].letter ? "T " : "F "));
-        }
-        console.log(letLocks, ...colNum);
-
-        console.log("Column Locks:");
-        let colLocks = "";
-        for(let i = 0; i < go.columns; i++)
-        {
-            colLocks += ("%s" + (go.locksArray[i].column ? "T " : "F ")); 
-        }
-        console.log(colLocks, ...colNum);
     }
 }

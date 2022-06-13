@@ -11,9 +11,6 @@ let minLength = 5;
 let numTries = 4;
 let usedLettersArray = new Array(0);
 
-//Main game object;
-let gameObject;
-
 //Array of letter columns.
 let columnArray = new Array(0);
 
@@ -46,119 +43,130 @@ let letterHeight = 0;
 //Go button pressed indicator.
 let isGo = false;
 
+let gg = new GameGenerator1(); //Create a new game generator.
+let gp = new GamePrinter1(); //Create a new game printer.
+let ge = new GameEngine1(); //Create a new game engine.
+
 /************************************* Game Control Functions ************************************/
 
 const evaluate = () =>
 {
     animActive = true;
     document.getElementById("go-btn").removeEventListener("click", evaluate);
-    evalColumnLocks();
+    ge.evalColumnLocks();
 }
 
 //-------------------- Column Lock Evaluations --------------------
-let columnOpacity = 0;
-let colLocksAnimArray = new Array(0);
 
-const evalColumnLocks = () =>
+//Game engine function.
+/*const evalColumnLocks = () =>
 {
-    columnOpacity = 0;
-    colLocksAnimArray.length = 0;
+    let newColumnLocksArray = new Array(0);
 
     //Check for column locks.
     for(let i = 0; i < columns; i++)
     {
-        if(gameObject.columnArray[i] === i)
+        if(ge.gameObject.columnArray[i] === i)
         {
             //Only include new columns.
-            if(!gameObject.locksArray[i].column)
+            if(!ge.gameObject.locksArray[i].column)
             {
-                gameObject.locksArray[i].column = true;
-                colLocksAnimArray.push(columnArray[i]);
+                ge.gameObject.locksArray[i].column = true;
+                newColumnLocksArray.push(i);
             }
         }
     }
 
-    if(colLocksAnimArray.length > 0)
+    if(newColumnLocksArray.length > 0)
     {
-        setTimeout(animColumnLocks, 20);
+        animColumnLocks(newColumnLocksArray);
     }
     else
     {
         evalDoneColumn();
     }
-}
+}*/
 
-const animColumnLocks = () =>
+//Renderer function.
+const animColumnLocks = (newColumnLocksArray) =>
 {
-    for(let i = 0; i < colLocksAnimArray.length; i++)
+    for(let i = 0; i < newColumnLocksArray.length; i++)
     {
-        colLocksAnimArray[i].style.backgroundColor = "rgb(157, 188, 255)";
-        colLocksAnimArray[i].style.transitionDuration = ".3s";
+        columnArray[newColumnLocksArray[i]].style.backgroundColor = "rgb(157, 188, 255)";
+        columnArray[newColumnLocksArray[i]].style.transitionDuration = ".4s";
     }
 
     setTimeout(evalDoneColumn, 300);
 }
 
 //-------------------- Completed Columns Evaluations --------------------
-let doneColAnimArray = new Array(0);
 
+//Game engine function.
 const evalDoneColumn = () =>
 {
-    doneColAnimArray.length = 0;
+    let newDoneColumnArray = new Array(0);
 
     //Check for column AND letter locks.
     for(let i = 0; i < columns; i++)
     {
         //Check if column is locked and correct letter is on top.
-        if(gameObject.locksArray[i].column && gameObject.letterArray[0][i] === gameObject.winningRow[i])
+        if(ge.gameObject.locksArray[i].column && ge.gameObject.letterArray[0][i] === ge.gameObject.winningRow[i])
         {
             //Only include new letters.
-            if(!gameObject.locksArray[i].letter)
+            if(!ge.gameObject.locksArray[i].letter)
             {
-                gameObject.locksArray[i].letter = true;
-                doneColAnimArray.push(i);
+                ge.gameObject.locksArray[i].letter = true;
+                newDoneColumnArray.push(i);
             }
         }
     }
 
-    if(doneColAnimArray.length === 0)
+    if(newDoneColumnArray.length === 0)
     {
         evalRightLetWrongCol();
     }
     else
     {
-        //Cycle through the solved columns and remove all the letters except for the top one.
-        for(let i = 0; i < doneColAnimArray.length; i++)
-        {
-            //Set scroll offset to zero to make things easier.
-            columnArray[doneColAnimArray[i]].scrollTop = 0;
-
-            //Remove all letters except for the first one.
-            for(let j = 1; j < columnArray[doneColAnimArray[i]].childNodes.length; j++)
-            {
-                columnArray[doneColAnimArray[i]].childNodes[j].style.transform = "scale(0, 0)";
-                columnArray[doneColAnimArray[i]].childNodes[j].style.transitionDuration = ".5s";
-            }
-        }
-
-        setTimeout(animDoneColumn, 500);
+        animDoneColumn1(newDoneColumnArray);
     }
 }
 
-const animDoneColumn = () =>
+//Renderer function.
+const animDoneColumn1 = (newDoneColumnArray) =>
+{
+    //Cycle through the solved columns and remove all the letters except for the top one.
+    for(let i = 0; i < newDoneColumnArray.length; i++)
+    {
+        //Set scroll offset to zero to make things easier.
+        columnArray[newDoneColumnArray[i]].scrollTop = 0;
+
+        //Remove all letters except for the first one.
+        for(let j = 1; j < columnArray[newDoneColumnArray[i]].childNodes.length; j++)
+        {
+            columnArray[newDoneColumnArray[i]].childNodes[j].style.transform = "scale(0, 0)";
+            columnArray[newDoneColumnArray[i]].childNodes[j].style.transitionDuration = ".4s";
+        }
+    }
+
+    setTimeout(() => animDoneColumn2(newDoneColumnArray), 500);
+}
+
+//Renderer function.
+const animDoneColumn2 = (newDoneColumnArray) =>
 {
     //Transition background color to green.
-    for(let i = 0; i < doneColAnimArray.length; i++)
+    for(let i = 0; i < newDoneColumnArray.length; i++)
     {
-        columnArray[doneColAnimArray[i]].style.fontWeight = "bold";
-        columnArray[doneColAnimArray[i]].style.backgroundColor = "rgb(169, 255, 158)";
-        columnArray[doneColAnimArray[i]].style.transitionDuration = ".5s";
-        columnArray[doneColAnimArray[i]].style.height = letterHeight + "px";
+        columnArray[newDoneColumnArray[i]].style.fontWeight = "bold";
+        columnArray[newDoneColumnArray[i]].style.backgroundColor = "rgb(169, 255, 158)";
+        columnArray[newDoneColumnArray[i]].style.transitionDuration = ".4s";
+        columnArray[newDoneColumnArray[i]].style.height = letterHeight + "px";
     }
    
-    setTimeout(animDoneColumnFinish, 500);
+    setTimeout(evalRightLetWrongCol, 500);
 }
 
+//Renderer function.
 const animDoneColumnFinish = () =>
 {
     redraw();
@@ -174,13 +182,13 @@ const evalRightLetWrongCol = () =>
 
     for(let i = 0; i < columns; i++)
     {
-        if(gameObject.letterArray[0][i] === gameObject.winningRow[i] && !gameObject.locksArray[i].column)
+        if(ge.gameObject.letterArray[0][i] === ge.gameObject.winningRow[i] && !ge.gameObject.locksArray[i].column)
         {
             let fromColumn;
             //Find the destination column
-            for(let j = 0; j < gameObject.columnArray.length; j++)
+            for(let j = 0; j < ge.gameObject.columnArray.length; j++)
             {
-                if(gameObject.columnArray[j] === i)
+                if(ge.gameObject.columnArray[j] === i)
                 {
                     fromColumn = j;
                 }
@@ -313,7 +321,7 @@ const evalRightLetWrongCol = () =>
             let endPos = columnArray[moveChainArray[i].to].getBoundingClientRect().x;
             let xDiff = endPos - startPos;
             columnArray[moveChainArray[i].from].style.transform = "translate(" + xDiff + "px)";
-            columnArray[moveChainArray[i].from].style.transitionDuration = ".5s";
+            columnArray[moveChainArray[i].from].style.transitionDuration = ".4s";
         }
 
         //Set smooth scrolling for all columns.
@@ -323,7 +331,7 @@ const evalRightLetWrongCol = () =>
         }
 
         //Make an array of indexes to change to for rotation changes later.
-        let indexesArray = new Array(gameObject.columns);
+        let indexesArray = new Array(ge.gameObject.columns);
         for(let i = 0; i < indexesArray.length; i++)
         {
             indexesArray[i] = -1;
@@ -335,12 +343,12 @@ const evalRightLetWrongCol = () =>
             if(moveChainArray[i].rotate)
             {
                 let index;
-                let letterToChangeTo = gameObject.winningRow[moveChainArray[i].to];
+                let letterToChangeTo = ge.gameObject.winningRow[moveChainArray[i].to];
                 
                 //Find the index of the letter to rotate to.
-                for(let j = 0; j < gameObject.letterArray.length; j++)
+                for(let j = 0; j < ge.gameObject.letterArray.length; j++)
                 {
-                    if(gameObject.letterArray[j][moveChainArray[i].from] === letterToChangeTo)
+                    if(ge.gameObject.letterArray[j][moveChainArray[i].from] === letterToChangeTo)
                     {
                         index = j;
                         indexesArray[moveChainArray[i].from] = index;
@@ -352,40 +360,40 @@ const evalRightLetWrongCol = () =>
         }
 
         //Create a new version of the letter array and copy in all the changes.
-        let letterArray = new Array(gameObject.rows);
+        let letterArray = new Array(ge.gameObject.rows);
         for(let i = 0; i < letterArray.length; i++)
         {
-            letterArray[i] = [...gameObject.letterArray[i]];
+            letterArray[i] = [...ge.gameObject.letterArray[i]];
         }
         
         //Create a new version of the indexes array.
         let indArray = [...indexesArray];
 
         //create new version of the columns array.
-        let colArray = [...gameObject.columnArray];
+        let colArray = [...ge.gameObject.columnArray];
 
         //Create new version of the locks array.
-        let lckArray = [...gameObject.locksArray];
+        let lckArray = [...ge.gameObject.locksArray];
 
         //Create a new version of the remaining letters array.
-        let remArray = [gameObject.remainArray];
+        let remArray = [ge.gameObject.remainArray];
         
         //Rearrange the order of all the newly formed arrays.
         for(let i = 0; i < moveChainArray.length; i++)
         {
-            for(let j = 0; j < gameObject.letterArray.length; j++)
+            for(let j = 0; j < ge.gameObject.letterArray.length; j++)
             {
-                letterArray[j][moveChainArray[i].to] = gameObject.letterArray[j][moveChainArray[i].from];
+                letterArray[j][moveChainArray[i].to] = ge.gameObject.letterArray[j][moveChainArray[i].from];
             }
 
             indArray[moveChainArray[i].to] = indexesArray[moveChainArray[i].from];
-            colArray[moveChainArray[i].to] = gameObject.columnArray[moveChainArray[i].from];
-            lckArray[moveChainArray[i].to] = gameObject.locksArray[moveChainArray[i].from];
-            remArray[moveChainArray[i].to] = gameObject.remainArray[moveChainArray[i].from];
+            colArray[moveChainArray[i].to] = ge.gameObject.columnArray[moveChainArray[i].from];
+            lckArray[moveChainArray[i].to] = ge.gameObject.locksArray[moveChainArray[i].from];
+            remArray[moveChainArray[i].to] = ge.gameObject.remainArray[moveChainArray[i].from];
         }
 
         //Now all the columns in the letter array need to be rotated to the proper indexes.
-        for(let i = 0; i < gameObject.columns; i++)
+        for(let i = 0; i < ge.gameObject.columns; i++)
         {
             if(indArray[i] !== -1)
             {
@@ -408,14 +416,14 @@ const evalRightLetWrongCol = () =>
         }
 
         //Update the game object!
-        for(let i = 0; i < gameObject.letterArray.length; i++)
+        for(let i = 0; i < ge.gameObject.letterArray.length; i++)
         {
-            gameObject.letterArray[i] = [...letterArray[i]];
+            ge.gameObject.letterArray[i] = [...letterArray[i]];
         }
 
-        gameObject.columnArray = [...colArray];
-        gameObject.locksArray = [...lckArray];
-        gameObject.remainArray = [...remArray];
+        ge.gameObject.columnArray = [...colArray];
+        ge.gameObject.locksArray = [...lckArray];
+        ge.gameObject.remainArray = [...remArray];
         
         setTimeout(animRightLetWrongCol, 600);
     } 
@@ -447,18 +455,18 @@ const evalUsedLetters = () =>
     let prevLength = usedLettersArray.length;
 
     //Loop through the top row of letters and look for ones in the solution.
-    for(let i = 0; i < gameObject.columns; i++)
+    for(let i = 0; i < ge.gameObject.columns; i++)
     {
         //Skip solved columns.
-        if(!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter)
+        if(!ge.gameObject.locksArray[i].column || !ge.gameObject.locksArray[i].letter)
         {
-            let thisLetter = gameObject.letterArray[0][i];
+            let thisLetter = ge.gameObject.letterArray[0][i];
 
             //Loop through winning row and locks array to see if this a used letter not yet solved for.
-            for(let j = 0; j < gameObject.columns; j++)
+            for(let j = 0; j < ge.gameObject.columns; j++)
             {
                 //If letter appears in the winning row in an unlocked column, add it to the used letters array.
-                if((thisLetter === gameObject.winningRow[j]) && (!gameObject.locksArray[j].column || !gameObject.locksArray[j].letter))
+                if((thisLetter === ge.gameObject.winningRow[j]) && (!ge.gameObject.locksArray[j].column || !ge.gameObject.locksArray[j].letter))
                 {
                     //Only add if its not already in there.
                     if(!usedLettersArray.includes(thisLetter))
@@ -484,10 +492,10 @@ const evalUsedLetters = () =>
                 for(let j = 0; j < columnArray[i].childNodes.length; j++)
                 {
                     let thisLetter = columnArray[i].childNodes[j].innerHTML;
-                    if(usedLettersArray.includes(thisLetter) && (!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter))
+                    if(usedLettersArray.includes(thisLetter) && (!ge.gameObject.locksArray[i].column || !ge.gameObject.locksArray[i].letter))
                     {
                         columnArray[i].childNodes[j].style.fontWeight = "bold";
-                        columnArray[i].childNodes[j].style.transitionDuration = ".5s";
+                        columnArray[i].childNodes[j].style.transitionDuration = ".4s";
                     }
                 }
             }
@@ -523,28 +531,28 @@ const evalUnusedLetters = () =>
     }
 
     //Keep track of what letters and how many are used in the solution.
-    for(let i = 0; i < gameObject.columns; i++)
+    for(let i = 0; i < ge.gameObject.columns; i++)
     {
-        alphabetObj[gameObject.winningRow[i]]++;
+        alphabetObj[ge.gameObject.winningRow[i]]++;
     }
 
     //Now subtract the solved letters from the alphabet object.
-    for(let i = 0; i < gameObject.columns; i++)
+    for(let i = 0; i < ge.gameObject.columns; i++)
     {
-        if(gameObject.locksArray[i].column && gameObject.locksArray[i].letter)
+        if(ge.gameObject.locksArray[i].column && ge.gameObject.locksArray[i].letter)
         {
-            alphabetObj[gameObject.letterArray[0][i]]--;
+            alphabetObj[ge.gameObject.letterArray[0][i]]--;
         }
     }
 
     console.log(alphabetObj)
 
     //Now we can calculate an array of unused letters.
-    for(let i = 0; i < gameObject.columns; i++)
+    for(let i = 0; i < ge.gameObject.columns; i++)
     {
-        if(alphabetObj[gameObject.letterArray[0][i]] === 0)
+        if(alphabetObj[ge.gameObject.letterArray[0][i]] === 0)
         {
-            let thisLetter = gameObject.letterArray[0][i];
+            let thisLetter = ge.gameObject.letterArray[0][i];
             if(!unusedLettersArray.includes(thisLetter))
             {
                 unusedLettersArray.push(thisLetter);
@@ -560,10 +568,10 @@ const evalUnusedLetters = () =>
         if(debug)console.log(unusedLettersArray);
 
         //Shrink unused letters away.
-        for(let i = 0; i < gameObject.columns; i++)
+        for(let i = 0; i < ge.gameObject.columns; i++)
         {
             //Only work on columns that have not already been solved
-            if(!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter)
+            if(!ge.gameObject.locksArray[i].column || !ge.gameObject.locksArray[i].letter)
             {
                 //Reset scroll for animation effects.
                 columnArray[i].scrollTop = 0;
@@ -574,20 +582,20 @@ const evalUnusedLetters = () =>
                     if(unusedLettersArray.includes(thisLetter))
                     {
                         columnArray[i].childNodes[j].style.transform = "scale(0, 0)";
-                        columnArray[i].childNodes[j].style.transitionDuration = ".5s";
+                        columnArray[i].childNodes[j].style.transitionDuration = ".4s";
                     }
                 }
             }
         }
 
         //Remove letters from the game object.
-        for(let i = 0; i < gameObject.letterArray.length; i++)
+        for(let i = 0; i < ge.gameObject.letterArray.length; i++)
         {
-            for(let j = 0; j < gameObject.letterArray[i].length; j++)
+            for(let j = 0; j < ge.gameObject.letterArray[i].length; j++)
             {
-                if(unusedLettersArray.includes(gameObject.letterArray[i][j]))
+                if(unusedLettersArray.includes(ge.gameObject.letterArray[i][j]))
                 {
-                    gameObject.letterArray[i][j] = " ";
+                    ge.gameObject.letterArray[i][j] = " ";
                 }
             }
         }
@@ -603,12 +611,12 @@ const evalUnusedLetters = () =>
 const animUnusedLetters = (unusedLettersArray) =>
 {
     //Move letters up in the columns to fill in any holes from removed letters.
-    for(let i = 0; i < gameObject.columns; i++)
+    for(let i = 0; i < ge.gameObject.columns; i++)
     {
         let missingLetters = 0;
 
         //Go through only the first repitition of letters.
-        for(let j = 0; j < gameObject.remainArray[i]; j++)
+        for(let j = 0; j < ge.gameObject.remainArray[i]; j++)
         {
             let thisLetter
             try
@@ -619,11 +627,10 @@ const animUnusedLetters = (unusedLettersArray) =>
             {
                 console.log("ERROR");
                 console.log("i: %s, j: %s, gameObject.remainArray[i]: %s, childNodes length: %s", 
-                             i, j, gameObject.remainArray[i], columnArray[i].childNodes.length)
+                             i, j, ge.gameObject.remainArray[i], columnArray[i].childNodes.length)
             }
             
-            
-            if(unusedLettersArray.includes(thisLetter) && gameObject.remainArray[i] > 1)
+            if(unusedLettersArray.includes(thisLetter) && ge.gameObject.remainArray[i] > 1)
             {
                 //Letter has been removed.
                 missingLetters++;
@@ -634,7 +641,7 @@ const animUnusedLetters = (unusedLettersArray) =>
                 if(missingLetters)
                 {
                     let dy = -missingLetters * letterHeight;
-                    columnArray[i].childNodes[j].style.transitionDuration = ".5s";
+                    columnArray[i].childNodes[j].style.transitionDuration = ".4s";
                     columnArray[i].childNodes[j].style.transform = "translateY(" + dy + "px)";
                 }
             }
@@ -643,8 +650,8 @@ const animUnusedLetters = (unusedLettersArray) =>
         //Resize column, if necessary.
         if(missingLetters)
         {
-            columnArray[i].style.transitionDuration = ".5s";
-            columnArray[i].style.height = ((gameObject.remainArray[i] - missingLetters) * letterHeight) + "px";
+            columnArray[i].style.transitionDuration = ".4s";
+            columnArray[i].style.height = ((ge.gameObject.remainArray[i] - missingLetters) * letterHeight) + "px";
             removedLetters = true;
         }
     }
@@ -668,7 +675,7 @@ const evalFinished = () =>
 
 const resetGame = () =>
 {
-    gameObject = new GameGenerator1({rows: rows, columns: columns, numWords: numWords, minLength: minLength, numTries: numTries});
+    ge.copyGameObject(gg.newGameObject(rows, columns, numWords, minLength, numTries));
     usedLettersArray.length = 0;
 }
 
@@ -722,7 +729,7 @@ const columnSwap = () =>
             return;
         }
 
-        if(gameObject.locksArray[colIndex1].column)
+        if(ge.gameObject.locksArray[colIndex1].column)
         {
             //Locked. Indicate it can't move and cancel.
             animIndexArray.push(colIndex1);
@@ -747,7 +754,7 @@ const columnSwap = () =>
             return;
         }
 
-        if(gameObject.locksArray[colIndex2].column)
+        if(ge.gameObject.locksArray[colIndex2].column)
         {
             //Locked. Indicate it can't move and cancel.
             columnArray[colIndex1].style.backgroundColor = "rgba(0, 0, 0, 0)";
@@ -791,9 +798,9 @@ const updateColumns = () =>
         //Take all the valid letters out of the current column and push them into the temp array.
         for(let j = 0; j < rows; j++)
         {
-            if(gameObject.letterArray[j][i] !== " ")
+            if(ge.gameObject.letterArray[j][i] !== " ")
             {
-                tempArray.push(gameObject.letterArray[j][i]);
+                tempArray.push(ge.gameObject.letterArray[j][i]);
                 letterCount++;
             }
         }
@@ -801,38 +808,39 @@ const updateColumns = () =>
         //Replace the letters in the letter array with the consolidated version.
         for(let j = 0; j < rows; j++)
         {
-            gameObject.letterArray[j][i] = " ";
+            ge.gameObject.letterArray[j][i] = " ";
         }
 
         for(let j = 0; j < tempArray.length; j++)
         {
-            gameObject.letterArray[j][i] = tempArray[j];
+            ge.gameObject.letterArray[j][i] = tempArray[j];
         }
 
         //Update the letters remaining array.
-        gameObject.remainArray[i] = letterCount;
+        ge.gameObject.remainArray[i] = letterCount;
 
         //Update the letter lock indicator, if necessary.
         if(letterCount === 1)
         {
-            gameObject.locksArray[i].letter = true;
+            ge.gameObject.locksArray[i].letter = true;
         }
     }
 }
 
-//This will allow for easier testing and verify things stay valid.
+//This will allow for easier testing and verify things stay valid. If there is a letter lock on a column,
+//it erases all the letters except for the correct one for the column.
 const checkLetterLock = () =>
 {
     for(let i = 0; i < columns; i++)
     {
-        if(gameObject.locksArray[i].letter)
+        if(ge.gameObject.locksArray[i].letter)
         {
             //Get the correct final letter for the current column.
-            let finalLetter = gameObject.winningRow[gameObject.columnArray[i]];
+            let finalLetter = ge.gameObject.winningRow[ge.gameObject.columnArray[i]];
 
             for(let j = 0; j < rows; j++)
             {
-                gameObject.letterArray[j][i] = (j === 0) ? finalLetter : " ";
+                ge.gameObject.letterArray[j][i] = (j === 0) ? finalLetter : " ";
             }
         }
     }
@@ -853,7 +861,7 @@ const updateColumnDrag = () =>
     for(let i = 0; i < columns; i++)
     {
         //Get number of letters remaining in current column.
-        let lettersRemaining = gameObject.remainArray[i];
+        let lettersRemaining = ge.gameObject.remainArray[i];
 
         //Get the scroll offset for current column.
         let thisScrollOffset = columnArray[i].scrollTop;
@@ -869,9 +877,9 @@ const updateColumnDrag = () =>
         let reformedArray = new Array(0);
         for(let j = 0; j < rows; j++)
         {
-            if(gameObject.letterArray[j][i] !== " ")
+            if(ge.gameObject.letterArray[j][i] !== " ")
             {
-                tempArray.push(gameObject.letterArray[j][i]);
+                tempArray.push(ge.gameObject.letterArray[j][i]);
             }
         }
 
@@ -890,7 +898,7 @@ const updateColumnDrag = () =>
 
             for(let j = 0; j < reformedArray.length; j++)
             {
-                gameObject.letterArray[j][i] = reformedArray[j];
+                ge.gameObject.letterArray[j][i] = reformedArray[j];
             }
         }
 
@@ -908,13 +916,13 @@ const updateColumnDrag = () =>
 
             for(let j = 0; j < reformedArray.length; j++)
             {
-                gameObject.letterArray[j][i] = reformedArray[j];
+                ge.gameObject.letterArray[j][i] = reformedArray[j];
             }
         }
     }
 
     //Show the results.
-    if(debug)GameGenerator1.printGameObject(gameObject);
+    if(debug)gp.printGameObject(ge.gameObject);
     redraw();
 }
 
@@ -948,13 +956,13 @@ const redraw = () =>
         transLetterArray[i] = new Array(0);
     }
 
-    for(let i = 0; i < gameObject.letterArray.length; i++)
+    for(let i = 0; i < ge.gameObject.letterArray.length; i++)
     {
-        for(let j = 0; j < gameObject.letterArray[i].length; j++)
+        for(let j = 0; j < ge.gameObject.letterArray[i].length; j++)
         {
-            if(gameObject.letterArray[i][j] !== " ")
+            if(ge.gameObject.letterArray[i][j] !== " ")
             {
-                transLetterArray[j].push(gameObject.letterArray[i][j]);
+                transLetterArray[j].push(ge.gameObject.letterArray[i][j]);
             }
         }
     }
@@ -977,7 +985,7 @@ const redraw = () =>
         thisDiv.addEventListener("mousedown", start);
 	    thisDiv.addEventListener("touchstart", start);
 
-        if(!gameObject.locksArray[i].letter)
+        if(!ge.gameObject.locksArray[i].letter)
         {
             thisDiv.addEventListener("mousemove", move);
             thisDiv.addEventListener("touchmove", move);
@@ -990,17 +998,17 @@ const redraw = () =>
         thisDiv.addEventListener("touchend", release);
 
         //Check for column lock only.
-        if(gameObject.locksArray[i].column && !gameObject.locksArray[i].letter)
+        if(ge.gameObject.locksArray[i].column && !ge.gameObject.locksArray[i].letter)
         {
             thisDiv.style.backgroundColor = "rgb(157, 188, 255)";
         }
 
         //Check for word lock and column lock.
-        if(gameObject.locksArray[i].column && gameObject.locksArray[i].letter)
+        if(ge.gameObject.locksArray[i].column && ge.gameObject.locksArray[i].letter)
         {
             thisDiv.style.fontWeight = "bold";
             thisDiv.style.backgroundColor = "rgb(169, 255, 158)";
-            gameObject.remainArray[i] = 1;
+            ge.gameObject.remainArray[i] = 1;
         }
     }
 
@@ -1021,7 +1029,7 @@ const redraw = () =>
         columnArray[i].innerHTML = "";
 
         //Only put one copy of letter in box if it is letter locked.
-        let repeats = (gameObject.locksArray[i].letter) ? 1 : 3;
+        let repeats = (ge.gameObject.locksArray[i].letter) ? 1 : 3;
 
         //Push 3 copies into the array for scrolling.
         for(let j = 0; j < repeats; j++)
@@ -1047,7 +1055,7 @@ const redraw = () =>
     //Calculate scroll offset.
     for(let i = 0; i < columns; i++)
     {
-        let scrollOffset = letterHeight * gameObject.remainArray[i];
+        let scrollOffset = letterHeight * ge.gameObject.remainArray[i];
         columnArray[i].scrollTop = scrollOffset;     
     }
 
@@ -1058,7 +1066,7 @@ const redraw = () =>
             for(let j = 0; j < columnArray[i].childNodes.length; j++)
             {
                 let thisLetter = columnArray[i].childNodes[j].innerHTML;
-                if(usedLettersArray.includes(thisLetter) && (!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter))
+                if(usedLettersArray.includes(thisLetter) && (!ge.gameObject.locksArray[i].column || !ge.gameObject.locksArray[i].letter))
                 {
                     columnArray[i].childNodes[j].style.fontWeight = "bold";
                     columnArray[i].childNodes[j].style.transitionDuration = "0s";
@@ -1084,11 +1092,11 @@ const doSwapAnimations = () =>
 
                 columnArray[animIndexArray[0]].style.backgroundColor = "rgba(0, 0, 0, 0)";
                 columnArray[animIndexArray[0]].style.transform = "translate(" + (-xdiff) + "px)";
-                columnArray[animIndexArray[0]].style.transitionDuration = ".5s";
+                columnArray[animIndexArray[0]].style.transitionDuration = ".4s";
 
                 columnArray[animIndexArray[1]].style.backgroundColor = "rgba(0, 0, 0, 0)";
                 columnArray[animIndexArray[1]].style.transform = "translate(" + xdiff + "px)";
-                columnArray[animIndexArray[1]].style.transitionDuration = ".5s";
+                columnArray[animIndexArray[1]].style.transitionDuration = ".4s";
             }
             animTimer = setTimeout(doSwapAnimations, 500);
             animState++;
@@ -1096,25 +1104,25 @@ const doSwapAnimations = () =>
 
         default:
             //Swap columns in the letter array.
-            for(let i = 0; i < gameObject.letterArray.length; i++)
+            for(let i = 0; i < ge.gameObject.letterArray.length; i++)
             {
-                [gameObject.letterArray[i][animIndexArray[0]], gameObject.letterArray[i][animIndexArray[1]]] = 
-                [gameObject.letterArray[i][animIndexArray[1]], gameObject.letterArray[i][animIndexArray[0]]];
+                [ge.gameObject.letterArray[i][animIndexArray[0]], ge.gameObject.letterArray[i][animIndexArray[1]]] = 
+                [ge.gameObject.letterArray[i][animIndexArray[1]], ge.gameObject.letterArray[i][animIndexArray[0]]];
             }
 
             //Swap items in the column order.
-            [gameObject.columnArray[animIndexArray[0]], gameObject.columnArray[animIndexArray[1]]] =
-            [gameObject.columnArray[animIndexArray[1]], gameObject.columnArray[animIndexArray[0]]];
+            [ge.gameObject.columnArray[animIndexArray[0]], ge.gameObject.columnArray[animIndexArray[1]]] =
+            [ge.gameObject.columnArray[animIndexArray[1]], ge.gameObject.columnArray[animIndexArray[0]]];
 
             //Swap items in the locks array.
-            [gameObject.locksArray[animIndexArray[0]], gameObject.locksArray[animIndexArray[1]]] =
-            [gameObject.locksArray[animIndexArray[1]], gameObject.locksArray[animIndexArray[0]]];
+            [ge.gameObject.locksArray[animIndexArray[0]], ge.gameObject.locksArray[animIndexArray[1]]] =
+            [ge.gameObject.locksArray[animIndexArray[1]], ge.gameObject.locksArray[animIndexArray[0]]];
 
             //Swap items in letters remaining array.
-            [gameObject.remainArray[animIndexArray[0]], gameObject.remainArray[animIndexArray[1]]] =
-            [gameObject.remainArray[animIndexArray[1]], gameObject.remainArray[animIndexArray[0]]];
+            [ge.gameObject.remainArray[animIndexArray[0]], ge.gameObject.remainArray[animIndexArray[1]]] =
+            [ge.gameObject.remainArray[animIndexArray[1]], ge.gameObject.remainArray[animIndexArray[0]]];
 
-            if(debug)GameGenerator1.printGameObject(gameObject);
+            if(debug)gp.printGameObject(ge.gameObject);
             redraw();
             animActive = false;
             clearTimeout(animTimer);
@@ -1374,6 +1382,10 @@ document.getElementById("go-btn").addEventListener("click", evaluate);
 
 /******************************************* Game Code *******************************************/
 
+//Setup game engine callbacks.
+ge.animColumnLocks = animColumnLocks;
+ge.evalDoneColumn = evalDoneColumn;
+
 resetGame();
 redraw();
-if(debug)GameGenerator1.printGameObject(gameObject);
+if(debug)gp.printGameObject(ge.gameObject);

@@ -1,4 +1,4 @@
-//This node program takes a csv file of capitolized words and converts it into a 2D array.
+//This node program takes a csv file of capitalized words and converts it into a 2D array.
 
 const fs = require('fs');
 const lineReader = require('line-reader');
