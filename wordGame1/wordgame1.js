@@ -11,9 +11,6 @@ let minLength = 5;
 let numTries = 4;
 let usedLettersArray = new Array(0);
 
-//Array of letter columns.
-let columnArray = new Array(0);
-
 //Slider variables.
 let isDown = false;
 let startY;
@@ -46,6 +43,7 @@ let isGo = false;
 let gg = new GameGenerator1(); //Create a new game generator.
 let gp = new GamePrinter1(); //Create a new game printer.
 let ge = new GameEngine1(); //Create a new game engine.
+let gr = new GameRenderer1(document.getElementById("game-body")); //Create a new game presenter.
 
 /************************************* Game Control Functions ************************************/
 
@@ -53,7 +51,7 @@ const evaluate = () =>
 {
     animActive = true;
     document.getElementById("go-btn").removeEventListener("click", evaluate);
-    ge.evalColumnLocks();
+    ge.doEvaluation();
 }
 
 //-------------------- Column Lock Evaluations --------------------
@@ -88,16 +86,16 @@ const evaluate = () =>
 }*/
 
 //Renderer function.
-const animColumnLocks = (newColumnLocksArray) =>
+/*const animColumnLocks = (newColumnLocksArray) =>
 {
     for(let i = 0; i < newColumnLocksArray.length; i++)
     {
-        columnArray[newColumnLocksArray[i]].style.backgroundColor = "rgb(157, 188, 255)";
-        columnArray[newColumnLocksArray[i]].style.transitionDuration = ".4s";
+        gr.columnArray[newColumnLocksArray[i]].style.backgroundColor = "rgb(157, 188, 255)";
+        gr.columnArray[newColumnLocksArray[i]].style.transitionDuration = ".4s";
     }
 
     setTimeout(evalDoneColumn, 300);
-}
+}*/
 
 //-------------------- Completed Columns Evaluations --------------------
 
@@ -138,13 +136,13 @@ const animDoneColumn1 = (newDoneColumnArray) =>
     for(let i = 0; i < newDoneColumnArray.length; i++)
     {
         //Set scroll offset to zero to make things easier.
-        columnArray[newDoneColumnArray[i]].scrollTop = 0;
+        gr.columnArray[newDoneColumnArray[i]].scrollTop = 0;
 
         //Remove all letters except for the first one.
-        for(let j = 1; j < columnArray[newDoneColumnArray[i]].childNodes.length; j++)
+        for(let j = 1; j < gr.columnArray[newDoneColumnArray[i]].childNodes.length; j++)
         {
-            columnArray[newDoneColumnArray[i]].childNodes[j].style.transform = "scale(0, 0)";
-            columnArray[newDoneColumnArray[i]].childNodes[j].style.transitionDuration = ".4s";
+            gr.columnArray[newDoneColumnArray[i]].childNodes[j].style.transform = "scale(0, 0)";
+            gr.columnArray[newDoneColumnArray[i]].childNodes[j].style.transitionDuration = ".4s";
         }
     }
 
@@ -157,10 +155,10 @@ const animDoneColumn2 = (newDoneColumnArray) =>
     //Transition background color to green.
     for(let i = 0; i < newDoneColumnArray.length; i++)
     {
-        columnArray[newDoneColumnArray[i]].style.fontWeight = "bold";
-        columnArray[newDoneColumnArray[i]].style.backgroundColor = "rgb(169, 255, 158)";
-        columnArray[newDoneColumnArray[i]].style.transitionDuration = ".4s";
-        columnArray[newDoneColumnArray[i]].style.height = letterHeight + "px";
+        gr.columnArray[newDoneColumnArray[i]].style.fontWeight = "bold";
+        gr.columnArray[newDoneColumnArray[i]].style.backgroundColor = "rgb(169, 255, 158)";
+        gr.columnArray[newDoneColumnArray[i]].style.transitionDuration = ".4s";
+        gr.columnArray[newDoneColumnArray[i]].style.height = letterHeight + "px";
     }
    
     setTimeout(evalRightLetWrongCol, 500);
@@ -317,17 +315,17 @@ const evalRightLetWrongCol = () =>
         //Swap columns.
         for(let i = 0; i < moveChainArray.length; i++)
         {
-            let startPos = columnArray[moveChainArray[i].from].getBoundingClientRect().x;
-            let endPos = columnArray[moveChainArray[i].to].getBoundingClientRect().x;
+            let startPos = gr.columnArray[moveChainArray[i].from].getBoundingClientRect().x;
+            let endPos = gr.columnArray[moveChainArray[i].to].getBoundingClientRect().x;
             let xDiff = endPos - startPos;
-            columnArray[moveChainArray[i].from].style.transform = "translate(" + xDiff + "px)";
-            columnArray[moveChainArray[i].from].style.transitionDuration = ".4s";
+            gr.columnArray[moveChainArray[i].from].style.transform = "translate(" + xDiff + "px)";
+            gr.columnArray[moveChainArray[i].from].style.transitionDuration = ".4s";
         }
 
         //Set smooth scrolling for all columns.
-        for(let i = 0; i < columnArray.length; i++)
+        for(let i = 0; i < gr.columnArray.length; i++)
         {
-            columnArray[i].classList.add("smooth-scroll");
+            gr.columnArray[i].classList.add("smooth-scroll");
         }
 
         //Make an array of indexes to change to for rotation changes later.
@@ -354,7 +352,7 @@ const evalRightLetWrongCol = () =>
                         indexesArray[moveChainArray[i].from] = index;
                     }
 
-                    columnArray[moveChainArray[i].from].scrollTop += letterHeight * index;
+                    gr.columnArray[moveChainArray[i].from].scrollTop += letterHeight * index;
                 }
             }
         }
@@ -432,9 +430,9 @@ const evalRightLetWrongCol = () =>
 const animRightLetWrongCol = () =>
 {
     //Set smooth scrolling for all columns.
-    for(let i = 0; i < columnArray.length; i++)
+    for(let i = 0; i < gr.columnArray.length; i++)
     {
-        columnArray[i].classList.remove("smooth-scroll");
+        gr.columnArray[i].classList.remove("smooth-scroll");
     }
 
     redraw();
@@ -487,15 +485,15 @@ const evalUsedLetters = () =>
     {
         //Cycle through all the letters on the screen and add an orange background to the used letters.
         {
-            for(let i = 0; i < columnArray.length; i++)
+            for(let i = 0; i < gr.columnArray.length; i++)
             {
-                for(let j = 0; j < columnArray[i].childNodes.length; j++)
+                for(let j = 0; j < gr.columnArray[i].childNodes.length; j++)
                 {
-                    let thisLetter = columnArray[i].childNodes[j].innerHTML;
+                    let thisLetter = gr.columnArray[i].childNodes[j].innerHTML;
                     if(usedLettersArray.includes(thisLetter) && (!ge.gameObject.locksArray[i].column || !ge.gameObject.locksArray[i].letter))
                     {
-                        columnArray[i].childNodes[j].style.fontWeight = "bold";
-                        columnArray[i].childNodes[j].style.transitionDuration = ".4s";
+                        gr.columnArray[i].childNodes[j].style.fontWeight = "bold";
+                        gr.columnArray[i].childNodes[j].style.transitionDuration = ".4s";
                     }
                 }
             }
@@ -574,15 +572,15 @@ const evalUnusedLetters = () =>
             if(!ge.gameObject.locksArray[i].column || !ge.gameObject.locksArray[i].letter)
             {
                 //Reset scroll for animation effects.
-                columnArray[i].scrollTop = 0;
+                gr.columnArray[i].scrollTop = 0;
 
-                for(let j = 0; j < columnArray[i].childNodes.length; j++)
+                for(let j = 0; j < gr.columnArray[i].childNodes.length; j++)
                 {
-                    let thisLetter = columnArray[i].childNodes[j].innerHTML;
+                    let thisLetter = gr.columnArray[i].childNodes[j].innerHTML;
                     if(unusedLettersArray.includes(thisLetter))
                     {
-                        columnArray[i].childNodes[j].style.transform = "scale(0, 0)";
-                        columnArray[i].childNodes[j].style.transitionDuration = ".4s";
+                        gr.columnArray[i].childNodes[j].style.transform = "scale(0, 0)";
+                        gr.columnArray[i].childNodes[j].style.transitionDuration = ".4s";
                     }
                 }
             }
@@ -621,13 +619,13 @@ const animUnusedLetters = (unusedLettersArray) =>
             let thisLetter
             try
             {
-                thisLetter = columnArray[i].childNodes[j].innerHTML;
+                thisLetter = gr.columnArray[i].childNodes[j].innerHTML;
             }
             catch(error)
             {
                 console.log("ERROR");
                 console.log("i: %s, j: %s, gameObject.remainArray[i]: %s, childNodes length: %s", 
-                             i, j, ge.gameObject.remainArray[i], columnArray[i].childNodes.length)
+                             i, j, ge.gameObject.remainArray[i], gr.columnArray[i].childNodes.length)
             }
             
             if(unusedLettersArray.includes(thisLetter) && ge.gameObject.remainArray[i] > 1)
@@ -641,8 +639,8 @@ const animUnusedLetters = (unusedLettersArray) =>
                 if(missingLetters)
                 {
                     let dy = -missingLetters * letterHeight;
-                    columnArray[i].childNodes[j].style.transitionDuration = ".4s";
-                    columnArray[i].childNodes[j].style.transform = "translateY(" + dy + "px)";
+                    gr.columnArray[i].childNodes[j].style.transitionDuration = ".4s";
+                    gr.columnArray[i].childNodes[j].style.transform = "translateY(" + dy + "px)";
                 }
             }
         }
@@ -650,8 +648,8 @@ const animUnusedLetters = (unusedLettersArray) =>
         //Resize column, if necessary.
         if(missingLetters)
         {
-            columnArray[i].style.transitionDuration = ".4s";
-            columnArray[i].style.height = ((ge.gameObject.remainArray[i] - missingLetters) * letterHeight) + "px";
+            gr.columnArray[i].style.transitionDuration = ".4s";
+            gr.columnArray[i].style.height = ((ge.gameObject.remainArray[i] - missingLetters) * letterHeight) + "px";
             removedLetters = true;
         }
     }
@@ -739,9 +737,9 @@ const columnSwap = () =>
         }
         else
         {
-            columnArray[colIndex1].style.transform = "scale(1.1, 1.05)";
-            columnArray[colIndex1].style.transitionDuration = ".15s";
-            columnArray[colIndex1].style.backgroundColor = "rgb(230, 230, 230)";
+            gr.columnArray[colIndex1].style.transform = "scale(1.1, 1.05)";
+            gr.columnArray[colIndex1].style.transitionDuration = ".15s";
+            gr.columnArray[colIndex1].style.backgroundColor = "rgb(230, 230, 230)";
         }
     }
     else if(colIndex1 !== undefined && colIndex2 !== undefined)
@@ -757,9 +755,9 @@ const columnSwap = () =>
         if(ge.gameObject.locksArray[colIndex2].column)
         {
             //Locked. Indicate it can't move and cancel.
-            columnArray[colIndex1].style.backgroundColor = "rgba(0, 0, 0, 0)";
-            columnArray[colIndex1].style.transform = "scale(1.0, 1.0)";
-            columnArray[colIndex1].style.transitionDuration = ".15s";
+            gr.columnArray[colIndex1].style.backgroundColor = "rgba(0, 0, 0, 0)";
+            gr.columnArray[colIndex1].style.transform = "scale(1.0, 1.0)";
+            gr.columnArray[colIndex1].style.transitionDuration = ".15s";
             animIndexArray.push(colIndex1);
             animIndexArray.push(colIndex2);
             doShakeAnimations();
@@ -769,9 +767,9 @@ const columnSwap = () =>
         else if(colIndex1 === colIndex2)
         {
             //Cancel selection.
-            columnArray[colIndex1].style.transform = "scale(1.0, 1.0)";
-            columnArray[colIndex1].style.transitionDuration = ".15s";
-            columnArray[colIndex1].style.backgroundColor = "rgba(0, 0, 0, 0)";
+            gr.columnArray[colIndex1].style.transform = "scale(1.0, 1.0)";
+            gr.columnArray[colIndex1].style.transitionDuration = ".15s";
+            gr.columnArray[colIndex1].style.backgroundColor = "rgba(0, 0, 0, 0)";
             colIndex1 = undefined;
             colIndex2 = undefined;
         }
@@ -864,7 +862,7 @@ const updateColumnDrag = () =>
         let lettersRemaining = ge.gameObject.remainArray[i];
 
         //Get the scroll offset for current column.
-        let thisScrollOffset = columnArray[i].scrollTop;
+        let thisScrollOffset = gr.columnArray[i].scrollTop;
 
         //Caclulate the scroll offset for the first character.
         let zeroScroll = Math.floor(letterHeight * lettersRemaining);
@@ -930,7 +928,7 @@ const updateColumnDrag = () =>
 
 const redraw = () =>
 {
-    columnArray.length = 0;
+    gr.columnArray.length = 0;
 
     //Get critical dimension info about the game body element.
     let gameBody = document.getElementById("game-body");
@@ -975,7 +973,7 @@ const redraw = () =>
     {
         //Else draw whole column.
         let thisDiv = document.createElement("div");
-        columnArray.push(thisDiv);
+        gr.columnArray.push(thisDiv);
         thisDiv.classList.add("column-div");
         thisDiv.innerHTML = i;
         thisDiv.style.fontSize = "2.5vw";
@@ -1013,20 +1011,20 @@ const redraw = () =>
     }
 
     //Get the exact letter height. Need to subtract 2. Border, perhaps?
-    letterHeight = parseFloat(columnArray[0].getBoundingClientRect().height) - 2;
+    letterHeight = parseFloat(gr.columnArray[0].getBoundingClientRect().height) - 2;
 
     //Calculate column height.
     for(let i = 0; i < columns; i++)
     {
         let thisColLetters = transLetterArray[i].length;
         let newHeight = thisColLetters * letterHeight;
-        columnArray[i].style.height = newHeight + "px";
+        gr.columnArray[i].style.height = newHeight + "px";
     }
 
     //Now go back in and fill the columns with the letters.
     for(let i = 0; i < columns; i++)
     {
-        columnArray[i].innerHTML = "";
+        gr.columnArray[i].innerHTML = "";
 
         //Only put one copy of letter in box if it is letter locked.
         let repeats = (ge.gameObject.locksArray[i].letter) ? 1 : 3;
@@ -1037,7 +1035,7 @@ const redraw = () =>
             for(let k = 0; k < transLetterArray[i].length; k++)
             {
                 let thisDiv = document.createElement("div");
-                columnArray[i].appendChild(thisDiv);
+                gr.columnArray[i].appendChild(thisDiv);
                 thisDiv.classList.add("letter-div");
                 thisDiv.innerHTML = transLetterArray[i][k];
                 thisDiv.style.fontSize = "2.5vw";
@@ -1049,27 +1047,27 @@ const redraw = () =>
     //Explicitly set the horizontal position of the columns for transition effects.
     for(let i = 0; i < columns; i++)
     {
-        columnArray[i].style.left = columnArray[i].getBoundingClientRect().x;
+        gr.columnArray[i].style.left = gr.columnArray[i].getBoundingClientRect().x;
     }
 
     //Calculate scroll offset.
     for(let i = 0; i < columns; i++)
     {
         let scrollOffset = letterHeight * ge.gameObject.remainArray[i];
-        columnArray[i].scrollTop = scrollOffset;     
+        gr.columnArray[i].scrollTop = scrollOffset;     
     }
 
     //Cycle through all the letters on the screen and add an orange background to the used letters.
     {
-        for(let i = 0; i < columnArray.length; i++)
+        for(let i = 0; i < gr.columnArray.length; i++)
         {
-            for(let j = 0; j < columnArray[i].childNodes.length; j++)
+            for(let j = 0; j < gr.columnArray[i].childNodes.length; j++)
             {
-                let thisLetter = columnArray[i].childNodes[j].innerHTML;
+                let thisLetter = gr.columnArray[i].childNodes[j].innerHTML;
                 if(usedLettersArray.includes(thisLetter) && (!ge.gameObject.locksArray[i].column || !ge.gameObject.locksArray[i].letter))
                 {
-                    columnArray[i].childNodes[j].style.fontWeight = "bold";
-                    columnArray[i].childNodes[j].style.transitionDuration = "0s";
+                    gr.columnArray[i].childNodes[j].style.fontWeight = "bold";
+                    gr.columnArray[i].childNodes[j].style.transitionDuration = "0s";
                 }
             }
         }
@@ -1086,17 +1084,17 @@ const doSwapAnimations = () =>
             clearTimeout(animTimer);
             if(animIndexArray.length === 2)
             {
-                let xpos0 = parseFloat(columnArray[animIndexArray[0]].getBoundingClientRect().x);
-                let xpos1 = parseFloat(columnArray[animIndexArray[1]].getBoundingClientRect().x);
+                let xpos0 = parseFloat(gr.columnArray[animIndexArray[0]].getBoundingClientRect().x);
+                let xpos1 = parseFloat(gr.columnArray[animIndexArray[1]].getBoundingClientRect().x);
                 let xdiff = xpos0 - xpos1;
 
-                columnArray[animIndexArray[0]].style.backgroundColor = "rgba(0, 0, 0, 0)";
-                columnArray[animIndexArray[0]].style.transform = "translate(" + (-xdiff) + "px)";
-                columnArray[animIndexArray[0]].style.transitionDuration = ".4s";
+                gr.columnArray[animIndexArray[0]].style.backgroundColor = "rgba(0, 0, 0, 0)";
+                gr.columnArray[animIndexArray[0]].style.transform = "translate(" + (-xdiff) + "px)";
+                gr.columnArray[animIndexArray[0]].style.transitionDuration = ".4s";
 
-                columnArray[animIndexArray[1]].style.backgroundColor = "rgba(0, 0, 0, 0)";
-                columnArray[animIndexArray[1]].style.transform = "translate(" + xdiff + "px)";
-                columnArray[animIndexArray[1]].style.transitionDuration = ".4s";
+                gr.columnArray[animIndexArray[1]].style.backgroundColor = "rgba(0, 0, 0, 0)";
+                gr.columnArray[animIndexArray[1]].style.transform = "translate(" + xdiff + "px)";
+                gr.columnArray[animIndexArray[1]].style.transitionDuration = ".4s";
             }
             animTimer = setTimeout(doSwapAnimations, 500);
             animState++;
@@ -1142,8 +1140,8 @@ const doShakeAnimations = () =>
             clearTimeout(animTimer);
             for(let i = 0; i < animIndexArray.length; i++)
             {
-                columnArray[animIndexArray[i]].style.transform = "translate(-1vh)";
-                columnArray[animIndexArray[i]].style.transitionDuration = ".075s";
+                gr.columnArray[animIndexArray[i]].style.transform = "translate(-1vh)";
+                gr.columnArray[animIndexArray[i]].style.transitionDuration = ".075s";
             }
             animTimer = setTimeout(doShakeAnimations, 75);
             animState++;
@@ -1152,8 +1150,8 @@ const doShakeAnimations = () =>
         case 1:
             for(let i = 0; i < animIndexArray.length; i++)
             {
-                columnArray[animIndexArray[i]].style.transform = "translate(1vh)";
-                columnArray[animIndexArray[i]].style.transitionDuration = ".1s";
+                gr.columnArray[animIndexArray[i]].style.transform = "translate(1vh)";
+                gr.columnArray[animIndexArray[i]].style.transitionDuration = ".1s";
             }
             animTimer = setTimeout(doShakeAnimations, 100);
             animState++;
@@ -1162,8 +1160,8 @@ const doShakeAnimations = () =>
         case 2:
             for(let i = 0; i < animIndexArray.length; i++)
             {
-                columnArray[animIndexArray[i]].style.transform = "translate(0vh)";
-                columnArray[animIndexArray[i]].style.transitionDuration = ".075s";
+                gr.columnArray[animIndexArray[i]].style.transform = "translate(0vh)";
+                gr.columnArray[animIndexArray[i]].style.transitionDuration = ".075s";
             }
             animTimer = setTimeout(doShakeAnimations, 75);
             animState++;
@@ -1383,8 +1381,9 @@ document.getElementById("go-btn").addEventListener("click", evaluate);
 /******************************************* Game Code *******************************************/
 
 //Setup game engine callbacks.
-ge.animColumnLocks = animColumnLocks;
+ge.animColumnLocks = gr.animColumnLocks;
 ge.evalDoneColumn = evalDoneColumn;
+gr.evalDoneColumn = evalDoneColumn;
 
 resetGame();
 redraw();

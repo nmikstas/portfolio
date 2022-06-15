@@ -44,7 +44,7 @@ class GameEngine1
     //                                      Class Functions                                      //
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    copyGameObject(gameObject)
+    copyGameObject = (gameObject) =>
     {
         if(gameObject)
         {
@@ -64,9 +64,15 @@ class GameEngine1
         }
     }
 
+    //-------------------- Game Reduction Evaluations --------------------
+    doEvaluation = () =>
+    {
+        this.evalColumnLocks()
+    }
+
     //-------------------- Column Lock Evaluations --------------------
 
-    evalColumnLocks()
+    evalColumnLocks = () =>
     {
         let newColumnLocksArray = new Array(0);
 

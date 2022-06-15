@@ -64,8 +64,8 @@ class GameGenerator1
     //                                      Class Functions                                      //
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    newGameObject(rows = this.rows, columns = this.columns, numWords = this.numWords,
-                minLength = this.minLength, numTries = this.numTries)
+    newGameObject = (rows = this.rows, columns = this.columns, numWords = this.numWords,
+                minLength = this.minLength, numTries = this.numTries) =>
     {
         this.rows = rows;
         this.columns = columns;
@@ -76,7 +76,7 @@ class GameGenerator1
         return this.gameObject;
     }
 
-    generateGameObject()
+    generateGameObject = () =>
     {
         //Calculate to see if game parameters are valid.
         const remainder = this.columns + this.numWords * (1 - this.minLength) - 1;
@@ -163,7 +163,7 @@ class GameGenerator1
     }
 
     //Generate word lengths for a single row.
-    getWordLengths(columns, numWords, minLength)
+    getWordLengths = (columns, numWords, minLength) =>
     {
         //Min/max columns: 5/20.
         if(columns > GameGenerator1.MAX_LETTERS || columns < GameGenerator1.MIN_LETTERS)
@@ -220,7 +220,7 @@ class GameGenerator1
     }
 
     //Get a single word from the word array.
-    getWord(wordLength, startingLetter)
+    getWord = (wordLength, startingLetter) =>
     {
         let word = GameGenerator1.FAILED;
         let tries = 0;
@@ -249,7 +249,7 @@ class GameGenerator1
     }
 
     //Gets a single row of words.
-    getWordRow(wordLengthsArray)
+    getWordRow = (wordLengthsArray) =>
     {
         let wordArray = new Array(0);
 
@@ -293,7 +293,7 @@ class GameGenerator1
     }
 
     //Generates a 2D matrix of words for the game.
-    get2DWordArray(rows, columns, numWords, minLength)
+    get2DWordArray = (rows, columns, numWords, minLength) =>
     {
         //Min/max columns: 5/20.
         if(columns > GameGenerator1.MAX_LETTERS || columns < GameGenerator1.MIN_LETTERS)
@@ -341,7 +341,7 @@ class GameGenerator1
     }
 
     //Get a 2D matrix of letters to use in the game object.
-    get2DLetterArray(rows, columns, numWords, minLength)
+    get2DLetterArray = (rows, columns, numWords, minLength) =>
     {
         //Get the 2D word array.
         let wordArray = this.get2DWordArray(rows, columns, numWords, minLength);
