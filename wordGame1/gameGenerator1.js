@@ -146,6 +146,14 @@ class GameGenerator1
         {
             remainArray.push(rows);
         }
+
+        //Generate array of solved letters.
+        let solvedArray = new Array(0);
+
+        for(let i = 0; i < this.columns; i++)
+        {
+            solvedArray.push(false);
+        }
     
         //Bundle everything inside an object and return it.
         return {
@@ -158,7 +166,8 @@ class GameGenerator1
             winningRow:  winningRow,
             columnArray: columnArray,
             locksArray:  locksArray,
-            remainArray: remainArray
+            remainArray: remainArray,
+            solvedArray: solvedArray
         }
     }
 

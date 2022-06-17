@@ -51,5 +51,14 @@ class GamePrinter1
             colLocks += ("%s" + (go.locksArray[i].column ? "T " : "F ")); 
         }
         console.log(colLocks, ...colNum);
+
+        console.log("Solved Letters:");
+        let solvedLetters = "";
+        for(let i = 0; i < go.columns; i++)
+        {
+            solvedLetters += ("%s" + (go.solvedArray[i] ? "T " : "F ")); 
+        }
+        console.log(solvedLetters, ...colNum);
+
     }
 }

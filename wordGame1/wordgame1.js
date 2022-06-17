@@ -10,15 +10,9 @@ let numWords = 1;
 let minLength = 5;
 let numTries = 4;
 
-//Fix this.
-let usedLettersArray = new Array(0);
-
-//Go button pressed indicator.
-let isGo = false;
-
 let gg = new GameGenerator1(); //Create a new game generator.
 let gp = new GamePrinter1(); //Create a new game printer.
-let ge = new GameEngine1(); //Create a new game engine.
+let ge = new GameEngine1({debug: true}); //Create a new game engine.
 let gr = new GameRenderer1 //Create a new game renderer.
 (
     document.getElementById("game-body"),
@@ -32,7 +26,7 @@ const evaluate = () =>
 {
     gr.animActive = true;
     document.getElementById("go-btn").removeEventListener("click", evaluate);
-    ge.doEvaluation();
+    ge.doEvaluations();
 }
 
 //-------------------- Right Letter Wrong Column Evaluations --------------------
@@ -46,7 +40,7 @@ const animRightLetWrongCol2 = () =>
         gr.columnArray[i].classList.remove("smooth-scroll");
     }
    
-    gr.redraw(ge.gameObject, usedLettersArray);
+    gr.redraw();
     evalRightLetWrongCol2();
 }
 
@@ -56,7 +50,7 @@ const evalRightLetWrongCol2 = () =>
     if(ge.didSwap)
     {
         ge.updateColumns(); //Consolidate columns.   
-        ge.doEvaluation();
+        ge.doEvaluations();
     }
     else
     {
@@ -66,9 +60,10 @@ const evalRightLetWrongCol2 = () =>
 
 //-------------------- Used Letter Evaluations --------------------
 
+//Game engine.
 const evalUsedLetters = () =>
 {
-    let prevLength = usedLettersArray.length;
+    let prevLength = ge.usedLettersArray.length;
 
     //Loop through the top row of letters and look for ones in the solution.
     for(let i = 0; i < ge.gameObject.columns; i++)
@@ -85,9 +80,9 @@ const evalUsedLetters = () =>
                 if((thisLetter === ge.gameObject.winningRow[j]) && (!ge.gameObject.locksArray[j].column || !ge.gameObject.locksArray[j].letter))
                 {
                     //Only add if its not already in there.
-                    if(!usedLettersArray.includes(thisLetter))
+                    if(!ge.usedLettersArray.includes(thisLetter))
                     {
-                        usedLettersArray.push(thisLetter);
+                        ge.usedLettersArray.push(thisLetter);
                     }
                 }
             }
@@ -95,13 +90,15 @@ const evalUsedLetters = () =>
     }
 
     if(debug)console.log("Used Letters:");
-    if(debug)console.log(usedLettersArray);
+    if(debug)console.log(ge.usedLettersArray);
 
+    ge.updateColumns(); //Consolidate columns.   
+    ge.checkLetterLock(); //Check for letter lock only.
 
     //Run the used letters animation only if something has changed.
-    if(usedLettersArray.length !== prevLength)
+    if(ge.usedLettersArray.length !== prevLength)
     {
-        animUsedLetters1();
+        animUsedLetters1(ge.usedLettersArray);
     }
     else
     {
@@ -109,10 +106,11 @@ const evalUsedLetters = () =>
     }
 }
 
-const animUsedLetters1 = () =>
+const animUsedLetters1 = (usedLettersArray) =>
 {
+    let workDone = false; //Only delay if some animations set.
 
-    //Cycle through all the letters on the screen and add an orange background to the used letters.
+    //Cycle through all the letters on the screen and add bold the used letters.
     for(let i = 0; i < gr.columnArray.length; i++)
     {
         for(let j = 0; j < gr.columnArray[i].childNodes.length; j++)
@@ -122,23 +120,30 @@ const animUsedLetters1 = () =>
             {
                 gr.columnArray[i].childNodes[j].style.fontWeight = "bold";
                 gr.columnArray[i].childNodes[j].style.transitionDuration = ".4s";
+                workDone = true;
             }
         }
     }
 
-    setTimeout(animUsedLetters2, 500);
+    if(workDone)
+    {
+        setTimeout(animUsedLetters2, 500);
+    }
+    else
+    {
+        animUsedLetters2();
+    }
 }
 
 const animUsedLetters2 = () =>
 {
-    ge.updateColumns(); //Consolidate columns.   
-    ge.checkLetterLock(); //Check for letter lock only.
-    gr.redraw(ge.gameObject, usedLettersArray);
+    gr.redraw();
     evalUnusedLetters();
 }
 
 //-------------------- Unused Letter Evaluations --------------------
 
+//Game engine.
 const evalUnusedLetters = () =>
 {
     let unusedLettersArray = new Array(0);
@@ -165,8 +170,6 @@ const evalUnusedLetters = () =>
         }
     }
 
-    console.log(alphabetObj)
-
     //Now we can calculate an array of unused letters.
     for(let i = 0; i < ge.gameObject.columns; i++)
     {
@@ -180,47 +183,22 @@ const evalUnusedLetters = () =>
         }
     }
 
-    console.log(unusedLettersArray)
+    //Remove letters from the game object.
+    for(let i = 0; i < ge.gameObject.letterArray.length; i++)
+    {
+        for(let j = 0; j < ge.gameObject.letterArray[i].length; j++)
+        {
+            if(unusedLettersArray.includes(ge.gameObject.letterArray[i][j]))
+            {
+                ge.gameObject.letterArray[i][j] = " ";
+            }
+        }
+    }
 
+    //Shrink unused letters away from screen.
     if(unusedLettersArray.length !== 0)
     {
-        if(debug)console.log("Unused Letters:");
-        if(debug)console.log(unusedLettersArray);
-
-        //Shrink unused letters away.
-        for(let i = 0; i < ge.gameObject.columns; i++)
-        {
-            //Only work on columns that have not already been solved
-            if(!ge.gameObject.locksArray[i].column || !ge.gameObject.locksArray[i].letter)
-            {
-                //Reset scroll for animation effects.
-                gr.columnArray[i].scrollTop = 0;
-
-                for(let j = 0; j < gr.columnArray[i].childNodes.length; j++)
-                {
-                    let thisLetter = gr.columnArray[i].childNodes[j].innerHTML;
-                    if(unusedLettersArray.includes(thisLetter))
-                    {
-                        gr.columnArray[i].childNodes[j].style.transform = "scale(0, 0)";
-                        gr.columnArray[i].childNodes[j].style.transitionDuration = ".4s";
-                    }
-                }
-            }
-        }
-
-        //Remove letters from the game object.
-        for(let i = 0; i < ge.gameObject.letterArray.length; i++)
-        {
-            for(let j = 0; j < ge.gameObject.letterArray[i].length; j++)
-            {
-                if(unusedLettersArray.includes(ge.gameObject.letterArray[i][j]))
-                {
-                    ge.gameObject.letterArray[i][j] = " ";
-                }
-            }
-        }
-
-        setTimeout(() => animUnusedLetters(unusedLettersArray), 500);
+        animUnusedLetters1(unusedLettersArray);
     }
     else
     {
@@ -228,8 +206,49 @@ const evalUnusedLetters = () =>
     }
 }
 
-const animUnusedLetters = (unusedLettersArray) =>
+const animUnusedLetters1 = (unusedLettersArray) =>
 {
+    let workDone = false; //Only delay if some animations set.
+
+    if(debug)console.log("Unused Letters:");
+    if(debug)console.log(unusedLettersArray);
+
+    for(let i = 0; i < ge.gameObject.columns; i++)
+    {
+        //Only work on columns that have not already been solved
+        if(!ge.gameObject.locksArray[i].column || !ge.gameObject.locksArray[i].letter)
+        {
+            //Reset scroll for animation effects.
+            gr.columnArray[i].scrollTop = 0;
+
+            for(let j = 0; j < gr.columnArray[i].childNodes.length; j++)
+            {
+                let thisLetter = gr.columnArray[i].childNodes[j].innerHTML;
+                if(unusedLettersArray.includes(thisLetter))
+                {
+                    gr.columnArray[i].childNodes[j].style.transform = "scale(0, 0)";
+                    gr.columnArray[i].childNodes[j].style.transitionDuration = ".4s";
+                    workDone = true;
+                }
+            }
+        }
+    }
+
+    if(workDone)
+    {
+        setTimeout(() => animUnusedLetters2(unusedLettersArray), 500);
+    }
+    else
+    {
+        animUnusedLetters2(unusedLettersArray);
+    }
+    
+}
+
+const animUnusedLetters2 = (unusedLettersArray) =>
+{
+    let workDone = false; //Only delay if some animations set.
+
     //Move letters up in the columns to fill in any holes from removed letters.
     for(let i = 0; i < ge.gameObject.columns; i++)
     {
@@ -272,33 +291,45 @@ const animUnusedLetters = (unusedLettersArray) =>
         {
             gr.columnArray[i].style.transitionDuration = ".4s";
             gr.columnArray[i].style.height = ((ge.gameObject.remainArray[i] - missingLetters) * gr.letterHeight) + "px";
+            workDone = true;
         }
     }
 
-    setTimeout(animUnusedLettersFinish, 500);
+    if(workDone)
+    {
+        setTimeout(animUnusedLetters3, 500);
+    }
+    else
+    {
+        animUnusedLetters3();
+    } 
 }
 
-const animUnusedLettersFinish = () =>
+const animUnusedLetters3 = () =>
 {
     ge.updateColumns(); //Consolidate columns.   
     ge.checkLetterLock(); //Check for letter lock only.
 
-    gr.redraw(ge.gameObject, usedLettersArray);
-    setTimeout(evalFinished, 500);
+    gr.redraw();
+    evalFinished();
 }
 
 //-------------------- Finished Evaluations --------------------
 const evalFinished = () =>
 {   
-    gr.redraw(ge.gameObject, usedLettersArray);
     gr.animActive = false;
     document.getElementById("go-btn").addEventListener("click", evaluate);
 }
 
+
+
+
+
+
 const resetGame = () =>
 {
     ge.copyGameObject(gg.newGameObject(rows, columns, numWords, minLength, numTries));
-    usedLettersArray.length = 0;
+    ge.usedLettersArray.length = 0;
 }
 
 //Set the selections in the game settings modal.
@@ -323,107 +354,19 @@ const setSelections = (rows, columns, numWords, minLength, numTries) =>
     selTries.selectedIndex = numTries - minTries;
 }
 
-//Column swap timer expired. Indicate single click did not happen.
-const checkColumnSwap = () =>
-{
-    gr.singleClick = false;
-}
-
-const columnSwap = () =>
-{
-    let animIndexArray = new Array(0);
-
-    //Save the temp index.
-    if(gr.colIndex1 === undefined)
-    {
-        gr.colIndex1 = gr.tempIndex;
-    }
-    else if(gr.colIndex2 === undefined)
-    {
-        gr.colIndex2 = gr.tempIndex;
-    }
-
-    if(gr.colIndex1 !== undefined && gr.colIndex2 === undefined)
-    {
-        //Accounts for a corner case where the border is clicked.
-        if(isNaN(gr.colIndex1))
-        {
-            gr.colIndex1 = undefined;
-            gr.colIndex2 = undefined;
-            return;
-        }
-
-        if(ge.gameObject.locksArray[gr.colIndex1].column)
-        {
-            //Locked. Indicate it can't move and cancel.
-            animIndexArray.push(gr.colIndex1);
-            gr.doShakeAnimations(animIndexArray);
-            gr.colIndex1 = undefined;
-            gr.colIndex2 = undefined;
-        }
-        else
-        {
-            gr.columnArray[gr.colIndex1].style.transform = "scale(1.1, 1.05)";
-            gr.columnArray[gr.colIndex1].style.transitionDuration = ".15s";
-            gr.columnArray[gr.colIndex1].style.backgroundColor = "rgb(230, 230, 230)";
-        }
-    }
-    else if(gr.colIndex1 !== undefined && gr.colIndex2 !== undefined)
-    {
-        //Accounts for a corner case where the border is clicked.
-        if(isNaN(gr.colIndex2))
-        {
-            gr.colIndex1 = undefined;
-            gr.colIndex2 = undefined;
-            return;
-        }
-
-        if(ge.gameObject.locksArray[gr.colIndex2].column)
-        {
-            //Locked. Indicate it can't move and cancel.
-            gr.columnArray[gr.colIndex1].style.backgroundColor = "rgba(0, 0, 0, 0)";
-            gr.columnArray[gr.colIndex1].style.transform = "scale(1.0, 1.0)";
-            gr.columnArray[gr.colIndex1].style.transitionDuration = ".15s";
-            animIndexArray.push(gr.colIndex1);
-            animIndexArray.push(gr.colIndex2);
-            gr.doShakeAnimations(animIndexArray);
-            gr.colIndex1 = undefined;
-            gr.colIndex2 = undefined;
-        }
-        else if(gr.colIndex1 === gr.colIndex2)
-        {
-            //Cancel selection.
-            gr.columnArray[gr.colIndex1].style.transform = "scale(1.0, 1.0)";
-            gr.columnArray[gr.colIndex1].style.transitionDuration = ".15s";
-            gr.columnArray[gr.colIndex1].style.backgroundColor = "rgba(0, 0, 0, 0)";
-            gr.colIndex1 = undefined;
-            gr.colIndex2 = undefined;
-        }
-        else
-        {
-            //Swap columns.
-            animIndexArray.push(gr.colIndex1);
-            animIndexArray.push(gr.colIndex2);
-            doSwapAnimations(animIndexArray);
-            gr.colIndex1 = undefined;
-            gr.colIndex2 = undefined;
-        }
-    }
-}
-
 //Update the rotation of the column after a user has clicked and dragged it.
 const updateColumnDrag = () =>
 {
-    if(isGo)
+    if(gr.isGo)
     {
-        isGo = false;
+        gr.isGo = false;
         return;
     }
 
     if(gr.animActive) return;
     if(gr.singleClick) return;
 
-    for(let i = 0; i < columns; i++)
+    for(let i = 0; i < ge.gameObject.columns; i++)
     {
         //Get number of letters remaining in current column.
         let lettersRemaining = ge.gameObject.remainArray[i];
@@ -437,58 +380,11 @@ const updateColumnDrag = () =>
         //Calculate how many letters away from zero scroll.
         let lettersOffset = Math.round((thisScrollOffset - zeroScroll) / gr.letterHeight) % lettersRemaining;
     
-        //Get the remaining letters from the current column.
-        let tempArray = new Array(0);
-        let reformedArray = new Array(0);
-        for(let j = 0; j < rows; j++)
-        {
-            if(ge.gameObject.letterArray[j][i] !== " ")
-            {
-                tempArray.push(ge.gameObject.letterArray[j][i]);
-            }
-        }
-
-        //Update the column order.
-        if(lettersOffset > 0)
-        {
-            for(let j = lettersOffset; j < tempArray.length; j++)
-            {
-                reformedArray.push(tempArray[j]);
-            }
-
-            for(let j = 0; j < lettersOffset; j++)
-            {
-                reformedArray.push(tempArray[j]);
-            }
-
-            for(let j = 0; j < reformedArray.length; j++)
-            {
-                ge.gameObject.letterArray[j][i] = reformedArray[j];
-            }
-        }
-
-        if(lettersOffset < 0)
-        {
-            for(let j = tempArray.length + lettersOffset; j < tempArray.length; j++)
-            {
-                reformedArray.push(tempArray[j]);
-            }
-
-            for(let j = 0; j < tempArray.length + lettersOffset; j++)
-            {
-                reformedArray.push(tempArray[j]);
-            }
-
-            for(let j = 0; j < reformedArray.length; j++)
-            {
-                ge.gameObject.letterArray[j][i] = reformedArray[j];
-            }
-        }
+        //Update the column in the game engine.
+        ge.scrollColumn(i, lettersOffset);
     }
 
-    //Show the results.
-    if(debug)gp.printGameObject(ge.gameObject);
-    gr.redraw(ge.gameObject, usedLettersArray);
+    gr.redraw();
 }
 
 /********************************** Game Presentation Functions **********************************/
@@ -540,7 +436,7 @@ const doSwapAnimations = (animIndexArray) =>
             [ge.gameObject.remainArray[animIndexArray[1]], ge.gameObject.remainArray[animIndexArray[0]]];
 
             if(debug)gp.printGameObject(ge.gameObject);
-            gr.redraw(ge.gameObject, usedLettersArray);
+            gr.redraw();
             gr.animActive = false;
             clearTimeout(gr.animTimer);
             gr.animState = 0;
@@ -628,13 +524,13 @@ settingsBtn.addEventListener("click", () =>
     numTries = setTries;
 
     resetGame();
-    gr.redraw(ge.gameObject, usedLettersArray);
+    gr.redraw();
 });
 
 //Resize window event listener.
 const resize = window.addEventListener("resize", () =>
 {
-    gr.redraw(ge.gameObject, usedLettersArray);
+    gr.redraw();
 });
 
 //Check for column updates whenever the mouse button is released.
@@ -644,14 +540,14 @@ window.addEventListener("touchup", updateColumnDrag);
 //Event listeners for the "Go" button.
 document.getElementById("go-btn").addEventListener("mousedown", () =>
 {
-    isGo = true;
+    gr.isGo = true;
     gr.colIndex1 = undefined;
     gr.colIndex2 = undefined;
 });
 
 document.getElementById("go-btn").addEventListener("touchstart", () =>
 {
-    isGo = true;
+    gr.isGo = true;
 });
 
 document.getElementById("go-btn").addEventListener("click", evaluate);
@@ -659,15 +555,18 @@ document.getElementById("go-btn").addEventListener("click", evaluate);
 /******************************************* Game Code *******************************************/
 
 //Setup game engine and game renderer callbacks.
+ge.printGameObject = gp.printGameObject;
 ge.animColumnLocks = gr.animColumnLocks;
 ge.animDoneColumn1 = gr.animDoneColumn1;
 ge.animRightLetWrongCol1 = gr.animRightLetWrongCol1;
 ge.evalUsedLetters = evalUsedLetters;
 
+gr.getGameObject = ge.getGameObject;
+gr.getUsedLettersArray = ge.getUsedLettersArray;
 gr.evalDoneColumn = ge.evalDoneColumn;
 gr.evalRightLetWrongCol = ge.evalRightLetWrongCol;
 gr.animRightLetWrongCol2 = animRightLetWrongCol2;
 
 resetGame();
-gr.redraw(ge.gameObject, usedLettersArray);
+gr.redraw();
 if(debug)gp.printGameObject(ge.gameObject);

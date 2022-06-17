@@ -20,7 +20,8 @@ class GameRenderer1
         RemainDiv,
         {
             debug = false,
-            gameObject = null,
+            getGameObject = null,
+            getUsedLettersArray = null,
             evalDoneColumn = null,
             evalRightLetWrongCol = null,
 
@@ -34,7 +35,8 @@ class GameRenderer1
         this.goButton = goButton;
         this.RemainDiv = RemainDiv;
         this.debug = debug;
-        this.gameObject = gameObject;
+        this.getGameObject = getGameObject;
+        this.getUsedLettersArray = getUsedLettersArray;
         this.evalDoneColumn = evalDoneColumn;
         this.evalRightLetWrongCol = evalRightLetWrongCol;
         
@@ -68,17 +70,9 @@ class GameRenderer1
         this.animState = 0;
         this.animTimer;
 
+        this.isGo = false; //Go button pressed indicator.
         this.columnArray = new Array(0); //Array of letter columns.
         this.letterHeight = 0; //Letter height in web presentation.
-
-
-
-
-
-
-
-
-
         
         document.addEventListener("mousemove", (event) => 
         {
@@ -116,8 +110,11 @@ class GameRenderer1
     //                                      Class Functions                                      //
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    redraw = (gameObject, usedLettersArray) =>
+    redraw = () =>
     {
+        let gameObject = this.getGameObject();
+        let usedLettersArray = this.getUsedLettersArray();
+
         this.columnArray.length = 0;
 
         //Get critical dimension info about the game body element.
@@ -233,8 +230,16 @@ class GameRenderer1
         //Calculate scroll offset.
         for(let i = 0; i < gameObject.columns; i++)
         {
-            let scrollOffset = this.letterHeight * gameObject.remainArray[i];
-            this.columnArray[i].scrollTop = scrollOffset;     
+            if(!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter)
+            {
+                let scrollOffset = this.letterHeight * gameObject.remainArray[i];
+                this.columnArray[i].scrollTop = scrollOffset;
+            }
+            else
+            {
+                this.columnArray[i].scrollTop = 0;
+            }
+                 
         }
 
         //Cycle through all the letters on the screen and bold the used letters.
@@ -299,6 +304,96 @@ class GameRenderer1
             break;
         }
     }
+
+    //Column swap timer expired. Indicate single click did not happen.
+    checkColumnSwap = () =>
+    {
+        this.singleClick = false;
+    }
+
+    //Do column swap animation.
+    columnSwap = () =>
+    {
+        let animIndexArray = new Array(0);
+        let gameObject = this.getGameObject();
+
+        //Save the temp index.
+        if(this.colIndex1 === undefined)
+        {
+            this.colIndex1 = this.tempIndex;
+        }
+        else if(this.colIndex2 === undefined)
+        {
+            this.colIndex2 = this.tempIndex;
+        }
+
+        if(this.colIndex1 !== undefined && this.colIndex2 === undefined)
+        {
+            //Accounts for a corner case where the border is clicked.
+            if(isNaN(this.colIndex1))
+            {
+                this.colIndex1 = undefined;
+                this.colIndex2 = undefined;
+                return;
+            }
+
+            if(gameObject.locksArray[this.colIndex1].column)
+            {
+                //Locked. Indicate it can't move and cancel.
+                animIndexArray.push(this.colIndex1);
+                this.doShakeAnimations(animIndexArray);
+                this.colIndex1 = undefined;
+                this.colIndex2 = undefined;
+            }
+            else
+            {
+                this.columnArray[this.colIndex1].style.transform = "scale(1.1, 1.05)";
+                this.columnArray[this.colIndex1].style.transitionDuration = ".15s";
+                this.columnArray[this.colIndex1].style.backgroundColor = "rgb(230, 230, 230)";
+            }
+        }
+        else if(this.colIndex1 !== undefined && this.colIndex2 !== undefined)
+        {
+            //Accounts for a corner case where the border is clicked.
+            if(isNaN(this.colIndex2))
+            {
+                this.colIndex1 = undefined;
+                this.colIndex2 = undefined;
+                return;
+            }
+
+            if(gameObject.locksArray[this.colIndex2].column)
+            {
+                //Locked. Indicate it can't move and cancel.
+                this.columnArray[this.colIndex1].style.backgroundColor = "rgba(0, 0, 0, 0)";
+                this.columnArray[this.colIndex1].style.transform = "scale(1.0, 1.0)";
+                this.columnArray[this.colIndex1].style.transitionDuration = ".15s";
+                animIndexArray.push(this.colIndex1);
+                animIndexArray.push(this.colIndex2);
+                this.doShakeAnimations(animIndexArray);
+                this.colIndex1 = undefined;
+                this.colIndex2 = undefined;
+            }
+            else if(this.colIndex1 === this.colIndex2)
+            {
+                //Cancel selection.
+                this.columnArray[this.colIndex1].style.transform = "scale(1.0, 1.0)";
+                this.columnArray[this.colIndex1].style.transitionDuration = ".15s";
+                this.columnArray[this.colIndex1].style.backgroundColor = "rgba(0, 0, 0, 0)";
+                this.colIndex1 = undefined;
+                this.colIndex2 = undefined;
+            }
+            else
+            {
+                //Swap columns.
+                animIndexArray.push(this.colIndex1);
+                animIndexArray.push(this.colIndex2);
+                doSwapAnimations(animIndexArray);
+                this.colIndex1 = undefined;
+                this.colIndex2 = undefined;
+            }
+        }
+    }
     
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //                                     Event Listeners                                       //
@@ -328,10 +423,9 @@ class GameRenderer1
         //Check if there was a quick click, indicating a column swap is desired.
         if(this.singleClick)
         {
-            columnSwap(); /* ***************************************************************************************** */
+            this.columnSwap();
         }
-        //Cancel any column swap if second click was a long click.
-        else 
+        else //Cancel any column swap if second click was a long click.
         {
             this.colIndex1 = undefined;
             this.colIndex2 = undefined;
@@ -343,7 +437,7 @@ class GameRenderer1
         if(this.animActive) return;
 
         //Set a timer to check for a column swap(single fast click).
-        setTimeout(checkColumnSwap, 200); /* ***************************************************************************************** */
+        setTimeout(this.checkColumnSwap, 200);
         this.singleClick = true; 
         this.isDown = true;
         this.scrollDiv = e.target.parentNode;
@@ -405,7 +499,16 @@ class GameRenderer1
             this.columnArray[newColumnLocksArray[i]].style.transitionDuration = ".4s";
         }
 
-        setTimeout(this.evalDoneColumn, 500);
+        //Only delay if work was done.
+        if(newColumnLocksArray.length > 0)
+        {
+            setTimeout(this.evalDoneColumn, 500);
+        }
+        else
+        {
+            this.evalDoneColumn();
+        }
+        
     }
 
     //-------------------- Completed Columns Animations --------------------
@@ -426,7 +529,16 @@ class GameRenderer1
             }
         }
 
-        setTimeout(() => this.animDoneColumn2(newDoneColumnArray), 500);
+        //Only delay if work was done.
+        if(newDoneColumnArray.length > 0)
+        {
+            setTimeout(() => this.animDoneColumn2(newDoneColumnArray), 500);
+        }
+        else
+        {
+            this.animDoneColumn2(newDoneColumnArray);
+        }
+        
     }
 
     animDoneColumn2 = (newDoneColumnArray) =>
@@ -440,7 +552,15 @@ class GameRenderer1
             this.columnArray[newDoneColumnArray[i]].style.height = this.letterHeight + "px";
         }
    
-        setTimeout(this.evalRightLetWrongCol, 500);
+        //Only delay if work was done.
+        if(newDoneColumnArray.length > 0)
+        {
+            setTimeout(this.evalRightLetWrongCol, 500);
+        }
+        else
+        {
+            this.evalRightLetWrongCol();
+        }
     }
 
     //-------------------- Right Letter Wrong Column Animations --------------------
@@ -469,7 +589,15 @@ class GameRenderer1
             this.columnArray[moveChainArray[i].from].style.transitionDuration = ".4s";
         }
       
-        setTimeout(this.animRightLetWrongCol2, 500);
+        //Only delay if work was done.
+        if(moveChainArray.length > 0)
+        {
+            setTimeout(this.animRightLetWrongCol2, 500);
+        }
+        else
+        {
+            this.animRightLetWrongCol2();
+        }
     }
 
     

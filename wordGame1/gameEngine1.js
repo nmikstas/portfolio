@@ -18,6 +18,7 @@ class GameEngine1
         {
             gameObject = null,
             debug = false,
+            printGameObject = null,
             animColumnLocks = null,
             animDoneColumn1 = null,
             animRightLetWrongCol1 = null,
@@ -32,6 +33,7 @@ class GameEngine1
     {
         this.gameObject = this.copyGameObject(gameObject);
         this.debug = debug;
+        this.printGameObject = printGameObject;
         this.animColumnLocks = animColumnLocks;
         this.animDoneColumn1 = animDoneColumn1;
         this.animRightLetWrongCol1 = animRightLetWrongCol1;
@@ -43,6 +45,7 @@ class GameEngine1
 
 
         this.didSwap = false;
+        this.usedLettersArray = new Array(0);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -64,9 +67,75 @@ class GameEngine1
                 winningRow:  gameObject.hasOwnProperty("winningRow") ? [...gameObject.winningRow] : null,
                 columnArray: gameObject.hasOwnProperty("columnArray") ? [...gameObject.columnArray] : null,
                 locksArray:  gameObject.hasOwnProperty("locksArray") ? [...gameObject.locksArray] : null,
-                remainArray: gameObject.hasOwnProperty("remainArray") ? [...gameObject.remainArray] : null
+                remainArray: gameObject.hasOwnProperty("remainArray") ? [...gameObject.remainArray] : null,
+                solvedArray: gameObject.hasOwnProperty("solvedArray") ? [...gameObject.solvedArray] : null
             }
         }
+    }
+
+    getGameObject = () =>
+    {
+        return this.gameObject;
+    }
+
+    getUsedLettersArray = () =>
+    {
+        return this.usedLettersArray;
+    }
+
+    //Rotates the columns off letters up and down by a given offset.
+    scrollColumn = (column, lettersOffset) =>
+    {
+        //Get the remaining letters from the current column.
+        let tempArray = new Array(0);
+        for(let j = 0; j < this.gameObject.rows; j++)
+        {
+            if(this.gameObject.letterArray[j][column] !== " ")
+            {
+                tempArray.push(this.gameObject.letterArray[j][column]);
+            }
+        }
+
+        //Update the column order.
+        let reformedArray = new Array(0);
+        if(lettersOffset > 0)
+        {
+            for(let j = lettersOffset; j < tempArray.length; j++)
+            {
+                reformedArray.push(tempArray[j]);
+            }
+
+            for(let j = 0; j < lettersOffset; j++)
+            {
+                reformedArray.push(tempArray[j]);
+            }
+
+            for(let j = 0; j < reformedArray.length; j++)
+            {
+                this.gameObject.letterArray[j][column] = reformedArray[j];
+            }
+        }
+
+        if(lettersOffset < 0)
+        {
+            for(let j = tempArray.length + lettersOffset; j < tempArray.length; j++)
+            {
+                reformedArray.push(tempArray[j]);
+            }
+
+            for(let j = 0; j < tempArray.length + lettersOffset; j++)
+            {
+                reformedArray.push(tempArray[j]);
+            }
+
+            for(let j = 0; j < reformedArray.length; j++)
+            {
+                this.gameObject.letterArray[j][column] = reformedArray[j];
+            }
+        }
+        
+        //Show the results.
+        if(this.debug)this.printGameObject(this.gameObject);
     }
 
     //This will allow for easier testing and verify things stay valid. If there is a letter lock on a column,
@@ -147,7 +216,7 @@ class GameEngine1
 
     //-------------------- Start Evaluations --------------------
 
-    doEvaluation = () =>
+    doEvaluations = () =>
     {
         this.evalColumnLocks()
     }
@@ -187,31 +256,36 @@ class GameEngine1
     evalDoneColumn = () =>
     {
         let newDoneColumnArray = new Array(0);
+        let workDone = false; //Only delay if some animations set.
+
+        this.updateColumns();
 
         //Check for column AND letter locks.
         for(let i = 0; i < this.gameObject.columns; i++)
         {
             //Check if column is locked and correct letter is on top.
-            if(this.gameObject.locksArray[i].column && this.gameObject.letterArray[0][i] === this.gameObject.winningRow[i])
+            if(this.gameObject.locksArray[i].column && (this.gameObject.letterArray[0][i] === this.gameObject.winningRow[i]))
             {
-                //Only include new letters.
-                if(!this.gameObject.locksArray[i].letter)
+                //Only process changes on newly solved letters.
+                if(!this.gameObject.solvedArray[i])
                 {
+                    this.gameObject.solvedArray[i] = true;
                     this.gameObject.locksArray[i].letter = true;
                     this.gameObject.remainArray[i] = 1;
-                    
-                    newDoneColumnArray.push(i);
+                    workDone = true;
                 }
+                
+                newDoneColumnArray.push(i);
             }
         }
 
-        if(newDoneColumnArray.length === 0)
+        if(workDone)
         {
-            this.evalRightLetWrongCol();
+            this.animDoneColumn1(newDoneColumnArray);
         }
         else
         {
-            this.animDoneColumn1(newDoneColumnArray);
+            this.evalRightLetWrongCol();
         }
     }
 
@@ -279,8 +353,8 @@ class GameEngine1
                 }
             }while(isModified);
 
-            if(debug)console.log("Word Chains:");
-            if(debug)console.log(moveArray);
+            if(this.debug)console.log("Word Chains:");
+            if(this.debug)console.log(moveArray);
 
             //Move chains are now complete. Need to determine which are closed chains and which are open chains.
             let closeArray = new Array(0);
@@ -334,8 +408,8 @@ class GameEngine1
                 }
             }
 
-            if(debug)console.log("Close Array:");
-            if(debug)console.log(closeArray);
+            if(this.debug)console.log("Close Array:");
+            if(this.debug)console.log(closeArray);
 
             //Flatten out the arrays and put them into a single array for ease of processing.
             let moveChainArray = new Array(0);
@@ -353,8 +427,8 @@ class GameEngine1
                 moveChainArray.push({from: closeArray[i].from, to: closeArray[i].to, rotate: false});
             }
 
-            if(debug)console.log("Move Chain Array:");
-            if(debug)console.log(moveChainArray);
+            if(this.debug)console.log("Move Chain Array:");
+            if(this.debug)console.log(moveChainArray);
 
             //Make an array of indexes to change to for scroll changes later.
             let indexesArray = new Array(this.gameObject.columns);
