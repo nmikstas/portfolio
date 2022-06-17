@@ -9,33 +9,9 @@ let columns = 7;
 let numWords = 1;
 let minLength = 5;
 let numTries = 4;
+
+//Fix this.
 let usedLettersArray = new Array(0);
-
-//Slider variables.
-let isDown = false;
-let startY;
-let scrollOffset;
-let scrollDiv;
-let letterDiv;
-let mouseX;
-let mouseY;
-
-//Column swap variables.
-let singleClick = false;
-let colIndex1 = undefined;
-let colIndex2 = undefined;
-let tempIndex;
-
-//Animation variables.
-let animActive = false;
-let animIndexArray = new Array(0);
-let animState = 0;
-let animTimer;
-let didSwap = false;
-let removedLetters = false;
-
-//Letter height in web presentation.
-let letterHeight = 0;
 
 //Go button pressed indicator.
 let isGo = false;
@@ -43,402 +19,44 @@ let isGo = false;
 let gg = new GameGenerator1(); //Create a new game generator.
 let gp = new GamePrinter1(); //Create a new game printer.
 let ge = new GameEngine1(); //Create a new game engine.
-let gr = new GameRenderer1(document.getElementById("game-body")); //Create a new game presenter.
+let gr = new GameRenderer1 //Create a new game renderer.
+(
+    document.getElementById("game-body"),
+    document.getElementById("go-btn"),
+    document.getElementById("remain-span")
+);
 
 /************************************* Game Control Functions ************************************/
 
 const evaluate = () =>
 {
-    animActive = true;
+    gr.animActive = true;
     document.getElementById("go-btn").removeEventListener("click", evaluate);
     ge.doEvaluation();
 }
 
-//-------------------- Column Lock Evaluations --------------------
-
-//Game engine function.
-/*const evalColumnLocks = () =>
-{
-    let newColumnLocksArray = new Array(0);
-
-    //Check for column locks.
-    for(let i = 0; i < columns; i++)
-    {
-        if(ge.gameObject.columnArray[i] === i)
-        {
-            //Only include new columns.
-            if(!ge.gameObject.locksArray[i].column)
-            {
-                ge.gameObject.locksArray[i].column = true;
-                newColumnLocksArray.push(i);
-            }
-        }
-    }
-
-    if(newColumnLocksArray.length > 0)
-    {
-        animColumnLocks(newColumnLocksArray);
-    }
-    else
-    {
-        evalDoneColumn();
-    }
-}*/
-
-//Renderer function.
-/*const animColumnLocks = (newColumnLocksArray) =>
-{
-    for(let i = 0; i < newColumnLocksArray.length; i++)
-    {
-        gr.columnArray[newColumnLocksArray[i]].style.backgroundColor = "rgb(157, 188, 255)";
-        gr.columnArray[newColumnLocksArray[i]].style.transitionDuration = ".4s";
-    }
-
-    setTimeout(evalDoneColumn, 300);
-}*/
-
-//-------------------- Completed Columns Evaluations --------------------
-
-//Game engine function.
-const evalDoneColumn = () =>
-{
-    let newDoneColumnArray = new Array(0);
-
-    //Check for column AND letter locks.
-    for(let i = 0; i < columns; i++)
-    {
-        //Check if column is locked and correct letter is on top.
-        if(ge.gameObject.locksArray[i].column && ge.gameObject.letterArray[0][i] === ge.gameObject.winningRow[i])
-        {
-            //Only include new letters.
-            if(!ge.gameObject.locksArray[i].letter)
-            {
-                ge.gameObject.locksArray[i].letter = true;
-                newDoneColumnArray.push(i);
-            }
-        }
-    }
-
-    if(newDoneColumnArray.length === 0)
-    {
-        evalRightLetWrongCol();
-    }
-    else
-    {
-        animDoneColumn1(newDoneColumnArray);
-    }
-}
-
-//Renderer function.
-const animDoneColumn1 = (newDoneColumnArray) =>
-{
-    //Cycle through the solved columns and remove all the letters except for the top one.
-    for(let i = 0; i < newDoneColumnArray.length; i++)
-    {
-        //Set scroll offset to zero to make things easier.
-        gr.columnArray[newDoneColumnArray[i]].scrollTop = 0;
-
-        //Remove all letters except for the first one.
-        for(let j = 1; j < gr.columnArray[newDoneColumnArray[i]].childNodes.length; j++)
-        {
-            gr.columnArray[newDoneColumnArray[i]].childNodes[j].style.transform = "scale(0, 0)";
-            gr.columnArray[newDoneColumnArray[i]].childNodes[j].style.transitionDuration = ".4s";
-        }
-    }
-
-    setTimeout(() => animDoneColumn2(newDoneColumnArray), 500);
-}
-
-//Renderer function.
-const animDoneColumn2 = (newDoneColumnArray) =>
-{
-    //Transition background color to green.
-    for(let i = 0; i < newDoneColumnArray.length; i++)
-    {
-        gr.columnArray[newDoneColumnArray[i]].style.fontWeight = "bold";
-        gr.columnArray[newDoneColumnArray[i]].style.backgroundColor = "rgb(169, 255, 158)";
-        gr.columnArray[newDoneColumnArray[i]].style.transitionDuration = ".4s";
-        gr.columnArray[newDoneColumnArray[i]].style.height = letterHeight + "px";
-    }
-   
-    setTimeout(evalRightLetWrongCol, 500);
-}
-
-//Renderer function.
-const animDoneColumnFinish = () =>
-{
-    redraw();
-    setTimeout(evalRightLetWrongCol, 500);
-}
-
 //-------------------- Right Letter Wrong Column Evaluations --------------------
 
-const evalRightLetWrongCol = () =>
-{
-    //Get array of the right letters but wrong columns.
-    let moveArray = new Array(0);
-
-    for(let i = 0; i < columns; i++)
-    {
-        if(ge.gameObject.letterArray[0][i] === ge.gameObject.winningRow[i] && !ge.gameObject.locksArray[i].column)
-        {
-            let fromColumn;
-            //Find the destination column
-            for(let j = 0; j < ge.gameObject.columnArray.length; j++)
-            {
-                if(ge.gameObject.columnArray[j] === i)
-                {
-                    fromColumn = j;
-                }
-            }
-
-            let moveObj = {from: fromColumn, to: i};
-            moveArray.push([moveObj]);
-        }
-    }
-
-    if(moveArray.length === 0)
-    {
-        //No move chains were found, move to next step.
-        didSwap = false;
-        evalUsedLetters();
-    }
-    else
-    {
-        //Move chains found. Process those chains.
-        didSwap = true;
-        let isModified = false;
-        do
-        {
-            isModified = false;
-            for(let i = 0; i < moveArray.length; i++)                //First dimension
-            {
-                for(let j = 0; j < moveArray.length; j++)            //First dimension
-                {
-                    for(let k = 0; k < moveArray[i].length; k++)     //Second dimension
-                    {
-                        for(let l = 0; l < moveArray[j].length; l++) //Second dimension
-                        {
-                            if(i !== j && (moveArray[i][k].from === moveArray[j][l].to || moveArray[i][k].to === moveArray[j][l].from))
-                            {
-                                let theseMoves = moveArray.splice(j, 1);                                
-                                moveArray[i] = [...moveArray[i], ...theseMoves[0]];
-                                isModified = true;
-                            }
-                            if(isModified) break;
-                        }
-                        if(isModified) break;
-                    }     
-                    if(isModified) break;
-                }
-                if(isModified) break;
-            }
-        }while(isModified);
-
-        if(debug)console.log("Word Chains:");
-        if(debug)console.log(moveArray);
-
-        //Move chains are now complete. Need to determine which are closed chains and which are open chains.
-        let closeArray = new Array(0);
-
-        //Loop through letter chains to find open chains. If open chain, close it with one additional move.
-        for(let i = 0; i < moveArray.length; i++)
-        {
-            let to, from;
-            let isOpenChain = false;
-            
-            for(let j = 0; j < moveArray[i].length; j++)
-            {
-                let isFound = false;
-                
-                for(let k = 0; k < moveArray[i].length; k++)
-                {
-                    if(moveArray[i][j].to === moveArray[i][k].from)
-                    {
-                        isFound = true;
-                    }
-                }
-
-                if(!isFound)
-                {
-                    from = moveArray[i][j].to;
-                    isOpenChain = true;
-                }
-            }
-
-            for(let j = 0; j < moveArray[i].length; j++)
-            {
-                let isFound = false;
-                
-                for(let k = 0; k < moveArray[i].length; k++)
-                {
-                    if(moveArray[i][j].from === moveArray[i][k].to)
-                    {
-                        isFound = true;
-                    }
-                }
-
-                if(!isFound)
-                {
-                    to = moveArray[i][j].from;
-                }
-            }
-
-            if(isOpenChain)
-            {
-                closeArray.push({from: from, to: to});
-            }
-        }
-
-        if(debug)console.log("Close Array:");
-        if(debug)console.log(closeArray);
-
-        //Flatten out the arrays and put them into a single array for ease of processing.
-        let moveChainArray = new Array(0);
-
-        for(let i = 0; i < moveArray.length; i++)
-        {
-            for(let j = 0; j < moveArray[i].length; j++)
-            {
-                moveChainArray.push({from: moveArray[i][j].from, to: moveArray[i][j].to, rotate: true});
-            }
-        }
-
-        for(let i = 0; i < closeArray.length; i++)
-        {
-            moveChainArray.push({from: closeArray[i].from, to: closeArray[i].to, rotate: false});
-        }
-
-        if(debug)console.log("Move Chain Array:");
-        if(debug)console.log(moveChainArray);
-
-        //Swap columns.
-        for(let i = 0; i < moveChainArray.length; i++)
-        {
-            let startPos = gr.columnArray[moveChainArray[i].from].getBoundingClientRect().x;
-            let endPos = gr.columnArray[moveChainArray[i].to].getBoundingClientRect().x;
-            let xDiff = endPos - startPos;
-            gr.columnArray[moveChainArray[i].from].style.transform = "translate(" + xDiff + "px)";
-            gr.columnArray[moveChainArray[i].from].style.transitionDuration = ".4s";
-        }
-
-        //Set smooth scrolling for all columns.
-        for(let i = 0; i < gr.columnArray.length; i++)
-        {
-            gr.columnArray[i].classList.add("smooth-scroll");
-        }
-
-        //Make an array of indexes to change to for rotation changes later.
-        let indexesArray = new Array(ge.gameObject.columns);
-        for(let i = 0; i < indexesArray.length; i++)
-        {
-            indexesArray[i] = -1;
-        }
-
-        //Need to rotate letters to the proper position in the column.
-        for(let i = 0; i < moveChainArray.length; i++)
-        {
-            if(moveChainArray[i].rotate)
-            {
-                let index;
-                let letterToChangeTo = ge.gameObject.winningRow[moveChainArray[i].to];
-                
-                //Find the index of the letter to rotate to.
-                for(let j = 0; j < ge.gameObject.letterArray.length; j++)
-                {
-                    if(ge.gameObject.letterArray[j][moveChainArray[i].from] === letterToChangeTo)
-                    {
-                        index = j;
-                        indexesArray[moveChainArray[i].from] = index;
-                    }
-
-                    gr.columnArray[moveChainArray[i].from].scrollTop += letterHeight * index;
-                }
-            }
-        }
-
-        //Create a new version of the letter array and copy in all the changes.
-        let letterArray = new Array(ge.gameObject.rows);
-        for(let i = 0; i < letterArray.length; i++)
-        {
-            letterArray[i] = [...ge.gameObject.letterArray[i]];
-        }
-        
-        //Create a new version of the indexes array.
-        let indArray = [...indexesArray];
-
-        //create new version of the columns array.
-        let colArray = [...ge.gameObject.columnArray];
-
-        //Create new version of the locks array.
-        let lckArray = [...ge.gameObject.locksArray];
-
-        //Create a new version of the remaining letters array.
-        let remArray = [ge.gameObject.remainArray];
-        
-        //Rearrange the order of all the newly formed arrays.
-        for(let i = 0; i < moveChainArray.length; i++)
-        {
-            for(let j = 0; j < ge.gameObject.letterArray.length; j++)
-            {
-                letterArray[j][moveChainArray[i].to] = ge.gameObject.letterArray[j][moveChainArray[i].from];
-            }
-
-            indArray[moveChainArray[i].to] = indexesArray[moveChainArray[i].from];
-            colArray[moveChainArray[i].to] = ge.gameObject.columnArray[moveChainArray[i].from];
-            lckArray[moveChainArray[i].to] = ge.gameObject.locksArray[moveChainArray[i].from];
-            remArray[moveChainArray[i].to] = ge.gameObject.remainArray[moveChainArray[i].from];
-        }
-
-        //Now all the columns in the letter array need to be rotated to the proper indexes.
-        for(let i = 0; i < ge.gameObject.columns; i++)
-        {
-            if(indArray[i] !== -1)
-            {
-                let rotatedArray = new Array(0);
-                for(let j = indArray[i]; j < remArray[i]; j++)
-                {
-                    rotatedArray.push(letterArray[j][i]);
-                }
-                for(let j = 0; j < indArray[i]; j++)
-                {
-                    rotatedArray.push(letterArray[j][i]);
-                }
-
-                //Copy rotated array back into the letter array.
-                for(let j = 0; j < rotatedArray.length; j++)
-                {
-                    letterArray[j][i] = rotatedArray[j];
-                }
-            }
-        }
-
-        //Update the game object!
-        for(let i = 0; i < ge.gameObject.letterArray.length; i++)
-        {
-            ge.gameObject.letterArray[i] = [...letterArray[i]];
-        }
-
-        ge.gameObject.columnArray = [...colArray];
-        ge.gameObject.locksArray = [...lckArray];
-        ge.gameObject.remainArray = [...remArray];
-        
-        setTimeout(animRightLetWrongCol, 600);
-    } 
-}
-
-const animRightLetWrongCol = () =>
+//Game renderer
+const animRightLetWrongCol2 = () =>
 {
     //Set smooth scrolling for all columns.
     for(let i = 0; i < gr.columnArray.length; i++)
     {
         gr.columnArray[i].classList.remove("smooth-scroll");
     }
+   
+    gr.redraw(ge.gameObject, usedLettersArray);
+    evalRightLetWrongCol2();
+}
 
-    redraw();
-    if(didSwap)
+//Game engine.
+const evalRightLetWrongCol2 = () =>
+{
+    if(ge.didSwap)
     {
-        evaluate();
+        ge.updateColumns(); //Consolidate columns.   
+        ge.doEvaluation();
     }
     else
     {
@@ -483,23 +101,7 @@ const evalUsedLetters = () =>
     //Run the used letters animation only if something has changed.
     if(usedLettersArray.length !== prevLength)
     {
-        //Cycle through all the letters on the screen and add an orange background to the used letters.
-        {
-            for(let i = 0; i < gr.columnArray.length; i++)
-            {
-                for(let j = 0; j < gr.columnArray[i].childNodes.length; j++)
-                {
-                    let thisLetter = gr.columnArray[i].childNodes[j].innerHTML;
-                    if(usedLettersArray.includes(thisLetter) && (!ge.gameObject.locksArray[i].column || !ge.gameObject.locksArray[i].letter))
-                    {
-                        gr.columnArray[i].childNodes[j].style.fontWeight = "bold";
-                        gr.columnArray[i].childNodes[j].style.transitionDuration = ".4s";
-                    }
-                }
-            }
-        }
-
-        setTimeout(animUsedLetters, 500);
+        animUsedLetters1();
     }
     else
     {
@@ -507,8 +109,31 @@ const evalUsedLetters = () =>
     }
 }
 
-const animUsedLetters = () =>
+const animUsedLetters1 = () =>
 {
+
+    //Cycle through all the letters on the screen and add an orange background to the used letters.
+    for(let i = 0; i < gr.columnArray.length; i++)
+    {
+        for(let j = 0; j < gr.columnArray[i].childNodes.length; j++)
+        {
+            let thisLetter = gr.columnArray[i].childNodes[j].innerHTML;
+            if(usedLettersArray.includes(thisLetter) && (!ge.gameObject.locksArray[i].column || !ge.gameObject.locksArray[i].letter))
+            {
+                gr.columnArray[i].childNodes[j].style.fontWeight = "bold";
+                gr.columnArray[i].childNodes[j].style.transitionDuration = ".4s";
+            }
+        }
+    }
+
+    setTimeout(animUsedLetters2, 500);
+}
+
+const animUsedLetters2 = () =>
+{
+    ge.updateColumns(); //Consolidate columns.   
+    ge.checkLetterLock(); //Check for letter lock only.
+    gr.redraw(ge.gameObject, usedLettersArray);
     evalUnusedLetters();
 }
 
@@ -516,9 +141,6 @@ const animUsedLetters = () =>
 
 const evalUnusedLetters = () =>
 {
-    redraw();
-
-    removedLetters = false;
     let unusedLettersArray = new Array(0);
 
     //Create an ibject that holds all the instances of letters used in the solution.
@@ -589,6 +211,12 @@ const evalUnusedLetters = () =>
         //Remove letters from the game object.
         for(let i = 0; i < ge.gameObject.letterArray.length; i++)
         {
+            //Need to make sure things are up to date.
+            if(ge.gameObject.locksArray[i].letter)
+            {
+                ge.gameObject.remainArray[i] = 1;
+            }
+
             for(let j = 0; j < ge.gameObject.letterArray[i].length; j++)
             {
                 if(unusedLettersArray.includes(ge.gameObject.letterArray[i][j]))
@@ -638,7 +266,7 @@ const animUnusedLetters = (unusedLettersArray) =>
                 //Letter is still present. Move it up, if necessary.
                 if(missingLetters)
                 {
-                    let dy = -missingLetters * letterHeight;
+                    let dy = -missingLetters * gr.letterHeight;
                     gr.columnArray[i].childNodes[j].style.transitionDuration = ".4s";
                     gr.columnArray[i].childNodes[j].style.transform = "translateY(" + dy + "px)";
                 }
@@ -649,8 +277,7 @@ const animUnusedLetters = (unusedLettersArray) =>
         if(missingLetters)
         {
             gr.columnArray[i].style.transitionDuration = ".4s";
-            gr.columnArray[i].style.height = ((ge.gameObject.remainArray[i] - missingLetters) * letterHeight) + "px";
-            removedLetters = true;
+            gr.columnArray[i].style.height = ((ge.gameObject.remainArray[i] - missingLetters) * gr.letterHeight) + "px";
         }
     }
 
@@ -659,15 +286,18 @@ const animUnusedLetters = (unusedLettersArray) =>
 
 const animUnusedLettersFinish = () =>
 {
-    redraw();
+    ge.updateColumns(); //Consolidate columns.   
+    ge.checkLetterLock(); //Check for letter lock only.
+
+    gr.redraw(ge.gameObject, usedLettersArray);
     setTimeout(evalFinished, 500);
 }
 
 //-------------------- Finished Evaluations --------------------
 const evalFinished = () =>
 {   
-    redraw();
-    animActive = false;
+    gr.redraw(ge.gameObject, usedLettersArray);
+    gr.animActive = false;
     document.getElementById("go-btn").addEventListener("click", evaluate);
 }
 
@@ -702,144 +332,87 @@ const setSelections = (rows, columns, numWords, minLength, numTries) =>
 //Column swap timer expired. Indicate single click did not happen.
 const checkColumnSwap = () =>
 {
-    singleClick = false;
+    gr.singleClick = false;
 }
 
 const columnSwap = () =>
 {
+    let animIndexArray = new Array(0);
+
     //Save the temp index.
-    if(colIndex1 === undefined)
+    if(gr.colIndex1 === undefined)
     {
-        colIndex1 = tempIndex;
+        gr.colIndex1 = gr.tempIndex;
     }
-    else if(colIndex2 === undefined)
+    else if(gr.colIndex2 === undefined)
     {
-        colIndex2 = tempIndex;
+        gr.colIndex2 = gr.tempIndex;
     }
 
-    if(colIndex1 !== undefined && colIndex2 === undefined)
+    if(gr.colIndex1 !== undefined && gr.colIndex2 === undefined)
     {
         //Accounts for a corner case where the border is clicked.
-        if(isNaN(colIndex1))
+        if(isNaN(gr.colIndex1))
         {
-            colIndex1 = undefined;
-            colIndex2 = undefined;
+            gr.colIndex1 = undefined;
+            gr.colIndex2 = undefined;
             return;
         }
 
-        if(ge.gameObject.locksArray[colIndex1].column)
+        if(ge.gameObject.locksArray[gr.colIndex1].column)
         {
             //Locked. Indicate it can't move and cancel.
-            animIndexArray.push(colIndex1);
-            doShakeAnimations();
-            colIndex1 = undefined;
-            colIndex2 = undefined;
+            animIndexArray.push(gr.colIndex1);
+            gr.doShakeAnimations(animIndexArray);
+            gr.colIndex1 = undefined;
+            gr.colIndex2 = undefined;
         }
         else
         {
-            gr.columnArray[colIndex1].style.transform = "scale(1.1, 1.05)";
-            gr.columnArray[colIndex1].style.transitionDuration = ".15s";
-            gr.columnArray[colIndex1].style.backgroundColor = "rgb(230, 230, 230)";
+            gr.columnArray[gr.colIndex1].style.transform = "scale(1.1, 1.05)";
+            gr.columnArray[gr.colIndex1].style.transitionDuration = ".15s";
+            gr.columnArray[gr.colIndex1].style.backgroundColor = "rgb(230, 230, 230)";
         }
     }
-    else if(colIndex1 !== undefined && colIndex2 !== undefined)
+    else if(gr.colIndex1 !== undefined && gr.colIndex2 !== undefined)
     {
         //Accounts for a corner case where the border is clicked.
-        if(isNaN(colIndex2))
+        if(isNaN(gr.colIndex2))
         {
-            colIndex1 = undefined;
-            colIndex2 = undefined;
+            gr.colIndex1 = undefined;
+            gr.colIndex2 = undefined;
             return;
         }
 
-        if(ge.gameObject.locksArray[colIndex2].column)
+        if(ge.gameObject.locksArray[gr.colIndex2].column)
         {
             //Locked. Indicate it can't move and cancel.
-            gr.columnArray[colIndex1].style.backgroundColor = "rgba(0, 0, 0, 0)";
-            gr.columnArray[colIndex1].style.transform = "scale(1.0, 1.0)";
-            gr.columnArray[colIndex1].style.transitionDuration = ".15s";
-            animIndexArray.push(colIndex1);
-            animIndexArray.push(colIndex2);
-            doShakeAnimations();
-            colIndex1 = undefined;
-            colIndex2 = undefined;
+            gr.columnArray[gr.colIndex1].style.backgroundColor = "rgba(0, 0, 0, 0)";
+            gr.columnArray[gr.colIndex1].style.transform = "scale(1.0, 1.0)";
+            gr.columnArray[gr.colIndex1].style.transitionDuration = ".15s";
+            animIndexArray.push(gr.colIndex1);
+            animIndexArray.push(gr.colIndex2);
+            gr.doShakeAnimations(animIndexArray);
+            gr.colIndex1 = undefined;
+            gr.colIndex2 = undefined;
         }
-        else if(colIndex1 === colIndex2)
+        else if(gr.colIndex1 === gr.colIndex2)
         {
             //Cancel selection.
-            gr.columnArray[colIndex1].style.transform = "scale(1.0, 1.0)";
-            gr.columnArray[colIndex1].style.transitionDuration = ".15s";
-            gr.columnArray[colIndex1].style.backgroundColor = "rgba(0, 0, 0, 0)";
-            colIndex1 = undefined;
-            colIndex2 = undefined;
+            gr.columnArray[gr.colIndex1].style.transform = "scale(1.0, 1.0)";
+            gr.columnArray[gr.colIndex1].style.transitionDuration = ".15s";
+            gr.columnArray[gr.colIndex1].style.backgroundColor = "rgba(0, 0, 0, 0)";
+            gr.colIndex1 = undefined;
+            gr.colIndex2 = undefined;
         }
         else
         {
             //Swap columns.
-            animIndexArray.push(colIndex1);
-            animIndexArray.push(colIndex2);
-            doSwapAnimations();
-            colIndex1 = undefined;
-            colIndex2 = undefined;
-        }
-    }
-}
-
-//Take all the blanks out of the columns and put them at the bottom.
-const updateColumns = () =>
-{
-    for(let i = 0; i < columns; i++)
-    {
-        let letterCount = 0;
-        let tempArray = new Array(0);
-
-        //Take all the valid letters out of the current column and push them into the temp array.
-        for(let j = 0; j < rows; j++)
-        {
-            if(ge.gameObject.letterArray[j][i] !== " ")
-            {
-                tempArray.push(ge.gameObject.letterArray[j][i]);
-                letterCount++;
-            }
-        }
-
-        //Replace the letters in the letter array with the consolidated version.
-        for(let j = 0; j < rows; j++)
-        {
-            ge.gameObject.letterArray[j][i] = " ";
-        }
-
-        for(let j = 0; j < tempArray.length; j++)
-        {
-            ge.gameObject.letterArray[j][i] = tempArray[j];
-        }
-
-        //Update the letters remaining array.
-        ge.gameObject.remainArray[i] = letterCount;
-
-        //Update the letter lock indicator, if necessary.
-        if(letterCount === 1)
-        {
-            ge.gameObject.locksArray[i].letter = true;
-        }
-    }
-}
-
-//This will allow for easier testing and verify things stay valid. If there is a letter lock on a column,
-//it erases all the letters except for the correct one for the column.
-const checkLetterLock = () =>
-{
-    for(let i = 0; i < columns; i++)
-    {
-        if(ge.gameObject.locksArray[i].letter)
-        {
-            //Get the correct final letter for the current column.
-            let finalLetter = ge.gameObject.winningRow[ge.gameObject.columnArray[i]];
-
-            for(let j = 0; j < rows; j++)
-            {
-                ge.gameObject.letterArray[j][i] = (j === 0) ? finalLetter : " ";
-            }
+            animIndexArray.push(gr.colIndex1);
+            animIndexArray.push(gr.colIndex2);
+            doSwapAnimations(animIndexArray);
+            gr.colIndex1 = undefined;
+            gr.colIndex2 = undefined;
         }
     }
 }
@@ -853,8 +426,8 @@ const updateColumnDrag = () =>
         return;
     }
 
-    if(animActive) return;
-    if(singleClick) return;
+    if(gr.animActive) return;
+    if(gr.singleClick) return;
 
     for(let i = 0; i < columns; i++)
     {
@@ -865,10 +438,10 @@ const updateColumnDrag = () =>
         let thisScrollOffset = gr.columnArray[i].scrollTop;
 
         //Caclulate the scroll offset for the first character.
-        let zeroScroll = Math.floor(letterHeight * lettersRemaining);
+        let zeroScroll = Math.floor(gr.letterHeight * lettersRemaining);
 
         //Calculate how many letters away from zero scroll.
-        let lettersOffset = Math.round((thisScrollOffset - zeroScroll) / letterHeight) % lettersRemaining;
+        let lettersOffset = Math.round((thisScrollOffset - zeroScroll) / gr.letterHeight) % lettersRemaining;
     
         //Get the remaining letters from the current column.
         let tempArray = new Array(0);
@@ -921,167 +494,19 @@ const updateColumnDrag = () =>
 
     //Show the results.
     if(debug)gp.printGameObject(ge.gameObject);
-    redraw();
+    gr.redraw(ge.gameObject, usedLettersArray);
 }
 
 /********************************** Game Presentation Functions **********************************/
 
-const redraw = () =>
-{
-    gr.columnArray.length = 0;
-
-    //Get critical dimension info about the game body element.
-    let gameBody = document.getElementById("game-body");
-    let gameWidth = gameBody.clientWidth;
-    let gameHeight = gameBody.clientHeight;
-    
-    //Update the number of tries remaining.
-    let triesRemaining = document.getElementById("remain-span");
-    triesRemaining.innerHTML = "Tries Remaining: " + numTries;
-
-    let limitingFactor = (gameWidth > gameHeight) ? gameHeight : gameWidth;
-
-    //Consolidate columns.
-    updateColumns();
-
-    //Check for letter lock only.
-    checkLetterLock();
-
-    //Need to transpose the letter array.
-    let transLetterArray = new Array(columns);
-    for(let i = 0; i < transLetterArray.length; i++)
-    {
-        transLetterArray[i] = new Array(0);
-    }
-
-    for(let i = 0; i < ge.gameObject.letterArray.length; i++)
-    {
-        for(let j = 0; j < ge.gameObject.letterArray[i].length; j++)
-        {
-            if(ge.gameObject.letterArray[i][j] !== " ")
-            {
-                transLetterArray[j].push(ge.gameObject.letterArray[i][j]);
-            }
-        }
-    }
-
-    //Clear out the game body div.
-    gameBody.innerHTML = "";
-
-    //Generate the column divs.
-    for(let i = 0; i < columns; i++)
-    {
-        //Else draw whole column.
-        let thisDiv = document.createElement("div");
-        gr.columnArray.push(thisDiv);
-        thisDiv.classList.add("column-div");
-        thisDiv.innerHTML = i;
-        thisDiv.style.fontSize = "2.5vw";
-        thisDiv.setAttribute("index", i);
-        gameBody.appendChild(thisDiv);
-
-        thisDiv.addEventListener("mousedown", start);
-	    thisDiv.addEventListener("touchstart", start);
-
-        if(!ge.gameObject.locksArray[i].letter)
-        {
-            thisDiv.addEventListener("mousemove", move);
-            thisDiv.addEventListener("touchmove", move);
-            thisDiv.addEventListener("mouseleave", end);
-            thisDiv.addEventListener("touchleave", end);
-        }
-	    
-	    thisDiv.addEventListener("mouseup", release);
-	    //thisDiv.addEventListener("touchend", end);
-        thisDiv.addEventListener("touchend", release);
-
-        //Check for column lock only.
-        if(ge.gameObject.locksArray[i].column && !ge.gameObject.locksArray[i].letter)
-        {
-            thisDiv.style.backgroundColor = "rgb(157, 188, 255)";
-        }
-
-        //Check for word lock and column lock.
-        if(ge.gameObject.locksArray[i].column && ge.gameObject.locksArray[i].letter)
-        {
-            thisDiv.style.fontWeight = "bold";
-            thisDiv.style.backgroundColor = "rgb(169, 255, 158)";
-            ge.gameObject.remainArray[i] = 1;
-        }
-    }
-
-    //Get the exact letter height. Need to subtract 2. Border, perhaps?
-    letterHeight = parseFloat(gr.columnArray[0].getBoundingClientRect().height) - 2;
-
-    //Calculate column height.
-    for(let i = 0; i < columns; i++)
-    {
-        let thisColLetters = transLetterArray[i].length;
-        let newHeight = thisColLetters * letterHeight;
-        gr.columnArray[i].style.height = newHeight + "px";
-    }
-
-    //Now go back in and fill the columns with the letters.
-    for(let i = 0; i < columns; i++)
-    {
-        gr.columnArray[i].innerHTML = "";
-
-        //Only put one copy of letter in box if it is letter locked.
-        let repeats = (ge.gameObject.locksArray[i].letter) ? 1 : 3;
-
-        //Push 3 copies into the array for scrolling.
-        for(let j = 0; j < repeats; j++)
-        {
-            for(let k = 0; k < transLetterArray[i].length; k++)
-            {
-                let thisDiv = document.createElement("div");
-                gr.columnArray[i].appendChild(thisDiv);
-                thisDiv.classList.add("letter-div");
-                thisDiv.innerHTML = transLetterArray[i][k];
-                thisDiv.style.fontSize = "2.5vw";
-                thisDiv.style.height = letterHeight + "px"; //Explicitly assign letter div height for transition effect.
-            }
-        }
-    }
-
-    //Explicitly set the horizontal position of the columns for transition effects.
-    for(let i = 0; i < columns; i++)
-    {
-        gr.columnArray[i].style.left = gr.columnArray[i].getBoundingClientRect().x;
-    }
-
-    //Calculate scroll offset.
-    for(let i = 0; i < columns; i++)
-    {
-        let scrollOffset = letterHeight * ge.gameObject.remainArray[i];
-        gr.columnArray[i].scrollTop = scrollOffset;     
-    }
-
-    //Cycle through all the letters on the screen and add an orange background to the used letters.
-    {
-        for(let i = 0; i < gr.columnArray.length; i++)
-        {
-            for(let j = 0; j < gr.columnArray[i].childNodes.length; j++)
-            {
-                let thisLetter = gr.columnArray[i].childNodes[j].innerHTML;
-                if(usedLettersArray.includes(thisLetter) && (!ge.gameObject.locksArray[i].column || !ge.gameObject.locksArray[i].letter))
-                {
-                    gr.columnArray[i].childNodes[j].style.fontWeight = "bold";
-                    gr.columnArray[i].childNodes[j].style.transitionDuration = "0s";
-                }
-            }
-        }
-    }
-}
-
 //Swaps columns whose indexes are in the animation index array.
-const doSwapAnimations = () =>
+const doSwapAnimations = (animIndexArray) =>
 {
-    switch(animState)
+    switch(gr.animState)
     {
         case 0:
-            animActive = true;
-            clearTimeout(animTimer);
+            gr.animActive = true;
+            clearTimeout(gr.animTimer);
             if(animIndexArray.length === 2)
             {
                 let xpos0 = parseFloat(gr.columnArray[animIndexArray[0]].getBoundingClientRect().x);
@@ -1096,8 +521,8 @@ const doSwapAnimations = () =>
                 gr.columnArray[animIndexArray[1]].style.transform = "translate(" + xdiff + "px)";
                 gr.columnArray[animIndexArray[1]].style.transitionDuration = ".4s";
             }
-            animTimer = setTimeout(doSwapAnimations, 500);
-            animState++;
+            gr.animTimer = setTimeout(() => doSwapAnimations(animIndexArray), 500);
+            gr.animState++;
         break;
 
         default:
@@ -1121,157 +546,16 @@ const doSwapAnimations = () =>
             [ge.gameObject.remainArray[animIndexArray[1]], ge.gameObject.remainArray[animIndexArray[0]]];
 
             if(debug)gp.printGameObject(ge.gameObject);
-            redraw();
-            animActive = false;
-            clearTimeout(animTimer);
-            animState = 0;
-            animIndexArray.length = 0;
-        break;
-    }
-}
-
-//Shake columns whose indexes are in the animation index array.
-const doShakeAnimations = () =>
-{
-    switch(animState)
-    {
-        case 0:
-            animActive = true;
-            clearTimeout(animTimer);
-            for(let i = 0; i < animIndexArray.length; i++)
-            {
-                gr.columnArray[animIndexArray[i]].style.transform = "translate(-1vh)";
-                gr.columnArray[animIndexArray[i]].style.transitionDuration = ".075s";
-            }
-            animTimer = setTimeout(doShakeAnimations, 75);
-            animState++;
-        break;
-        
-        case 1:
-            for(let i = 0; i < animIndexArray.length; i++)
-            {
-                gr.columnArray[animIndexArray[i]].style.transform = "translate(1vh)";
-                gr.columnArray[animIndexArray[i]].style.transitionDuration = ".1s";
-            }
-            animTimer = setTimeout(doShakeAnimations, 100);
-            animState++;
-        break;
-
-        case 2:
-            for(let i = 0; i < animIndexArray.length; i++)
-            {
-                gr.columnArray[animIndexArray[i]].style.transform = "translate(0vh)";
-                gr.columnArray[animIndexArray[i]].style.transitionDuration = ".075s";
-            }
-            animTimer = setTimeout(doShakeAnimations, 75);
-            animState++;
-        break;
-
-        default:
-            animActive = false;
-            clearTimeout(animTimer);
-            animState = 0;
+            gr.redraw(ge.gameObject, usedLettersArray);
+            gr.animActive = false;
+            clearTimeout(gr.animTimer);
+            gr.animState = 0;
             animIndexArray.length = 0;
         break;
     }
 }
 
 /**************************************** Event Listeners ****************************************/
-
-const end = (e) =>
-{
-    if(animActive) return;
-    if(!isDown) return;
-
-    let yTop = scrollDiv.getBoundingClientRect().y;
-    let yBottom = scrollDiv.getBoundingClientRect().height + yTop;
-
-    if(mouseY > yBottom || mouseY < yTop)
-    {
-        isDown = false;
-        letterDiv.style.cursor = "pointer";
-    }
-}
-
-const release = (e) =>
-{
-    if(animActive) return;
-    isDown = false;
-    letterDiv.style.cursor = "pointer";
-
-    //Check if there was a quick click, indicating a column swap is desired.
-    if(singleClick)
-    {
-        columnSwap();
-    }
-    //Cancel any column swap if second click was a long click.
-    else 
-    {
-        colIndex1 = undefined;
-        colIndex2 = undefined;
-    }
-}
-
-const start = (e) =>
-{
-    if(animActive) return;
-
-    //Set a timer to check for a column swap(single fast click).
-    setTimeout(checkColumnSwap, 150);
-    singleClick = true; 
-    isDown = true;
-    scrollDiv = e.target.parentNode;
-    letterDiv = e.target;
-    letterDiv.style.cursor = "grab";
-    startY = e.pageY || e.touches[0].pageY - scrollDiv.offsetTop;
-    scrollOffset = scrollDiv.scrollTop;
-
-    //Get the index of the clicked column for column swapping purposes.
-    tempIndex = parseInt(scrollDiv.getAttribute("index"));
-}
-
-const move = (e) =>
-{
-    //Exit if in middle of column swap.
-    if(colIndex1 !== undefined) return;
-
-    if(animActive) return;
-    if(!isDown) return;
-
-    e.preventDefault();
-    
-    const y = e.pageY || e.touches[0].pageY - scrollDiv.offsetTop;
-    const dist = (y - startY);
-    scrollDiv.scrollTop = scrollOffset - dist;
-}
-
-document.addEventListener("mousemove", (event) => 
-{
-    if(animActive) return;
-    mouseX = event.clientX;
-    mouseY = event.clientY;
-    if(!isDown && letterDiv)letterDiv.style.cursor = "pointer";
-});
-
-document.addEventListener("touchmove", (event) => 
-{
-    if(animActive) return;
-    mouseX = event.touches[0].clientX;
-    mouseY = event.touches[0].clientY;
-    if(!isDown && letterDiv)letterDiv.style.cursor = "pointer";
-});
-
-document.addEventListener("mouseup", (event) => 
-{
-    if(animActive) return;
-    isDown = false;
-});
-
-document.addEventListener("touchup", (event) => 
-{
-    if(animActive) return;
-    isDown = false;
-});
 
 //Event listener that closes modals if clicked outside of modal.
 window.onclick = (event) =>
@@ -1350,13 +634,13 @@ settingsBtn.addEventListener("click", () =>
     numTries = setTries;
 
     resetGame();
-    redraw();
+    gr.redraw(ge.gameObject, usedLettersArray);
 });
 
 //Resize window event listener.
 const resize = window.addEventListener("resize", () =>
 {
-    redraw();
+    gr.redraw(ge.gameObject, usedLettersArray);
 });
 
 //Check for column updates whenever the mouse button is released.
@@ -1367,8 +651,8 @@ window.addEventListener("touchup", updateColumnDrag);
 document.getElementById("go-btn").addEventListener("mousedown", () =>
 {
     isGo = true;
-    colIndex1 = undefined;
-    colIndex2 = undefined;
+    gr.colIndex1 = undefined;
+    gr.colIndex2 = undefined;
 });
 
 document.getElementById("go-btn").addEventListener("touchstart", () =>
@@ -1380,11 +664,16 @@ document.getElementById("go-btn").addEventListener("click", evaluate);
 
 /******************************************* Game Code *******************************************/
 
-//Setup game engine callbacks.
+//Setup game engine and game renderer callbacks.
 ge.animColumnLocks = gr.animColumnLocks;
-ge.evalDoneColumn = evalDoneColumn;
-gr.evalDoneColumn = evalDoneColumn;
+ge.animDoneColumn1 = gr.animDoneColumn1;
+ge.animRightLetWrongCol1 = gr.animRightLetWrongCol1;
+ge.evalUsedLetters = evalUsedLetters;
+
+gr.evalDoneColumn = ge.evalDoneColumn;
+gr.evalRightLetWrongCol = ge.evalRightLetWrongCol;
+gr.animRightLetWrongCol2 = animRightLetWrongCol2;
 
 resetGame();
-redraw();
+gr.redraw(ge.gameObject, usedLettersArray);
 if(debug)gp.printGameObject(ge.gameObject);
