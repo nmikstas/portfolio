@@ -77,6 +77,9 @@ class GameEngine1
         {
             if(this.gameObject.locksArray[i].letter)
             {
+                //Set the letters remaining to 1.
+                this.gameObject.remainArray[i] = 1;
+
                 //Get the correct final letter for the current column.
                 let finalLetter = this.gameObject.winningRow[this.gameObject.columnArray[i]];
 

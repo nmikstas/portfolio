@@ -211,12 +211,6 @@ const evalUnusedLetters = () =>
         //Remove letters from the game object.
         for(let i = 0; i < ge.gameObject.letterArray.length; i++)
         {
-            //Need to make sure things are up to date.
-            if(ge.gameObject.locksArray[i].letter)
-            {
-                ge.gameObject.remainArray[i] = 1;
-            }
-
             for(let j = 0; j < ge.gameObject.letterArray[i].length; j++)
             {
                 if(unusedLettersArray.includes(ge.gameObject.letterArray[i][j]))
