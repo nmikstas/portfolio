@@ -23,11 +23,12 @@ class GameRenderer1
             getGameObject = null,
             getUsedLettersArray = null,
             evalDoneColumn = null,
-            evalRightLetWrongCol = null,
-
-
-
-            animRightLetWrongCol2 = null
+            evalRightLetWrongCol1 = null,
+            evalRightLetWrongCol2 = null,
+            evalUsedLetters = null,
+            evalUnusedLetters1 = null,
+            evalUnusedLetters2 = null,
+            evalFinished = null
         } = {}
     )
     {
@@ -38,17 +39,12 @@ class GameRenderer1
         this.getGameObject = getGameObject;
         this.getUsedLettersArray = getUsedLettersArray;
         this.evalDoneColumn = evalDoneColumn;
-        this.evalRightLetWrongCol = evalRightLetWrongCol;
-        
-
-
-        this.animRightLetWrongCol2 = animRightLetWrongCol2;
-
-
-
-
-
-
+        this.evalRightLetWrongCol1 = evalRightLetWrongCol1;
+        this.evalRightLetWrongCol2 = evalRightLetWrongCol2;
+        this.evalUsedLetters = evalUsedLetters;
+        this.evalUnusedLetters1 = evalUnusedLetters1;
+        this.evalUnusedLetters2 = evalUnusedLetters2;
+        this.evalFinished = evalFinished;
 
         //Slider variables.
         this.isDown = false;
@@ -388,7 +384,7 @@ class GameRenderer1
                 //Swap columns.
                 animIndexArray.push(this.colIndex1);
                 animIndexArray.push(this.colIndex2);
-                doSwapAnimations(animIndexArray);
+                animSwap1(animIndexArray); /********************************************************************************* */
                 this.colIndex1 = undefined;
                 this.colIndex2 = undefined;
             }
@@ -555,11 +551,11 @@ class GameRenderer1
         //Only delay if work was done.
         if(newDoneColumnArray.length > 0)
         {
-            setTimeout(this.evalRightLetWrongCol, 500);
+            setTimeout(this.evalRightLetWrongCol1, 500);
         }
         else
         {
-            this.evalRightLetWrongCol();
+            this.evalRightLetWrongCol1();
         }
     }
 
@@ -600,25 +596,167 @@ class GameRenderer1
         }
     }
 
+    animRightLetWrongCol2 = () =>
+    {
+        //Set smooth scrolling for all columns.
+        for(let i = 0; i < this.columnArray.length; i++)
+        {
+            this.columnArray[i].classList.remove("smooth-scroll");
+        }
     
-
-
+        this.redraw();
+        this.evalRightLetWrongCol2();
+    }
 
     //-------------------- Used Letter Animations --------------------
 
-
-
-
+    animUsedLetters1 = (usedLettersArray) =>
+    {
+        let workDone = false; //Only delay if some animations set.
+        let gameObject = this.getGameObject();
+    
+        //Cycle through all the letters on the screen and add bold the used letters.
+        for(let i = 0; i < this.columnArray.length; i++)
+        {
+            for(let j = 0; j < this.columnArray[i].childNodes.length; j++)
+            {
+                let thisLetter = this.columnArray[i].childNodes[j].innerHTML;
+                if(usedLettersArray.includes(thisLetter) && (!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter))
+                {
+                    this.columnArray[i].childNodes[j].style.fontWeight = "bold";
+                    this.columnArray[i].childNodes[j].style.transitionDuration = ".4s";
+                    workDone = true;
+                }
+            }
+        }
+    
+        if(workDone)
+        {
+            setTimeout(this.animUsedLetters2, 500);
+        }
+        else
+        {
+            this.animUsedLetters2();
+        }
+    }
+    
+    animUsedLetters2 = () =>
+    {
+        this.redraw();
+        this.evalUnusedLetters1();
+    }
 
     //-------------------- Unused Letter Animations --------------------
 
+    animUnusedLetters1 = (unusedLettersArray) =>
+    {
+        let workDone = false; //Only delay if some animations set.
+        let gameObject = this.getGameObject();
+    
+        if(this.debug)console.log("Unused Letters:");
+        if(this.debug)console.log(unusedLettersArray);
+    
+        for(let i = 0; i < gameObject.columns; i++)
+        {
+            //Only work on columns that have not already been solved
+            if(!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter)
+            {
+                //Reset scroll for animation effects.
+                this.columnArray[i].scrollTop = 0;
+    
+                for(let j = 0; j < this.columnArray[i].childNodes.length; j++)
+                {
+                    let thisLetter = this.columnArray[i].childNodes[j].innerHTML;
+                    if(unusedLettersArray.includes(thisLetter))
+                    {
+                        this.columnArray[i].childNodes[j].style.transform = "scale(0, 0)";
+                        this.columnArray[i].childNodes[j].style.transitionDuration = ".4s";
+                        workDone = true;
+                    }
+                }
+            }
+        }
+    
+        if(workDone)
+        {
+            setTimeout(() => this.animUnusedLetters2(unusedLettersArray), 500);
+        }
+        else
+        {
+            this.animUnusedLetters2(unusedLettersArray);
+        } 
+    }
 
+    animUnusedLetters2 = (unusedLettersArray) =>
+    {
+        let workDone = false; //Only delay if some animations set.
+        let gameObject = this.getGameObject();
+    
+        //Move letters up in the columns to fill in any holes from removed letters.
+        for(let i = 0; i < gameObject.columns; i++)
+        {
+            let missingLetters = 0;
+    
+            //Go through only the first repitition of letters.
+            for(let j = 0; j < gameObject.remainArray[i]; j++)
+            {
+                let thisLetter
+                try
+                {
+                    thisLetter = this.columnArray[i].childNodes[j].innerHTML;
+                }
+                catch(error)
+                {
+                    console.log("ERROR");
+                    console.log("i: %s, j: %s, gameObject.remainArray[i]: %s, childNodes length: %s", 
+                                 i, j, gameObject.remainArray[i], this.columnArray[i].childNodes.length)
+                }
+                
+                if(unusedLettersArray.includes(thisLetter) && gameObject.remainArray[i] > 1)
+                {
+                    //Letter has been removed.
+                    missingLetters++;
+                }
+                else
+                {
+                    //Letter is still present. Move it up, if necessary.
+                    if(missingLetters)
+                    {
+                        let dy = -missingLetters * this.letterHeight;
+                        this.columnArray[i].childNodes[j].style.transitionDuration = ".4s";
+                        this.columnArray[i].childNodes[j].style.transform = "translateY(" + dy + "px)";
+                    }
+                }
+            }
+    
+            //Resize column, if necessary.
+            if(missingLetters)
+            {
+                this.columnArray[i].style.transitionDuration = ".4s";
+                this.columnArray[i].style.height = ((ge.gameObject.remainArray[i] - missingLetters) * this.letterHeight) + "px";
+                workDone = true;
+            }
+        }
+    
+        if(workDone)
+        {
+            setTimeout(this.evalUnusedLetters2, 500);
+        }
+        else
+        {
+            this.evalUnusedLetters2();
+        } 
+    }
 
-
+    animUnusedLetters3 = () =>
+    {
+        this.redraw();
+        this.evalFinished();
+    }
 
     //-------------------- Finished Animations --------------------
 
-
+    
 
 
 

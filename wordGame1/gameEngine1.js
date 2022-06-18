@@ -22,12 +22,12 @@ class GameEngine1
             animColumnLocks = null,
             animDoneColumn1 = null,
             animRightLetWrongCol1 = null,
-
-
-
-
-
-            evalUsedLetters = null
+            animRightLetWrongCol2 = null,
+            animUsedLetters1 = null,
+            animUsedLetters2 = null,
+            animUnusedLetters1 = null,
+            animUnusedLetters2 = null,
+            animUnusedLetters3 = null
         } = {}
     )
     {
@@ -37,12 +37,12 @@ class GameEngine1
         this.animColumnLocks = animColumnLocks;
         this.animDoneColumn1 = animDoneColumn1;
         this.animRightLetWrongCol1 = animRightLetWrongCol1;
-
-
-
-        this.evalUsedLetters = evalUsedLetters;
-
-
+        this.animRightLetWrongCol2 = animRightLetWrongCol2;
+        this.animUsedLetters1 = animUsedLetters1;
+        this.animUsedLetters2 = animUsedLetters2;
+        this.animUnusedLetters1 = animUnusedLetters1;
+        this.animUnusedLetters2 = animUnusedLetters2;
+        this.animUnusedLetters3 = animUnusedLetters3;
 
         this.didSwap = false;
         this.usedLettersArray = new Array(0);
@@ -138,8 +138,7 @@ class GameEngine1
         if(this.debug)this.printGameObject(this.gameObject);
     }
 
-    //This will allow for easier testing and verify things stay valid. If there is a letter lock on a column,
-    //it erases all the letters except for the correct one for the column.
+    //If there is a letter lock on a column, it erases all the letters except for the correct one for the column.
     checkLetterLock = () =>
     {
         for(let i = 0; i < this.gameObject.columns; i++)
@@ -285,13 +284,13 @@ class GameEngine1
         }
         else
         {
-            this.evalRightLetWrongCol();
+            this.evalRightLetWrongCol1();
         }
     }
 
     //-------------------- Right Letter Wrong Column Evaluations --------------------
 
-    evalRightLetWrongCol = () =>
+    evalRightLetWrongCol1 = () =>
     {
         //Get array of the right letters but wrong columns.
         let moveArray = new Array(0);
@@ -534,23 +533,140 @@ class GameEngine1
         } 
     }
 
-
+    evalRightLetWrongCol2 = () =>
+    {
+        if(this.didSwap)
+        {
+            this.updateColumns(); //Consolidate columns.   
+            this.doEvaluations();
+        }
+        else
+        {
+            this.evalUsedLetters();
+        }
+    }
 
     //-------------------- Used Letter Evaluations --------------------
 
-
-
-
+    evalUsedLetters = () =>
+    {
+        let prevLength = this.usedLettersArray.length;
+    
+        //Loop through the top row of letters and look for ones in the solution.
+        for(let i = 0; i < this.gameObject.columns; i++)
+        {
+            //Skip solved columns.
+            if(!this.gameObject.locksArray[i].column || !this.gameObject.locksArray[i].letter)
+            {
+                let thisLetter = this.gameObject.letterArray[0][i];
+    
+                //Loop through winning row and locks array to see if this a used letter not yet solved for.
+                for(let j = 0; j < this.gameObject.columns; j++)
+                {
+                    //If letter appears in the winning row in an unlocked column, add it to the used letters array.
+                    if((thisLetter === this.gameObject.winningRow[j]) && (!this.gameObject.locksArray[j].column || !this.gameObject.locksArray[j].letter))
+                    {
+                        //Only add if its not already in there.
+                        if(!this.usedLettersArray.includes(thisLetter))
+                        {
+                            this.usedLettersArray.push(thisLetter);
+                        }
+                    }
+                }
+            }
+        }
+    
+        if(this.debug)console.log("Used Letters:");
+        if(this.debug)console.log(this.usedLettersArray);
+    
+        this.updateColumns(); //Consolidate columns.   
+        this.checkLetterLock(); //Check for letter lock only.
+    
+        //Run the used letters animation only if something has changed.
+        if(this.usedLettersArray.length !== prevLength)
+        {
+            this.animUsedLetters1(this.usedLettersArray);
+        }
+        else
+        {
+            this.evalUnusedLetters1();
+        }
+    }
 
     //-------------------- Unused Letter Evaluations --------------------
 
+    evalUnusedLetters1 = () =>
+    {
+        let unusedLettersArray = new Array(0);
+    
+        //Create an ibject that holds all the instances of letters used in the solution.
+        let alphabetObj =
+        {
+            A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0, H: 0, I: 0, J: 0, K: 0, L: 0, M: 0,
+            N: 0, O: 0, P: 0, Q: 0, R: 0, S: 0, T: 0, U: 0, V: 0, W: 0, X: 0, Y: 0, Z: 0
+        }
+    
+        //Keep track of what letters and how many are used in the solution.
+        for(let i = 0; i < this.gameObject.columns; i++)
+        {
+            alphabetObj[this.gameObject.winningRow[i]]++;
+        }
+    
+        //Now subtract the solved letters from the alphabet object.
+        for(let i = 0; i < this.gameObject.columns; i++)
+        {
+            if(this.gameObject.locksArray[i].column && this.gameObject.locksArray[i].letter)
+            {
+                alphabetObj[this.gameObject.letterArray[0][i]]--;
+            }
+        }
+    
+        //Now we can calculate an array of unused letters.
+        for(let i = 0; i < this.gameObject.columns; i++)
+        {
+            if(alphabetObj[this.gameObject.letterArray[0][i]] === 0)
+            {
+                let thisLetter = this.gameObject.letterArray[0][i];
+                if(!unusedLettersArray.includes(thisLetter))
+                {
+                    unusedLettersArray.push(thisLetter);
+                }
+            }
+        }
+    
+        //Remove letters from the game object.
+        for(let i = 0; i < this.gameObject.letterArray.length; i++)
+        {
+            for(let j = 0; j < this.gameObject.letterArray[i].length; j++)
+            {
+                if(unusedLettersArray.includes(this.gameObject.letterArray[i][j]))
+                {
+                    this.gameObject.letterArray[i][j] = " ";
+                }
+            }
+        }
+    
+        //Shrink unused letters away from screen.
+        if(unusedLettersArray.length !== 0)
+        {
+            this.animUnusedLetters1(unusedLettersArray);
+        }
+        else
+        {
+            this.evalFinished();
+        }
+    }
 
-
-
+    evalUnusedLetters2 = () =>
+    {
+        this.updateColumns(); //Consolidate columns.   
+        this.checkLetterLock(); //Check for letter lock only.
+        this.animUnusedLetters3();
+    }
 
     //-------------------- Finished Evaluations --------------------
 
-
+      
 
 
 
