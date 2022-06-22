@@ -28,7 +28,8 @@ class GameRenderer1
             evalUsedLetters = null,
             evalUnusedLetters1 = null,
             evalUnusedLetters2 = null,
-            evalFinished = null
+            doEvaluations = null,
+            scrollColumn = null,
         } = {}
     )
     {
@@ -44,8 +45,9 @@ class GameRenderer1
         this.evalUsedLetters = evalUsedLetters;
         this.evalUnusedLetters1 = evalUnusedLetters1;
         this.evalUnusedLetters2 = evalUnusedLetters2;
-        this.evalFinished = evalFinished;
-
+        this.doEvaluations = doEvaluations;
+        this.scrollColumn = scrollColumn;
+        
         //Slider variables.
         this.isDown = false;
         this.startY;
@@ -390,6 +392,50 @@ class GameRenderer1
             }
         }
     }
+
+    //Update the rotation of the column after a user has clicked and dragged it.
+    updateColumnDrag = () =>
+    {
+        if(this.isGo)
+        {
+            this.isGo = false;
+            return;
+        }
+
+        if(this.animActive) return;
+        if(this.singleClick) return;
+
+        let gameObject = this.getGameObject();
+
+        for(let i = 0; i < gameObject.columns; i++)
+        {
+            //Get number of letters remaining in current column.
+            let lettersRemaining = gameObject.remainArray[i];
+
+            //Get the scroll offset for current column.
+            let thisScrollOffset = this.columnArray[i].scrollTop;
+
+            //Caclulate the scroll offset for the first character.
+            let zeroScroll = Math.floor(this.letterHeight * lettersRemaining);
+
+            //Calculate how many letters away from zero scroll.
+            let lettersOffset = Math.round((thisScrollOffset - zeroScroll) / this.letterHeight) % lettersRemaining;
+        
+            //Update the column in the game engine.
+            this.scrollColumn(i, lettersOffset);
+        }
+
+        this.redraw();
+    }
+
+
+
+
+
+
+
+
+
     
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //                                     Event Listeners                                       //
@@ -483,6 +529,15 @@ class GameRenderer1
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //                                   Evaluation Functions                                    //
     ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    //-------------------- Start Evaluations --------------------
+
+    evaluate = () =>
+    {
+        this.animActive = true;
+        this.goButton.removeEventListener("click", this.evaluate);
+        this.doEvaluations();
+    }
 
     //-------------------- Column Lock Animations --------------------
 
@@ -756,9 +811,9 @@ class GameRenderer1
 
     //-------------------- Finished Animations --------------------
 
-    
-
-
-
-
+    evalFinished = () =>
+    {   
+        this.animActive = false;
+        this.goButton.addEventListener("click", this.evaluate);
+    } 
 }

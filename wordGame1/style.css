@@ -201,7 +201,8 @@
     border-radius: .25vw;
     text-align: center;
     overflow: hidden;
-    vertical-align: top; 
+    vertical-align: top;
+    box-sizing: border-box;
 }
 
 .smooth-scroll
@@ -220,4 +221,5 @@
     cursor: pointer;
     -moz-user-select: none; /* mozilla browsers */
     -khtml-user-select: none; /* webkit browsers */
+    box-sizing: border-box;
 }

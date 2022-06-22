@@ -1,7 +1,7 @@
 "use strict";
 
 //Print debug info.
-let debug = false;
+let debug = true;
 
 //Initial state of game parameters.
 let rows = 7;
@@ -21,28 +21,7 @@ let gr = new GameRenderer1 //Create a new game renderer.
     {debug: debug}
 );
 
-/************************************* Game Control Functions ************************************/
-
-const evaluate = () =>
-{
-    gr.animActive = true;
-    document.getElementById("go-btn").removeEventListener("click", evaluate);
-    ge.doEvaluations();
-}
-
-//-------------------- Finished Evaluations --------------------
-
-const evalFinished = () =>
-{   
-    gr.animActive = false;
-    document.getElementById("go-btn").addEventListener("click", evaluate);
-} 
-
-const resetGame = () =>
-{
-    ge.copyGameObject(gg.newGameObject(rows, columns, numWords, minLength, numTries));
-    ge.usedLettersArray.length = 0;
-}
+/**************************** Top Level Event Listeners and Functions ****************************/
 
 //Set the selections in the game settings modal.
 const setSelections = (rows, columns, numWords, minLength, numTries) =>
@@ -65,96 +44,6 @@ const setSelections = (rows, columns, numWords, minLength, numTries) =>
     selLength.selectedIndex = minLength - minLen;
     selTries.selectedIndex = numTries - minTries;
 }
-
-//Update the rotation of the column after a user has clicked and dragged it.
-const updateColumnDrag = () =>
-{
-    if(gr.isGo)
-    {
-        gr.isGo = false;
-        return;
-    }
-
-    if(gr.animActive) return;
-    if(gr.singleClick) return;
-
-    for(let i = 0; i < ge.gameObject.columns; i++)
-    {
-        //Get number of letters remaining in current column.
-        let lettersRemaining = ge.gameObject.remainArray[i];
-
-        //Get the scroll offset for current column.
-        let thisScrollOffset = gr.columnArray[i].scrollTop;
-
-        //Caclulate the scroll offset for the first character.
-        let zeroScroll = Math.floor(gr.letterHeight * lettersRemaining);
-
-        //Calculate how many letters away from zero scroll.
-        let lettersOffset = Math.round((thisScrollOffset - zeroScroll) / gr.letterHeight) % lettersRemaining;
-    
-        //Update the column in the game engine.
-        ge.scrollColumn(i, lettersOffset);
-    }
-
-    gr.redraw();
-}
-
-/********************************** Game Presentation Functions **********************************/
-
-//Swaps columns whose indexes are in the animation index array.
-const animSwap1 = (animIndexArray) =>
-{
-    gr.animActive = true;
-    clearTimeout(gr.animTimer);
-    if(animIndexArray.length === 2)
-    {
-        let xpos0 = parseFloat(gr.columnArray[animIndexArray[0]].getBoundingClientRect().x);
-        let xpos1 = parseFloat(gr.columnArray[animIndexArray[1]].getBoundingClientRect().x);
-        let xdiff = xpos0 - xpos1;
-
-        gr.columnArray[animIndexArray[0]].style.backgroundColor = "rgba(0, 0, 0, 0)";
-        gr.columnArray[animIndexArray[0]].style.transform = "translate(" + (-xdiff) + "px)";
-        gr.columnArray[animIndexArray[0]].style.transitionDuration = ".4s";
-
-        gr.columnArray[animIndexArray[1]].style.backgroundColor = "rgba(0, 0, 0, 0)";
-        gr.columnArray[animIndexArray[1]].style.transform = "translate(" + xdiff + "px)";
-        gr.columnArray[animIndexArray[1]].style.transitionDuration = ".4s";
-    }
-    gr.animTimer = setTimeout(() => evalSwap(animIndexArray), 500);   
-}
-
-const evalSwap = (animIndexArray) =>
-{
-    for(let i = 0; i < ge.gameObject.letterArray.length; i++)
-    {
-        [ge.gameObject.letterArray[i][animIndexArray[0]], ge.gameObject.letterArray[i][animIndexArray[1]]] = 
-        [ge.gameObject.letterArray[i][animIndexArray[1]], ge.gameObject.letterArray[i][animIndexArray[0]]];
-    }
-
-    //Swap items in the column order.
-    [ge.gameObject.columnArray[animIndexArray[0]], ge.gameObject.columnArray[animIndexArray[1]]] =
-    [ge.gameObject.columnArray[animIndexArray[1]], ge.gameObject.columnArray[animIndexArray[0]]];
-
-    //Swap items in the locks array.
-    [ge.gameObject.locksArray[animIndexArray[0]], ge.gameObject.locksArray[animIndexArray[1]]] =
-    [ge.gameObject.locksArray[animIndexArray[1]], ge.gameObject.locksArray[animIndexArray[0]]];
-
-    //Swap items in letters remaining array.
-    [ge.gameObject.remainArray[animIndexArray[0]], ge.gameObject.remainArray[animIndexArray[1]]] =
-    [ge.gameObject.remainArray[animIndexArray[1]], ge.gameObject.remainArray[animIndexArray[0]]];
-
-    if(debug)gp.printGameObject(ge.gameObject);
-    animSwap2();
-}
-
-const animSwap2 = () =>
-{
-    gr.redraw();
-    gr.animActive = false;
-    clearTimeout(gr.animTimer);
-}
-
-/**************************************** Event Listeners ****************************************/
 
 //Event listener that closes modals if clicked outside of modal.
 window.onclick = (event) =>
@@ -232,19 +121,112 @@ settingsBtn.addEventListener("click", () =>
     minLength = setLength;
     numTries = setTries;
 
-    resetGame();
+    ge.resetGame();
     gr.redraw();
 });
 
-//Resize window event listener.
-const resize = window.addEventListener("resize", () =>
+/************************************** Game Initialization **************************************/
+
+//Setup game engine and game renderer callbacks.
+ge.printGameObject = gp.printGameObject;
+ge.animColumnLocks = gr.animColumnLocks;
+ge.animDoneColumn1 = gr.animDoneColumn1;
+ge.animRightLetWrongCol1 = gr.animRightLetWrongCol1;
+ge.animRightLetWrongCol2 = gr.animRightLetWrongCol2,
+ge.animUsedLetters1 = gr.animUsedLetters1;
+ge.animUsedLetters2 = gr.animUsedLetters2;
+ge.animUnusedLetters1 = gr.animUnusedLetters1;
+ge.animUnusedLetters2 = gr.animUnusedLetters2;
+ge.animUnusedLetters3 = gr.animUnusedLetters3;
+ge.newGameObject = gg.newGameObject;
+ge.evalFinished = gr.evalFinished;
+
+gr.getGameObject = ge.getGameObject;
+gr.doEvaluations = ge.doEvaluations;
+gr.getUsedLettersArray = ge.getUsedLettersArray;
+gr.evalDoneColumn = ge.evalDoneColumn;
+gr.evalRightLetWrongCol1 = ge.evalRightLetWrongCol1;
+gr.evalRightLetWrongCol2 = ge.evalRightLetWrongCol2;
+gr.evalUsedLetters = ge.evalUsedLetters;
+gr.evalUnusedLetters1 = ge.evalUnusedLetters1;
+gr.evalUnusedLetters2 = ge.evalUnusedLetters2;
+gr.scrollColumn = ge.scrollColumn;
+
+ge.resetGame();
+gr.redraw();
+if(debug)gp.printGameObject(ge.gameObject);
+
+
+
+
+
+
+
+
+
+/********************************** Game Presentation Functions **********************************/
+
+//Swaps columns whose indexes are in the animation index array.
+const animSwap1 = (animIndexArray) =>
+{
+    gr.animActive = true;
+    clearTimeout(gr.animTimer);
+    if(animIndexArray.length === 2)
+    {
+        let xpos0 = parseFloat(gr.columnArray[animIndexArray[0]].getBoundingClientRect().x);
+        let xpos1 = parseFloat(gr.columnArray[animIndexArray[1]].getBoundingClientRect().x);
+        let xdiff = xpos0 - xpos1;
+
+        gr.columnArray[animIndexArray[0]].style.backgroundColor = "rgba(0, 0, 0, 0)";
+        gr.columnArray[animIndexArray[0]].style.transform = "translate(" + (-xdiff) + "px)";
+        gr.columnArray[animIndexArray[0]].style.transitionDuration = ".4s";
+
+        gr.columnArray[animIndexArray[1]].style.backgroundColor = "rgba(0, 0, 0, 0)";
+        gr.columnArray[animIndexArray[1]].style.transform = "translate(" + xdiff + "px)";
+        gr.columnArray[animIndexArray[1]].style.transitionDuration = ".4s";
+    }
+    gr.animTimer = setTimeout(() => evalSwap(animIndexArray), 500);   
+}
+
+const evalSwap = (animIndexArray) =>
+{
+    for(let i = 0; i < ge.gameObject.letterArray.length; i++)
+    {
+        [ge.gameObject.letterArray[i][animIndexArray[0]], ge.gameObject.letterArray[i][animIndexArray[1]]] = 
+        [ge.gameObject.letterArray[i][animIndexArray[1]], ge.gameObject.letterArray[i][animIndexArray[0]]];
+    }
+
+    //Swap items in the column order.
+    [ge.gameObject.columnArray[animIndexArray[0]], ge.gameObject.columnArray[animIndexArray[1]]] =
+    [ge.gameObject.columnArray[animIndexArray[1]], ge.gameObject.columnArray[animIndexArray[0]]];
+
+    //Swap items in the locks array.
+    [ge.gameObject.locksArray[animIndexArray[0]], ge.gameObject.locksArray[animIndexArray[1]]] =
+    [ge.gameObject.locksArray[animIndexArray[1]], ge.gameObject.locksArray[animIndexArray[0]]];
+
+    //Swap items in letters remaining array.
+    [ge.gameObject.remainArray[animIndexArray[0]], ge.gameObject.remainArray[animIndexArray[1]]] =
+    [ge.gameObject.remainArray[animIndexArray[1]], ge.gameObject.remainArray[animIndexArray[0]]];
+
+    if(debug)ge.printGameObject(ge.gameObject);
+    animSwap2();
+}
+
+const animSwap2 = () =>
 {
     gr.redraw();
-});
+    gr.animActive = false;
+    clearTimeout(gr.animTimer);
+}
+
+/**************************************** Event Listeners ****************************************/
+
+//Resize window event listener.
+const resize = document.addEventListener("resize", () => gr.redraw());
 
 //Check for column updates whenever the mouse button is released.
-document.addEventListener("mouseup", updateColumnDrag);
-document.addEventListener("touchup", updateColumnDrag);
+document.addEventListener("mouseup", gr.updateColumnDrag);
+document.addEventListener("touchup", gr.updateColumnDrag);
 
 //Event listeners for the "Go" button.
 document.getElementById("go-btn").addEventListener("mousedown", () =>
@@ -259,32 +241,4 @@ document.getElementById("go-btn").addEventListener("touchstart", () =>
     gr.isGo = true;
 });
 
-document.getElementById("go-btn").addEventListener("click", evaluate);
-
-/******************************************* Game Code *******************************************/
-
-//Setup game engine and game renderer callbacks.
-ge.printGameObject = gp.printGameObject;
-ge.animColumnLocks = gr.animColumnLocks;
-ge.animDoneColumn1 = gr.animDoneColumn1;
-ge.animRightLetWrongCol1 = gr.animRightLetWrongCol1;
-ge.animRightLetWrongCol2 = gr.animRightLetWrongCol2,
-ge.animUsedLetters1 = gr.animUsedLetters1;
-ge.animUsedLetters2 = gr.animUsedLetters2;
-ge.animUnusedLetters1 = gr.animUnusedLetters1;
-ge.animUnusedLetters2 = gr.animUnusedLetters2;
-ge.animUnusedLetters3 = gr.animUnusedLetters3;
-
-gr.getGameObject = ge.getGameObject;
-gr.getUsedLettersArray = ge.getUsedLettersArray;
-gr.evalDoneColumn = ge.evalDoneColumn;
-gr.evalRightLetWrongCol1 = ge.evalRightLetWrongCol1;
-gr.evalRightLetWrongCol2 = ge.evalRightLetWrongCol2;
-gr.evalUsedLetters = ge.evalUsedLetters;
-gr.evalUnusedLetters1 = ge.evalUnusedLetters1;
-gr.evalUnusedLetters2 = ge.evalUnusedLetters2;
-gr.evalFinished = evalFinished;
-
-resetGame();
-gr.redraw();
-if(debug)gp.printGameObject(ge.gameObject);
+document.getElementById("go-btn").addEventListener("click", gr.evaluate);

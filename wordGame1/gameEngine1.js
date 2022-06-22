@@ -27,7 +27,9 @@ class GameEngine1
             animUsedLetters2 = null,
             animUnusedLetters1 = null,
             animUnusedLetters2 = null,
-            animUnusedLetters3 = null
+            animUnusedLetters3 = null,
+            newGameObject = null,
+            evalFinished = null
         } = {}
     )
     {
@@ -43,6 +45,8 @@ class GameEngine1
         this.animUnusedLetters1 = animUnusedLetters1;
         this.animUnusedLetters2 = animUnusedLetters2;
         this.animUnusedLetters3 = animUnusedLetters3;
+        this.newGameObject = newGameObject;
+        this.evalFinished = evalFinished;
 
         this.didSwap = false;
         this.usedLettersArray = new Array(0);
@@ -51,6 +55,12 @@ class GameEngine1
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //                                      Class Functions                                      //
     ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    resetGame = () =>
+    {
+        this.copyGameObject(this.newGameObject(rows, columns, numWords, minLength, numTries));
+        this.usedLettersArray.length = 0;
+    }
 
     copyGameObject = (gameObject) =>
     {
@@ -200,15 +210,6 @@ class GameEngine1
         }
     }
 
-
-
-
-
-
-
-
-
-    
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //                                   Evaluation Functions                                    //
     ///////////////////////////////////////////////////////////////////////////////////////////////
