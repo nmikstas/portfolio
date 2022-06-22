@@ -140,6 +140,7 @@ ge.animUnusedLetters2 = gr.animUnusedLetters2;
 ge.animUnusedLetters3 = gr.animUnusedLetters3;
 ge.newGameObject = gg.newGameObject;
 ge.evalFinished = gr.evalFinished;
+ge.animSwap2 = gr.animSwap2;
 
 gr.getGameObject = ge.getGameObject;
 gr.doEvaluations = ge.doEvaluations;
@@ -151,100 +152,8 @@ gr.evalUsedLetters = ge.evalUsedLetters;
 gr.evalUnusedLetters1 = ge.evalUnusedLetters1;
 gr.evalUnusedLetters2 = ge.evalUnusedLetters2;
 gr.scrollColumn = ge.scrollColumn;
+gr.evalSwap = ge.evalSwap;
 
 ge.resetGame();
 gr.redraw();
-if(debug)gp.printGameObject(ge.gameObject);
-
-
-
-
-
-
-
-
-
-/********************************** Game Presentation Functions **********************************/
-
-//Swaps columns whose indexes are in the animation index array.
-const animSwap1 = (animIndexArray) =>
-{
-    gr.animActive = true;
-    clearTimeout(gr.animTimer);
-    if(animIndexArray.length === 2)
-    {
-        let xpos0 = parseFloat(gr.columnArray[animIndexArray[0]].getBoundingClientRect().x);
-        let xpos1 = parseFloat(gr.columnArray[animIndexArray[1]].getBoundingClientRect().x);
-        let xdiff = xpos0 - xpos1;
-
-        gr.columnArray[animIndexArray[0]].style.backgroundColor = "rgba(0, 0, 0, 0)";
-        gr.columnArray[animIndexArray[0]].style.transform = "translate(" + (-xdiff) + "px)";
-        gr.columnArray[animIndexArray[0]].style.transitionDuration = ".4s";
-
-        gr.columnArray[animIndexArray[1]].style.backgroundColor = "rgba(0, 0, 0, 0)";
-        gr.columnArray[animIndexArray[1]].style.transform = "translate(" + xdiff + "px)";
-        gr.columnArray[animIndexArray[1]].style.transitionDuration = ".4s";
-    }
-    gr.animTimer = setTimeout(() => evalSwap(animIndexArray), 500);   
-}
-
-const evalSwap = (animIndexArray) =>
-{
-    for(let i = 0; i < ge.gameObject.letterArray.length; i++)
-    {
-        [ge.gameObject.letterArray[i][animIndexArray[0]], ge.gameObject.letterArray[i][animIndexArray[1]]] = 
-        [ge.gameObject.letterArray[i][animIndexArray[1]], ge.gameObject.letterArray[i][animIndexArray[0]]];
-    }
-
-    //Swap items in the column order.
-    [ge.gameObject.columnArray[animIndexArray[0]], ge.gameObject.columnArray[animIndexArray[1]]] =
-    [ge.gameObject.columnArray[animIndexArray[1]], ge.gameObject.columnArray[animIndexArray[0]]];
-
-    //Swap items in the locks array.
-    [ge.gameObject.locksArray[animIndexArray[0]], ge.gameObject.locksArray[animIndexArray[1]]] =
-    [ge.gameObject.locksArray[animIndexArray[1]], ge.gameObject.locksArray[animIndexArray[0]]];
-
-    //Swap items in letters remaining array.
-    [ge.gameObject.remainArray[animIndexArray[0]], ge.gameObject.remainArray[animIndexArray[1]]] =
-    [ge.gameObject.remainArray[animIndexArray[1]], ge.gameObject.remainArray[animIndexArray[0]]];
-
-    if(debug)ge.printGameObject(ge.gameObject);
-    animSwap2();
-}
-
-const animSwap2 = () =>
-{
-    gr.redraw();
-    gr.animActive = false;
-    clearTimeout(gr.animTimer);
-}
-
-/**************************************** Event Listeners ****************************************/
-
-//Resize window event listener.
-const resize = document.addEventListener("resize", () => gr.redraw());
-
-//Check for column updates whenever the mouse button is released.
-document.addEventListener("mouseup", gr.updateColumnDrag);
-document.addEventListener("touchup", gr.updateColumnDrag);
-
-//Event listeners for the "Go" button.
-//document.getElementById("go-btn").addEventListener("mousedown", () =>
-//{
-//    gr.isGo = true;
-//    gr.colIndex1 = undefined;
-//    gr.colIndex2 = undefined;
-//});
-
-//document.getElementById("go-btn").addEventListener("touchstart", () =>
-//{
-//    gr.isGo = true;
-//});
-
-document.getElementById("go-btn").addEventListener("click", () =>
-{
-    gr.isGo = true;
-    gr.colIndex1 = undefined;
-    gr.colIndex2 = undefined;
-    gr.evaluate();
-});
+if(debug)ge.printGameObject(ge.gameObject);

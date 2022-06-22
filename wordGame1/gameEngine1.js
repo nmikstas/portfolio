@@ -29,7 +29,8 @@ class GameEngine1
             animUnusedLetters2 = null,
             animUnusedLetters3 = null,
             newGameObject = null,
-            evalFinished = null
+            evalFinished = null,
+            animSwap2 = null,
         } = {}
     )
     {
@@ -47,6 +48,7 @@ class GameEngine1
         this.animUnusedLetters3 = animUnusedLetters3;
         this.newGameObject = newGameObject;
         this.evalFinished = evalFinished;
+        this.animSwap2 = animSwap2;
 
         this.didSwap = false;
         this.usedLettersArray = new Array(0);
@@ -208,6 +210,30 @@ class GameEngine1
                 this.gameObject.remainArray[i] = 1;
             }
         }
+    }
+
+    evalSwap = (animIndexArray) =>
+    {
+        for(let i = 0; i < this.gameObject.letterArray.length; i++)
+        {
+            [this.gameObject.letterArray[i][animIndexArray[0]], this.gameObject.letterArray[i][animIndexArray[1]]] = 
+            [this.gameObject.letterArray[i][animIndexArray[1]], this.gameObject.letterArray[i][animIndexArray[0]]];
+        }
+
+        //Swap items in the column order.
+        [this.gameObject.columnArray[animIndexArray[0]], this.gameObject.columnArray[animIndexArray[1]]] =
+        [this.gameObject.columnArray[animIndexArray[1]], this.gameObject.columnArray[animIndexArray[0]]];
+
+        //Swap items in the locks array.
+        [this.gameObject.locksArray[animIndexArray[0]], this.gameObject.locksArray[animIndexArray[1]]] =
+        [this.gameObject.locksArray[animIndexArray[1]], this.gameObject.locksArray[animIndexArray[0]]];
+
+        //Swap items in letters remaining array.
+        [this.gameObject.remainArray[animIndexArray[0]], this.gameObject.remainArray[animIndexArray[1]]] =
+        [this.gameObject.remainArray[animIndexArray[1]], this.gameObject.remainArray[animIndexArray[0]]];
+
+        if(debug)this.printGameObject(this.gameObject);
+        this.animSwap2();
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////

@@ -30,6 +30,7 @@ class GameRenderer1
             evalUnusedLetters2 = null,
             doEvaluations = null,
             scrollColumn = null,
+            evalSwap = null,
         } = {}
     )
     {
@@ -47,6 +48,7 @@ class GameRenderer1
         this.evalUnusedLetters2 = evalUnusedLetters2;
         this.doEvaluations = doEvaluations;
         this.scrollColumn = scrollColumn;
+        this.evalSwap = evalSwap;
         
         //Slider variables.
         this.isDown = false;
@@ -71,6 +73,18 @@ class GameRenderer1
         this.isGo = false; //Go button pressed indicator.
         this.columnArray = new Array(0); //Array of letter columns.
         this.letterHeight = 0; //Letter height in web presentation.
+
+        //Resize event listener.
+        document.addEventListener("resize", this.redraw);
+
+        //Go button event listener.
+        this.goButton.addEventListener("click", () =>
+        {
+            this.isGo = true;
+            this.colIndex1 = undefined;
+            this.colIndex2 = undefined;
+            this.evaluate();
+        });
         
         document.addEventListener("mousemove", (event) => 
         {
@@ -102,6 +116,85 @@ class GameRenderer1
 
         document.addEventListener("mousemove", this.move);
         document.addEventListener("touchmove", this.move);
+        document.addEventListener("mouseup", this.updateColumnDrag);
+        document.addEventListener("touchup", this.updateColumnDrag);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    //                                     Event Listeners                                       //
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    end = (e) =>
+    {
+        if(this.animActive) return;
+        if(!this.isDown) return;
+
+        let yTop = this.scrollDiv.getBoundingClientRect().y;
+        let yBottom = this.scrollDiv.getBoundingClientRect().height + yTop;
+
+        if(this.mouseY > yBottom || this.mouseY < yTop)
+        {
+            this.isDown = false;
+            this.letterDiv.style.cursor = "pointer";
+        }
+    }
+
+    release = (e) =>
+    {
+        if(this.animActive) return;
+        this.isDown = false;
+        this.letterDiv.style.cursor = "pointer";
+
+        //Check if there was a quick click, indicating a column swap is desired.
+        if(this.singleClick)
+        {
+            this.columnSwap();
+        }
+        else //Cancel any column swap if second click was a long click.
+        {
+            this.colIndex1 = undefined;
+            this.colIndex2 = undefined;
+        }
+    }
+
+    start = (e) =>
+    {
+        if(this.animActive) return;
+
+        //Set a timer to check for a column swap(single fast click).
+        setTimeout(this.checkColumnSwap, 200);
+        this.singleClick = true; 
+        this.isDown = true;
+        this.scrollDiv = e.target.parentNode;
+        this.letterDiv = e.target;
+        this.letterDiv.style.cursor = "grab";
+        this.startY = e.pageY || e.touches[0].pageY - this.scrollDiv.offsetTop;
+        this.scrollOffset = this.scrollDiv.scrollTop;
+
+        //Get the index of the clicked column for column swapping purposes.
+        this.tempIndex = parseInt(this.scrollDiv.getAttribute("index"));
+    }
+
+    move = (e) =>
+    {
+        //Exit if in middle of column swap.
+        if(this.colIndex1 !== undefined) return;
+
+        if(this.animActive) return;
+        if(!this.isDown) return;
+
+        e.preventDefault();
+
+        const bottom = this.scrollDiv.getBoundingClientRect().bottom;
+        const top = this.scrollDiv.getBoundingClientRect().top;
+        const y = e.pageY || e.touches[0].pageY - this.scrollDiv.offsetTop;
+        const dist = (y - this.startY);
+
+        //Don't scroll if above or below column.
+        if(y < bottom && y > top)
+        {
+            this.scrollDiv.scrollTop = this.scrollOffset - dist;
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -386,7 +479,7 @@ class GameRenderer1
                 //Swap columns.
                 animIndexArray.push(this.colIndex1);
                 animIndexArray.push(this.colIndex2);
-                animSwap1(animIndexArray); /********************************************************************************* */
+                this.animSwap1(animIndexArray);
                 this.colIndex1 = undefined;
                 this.colIndex2 = undefined;
             }
@@ -428,103 +521,34 @@ class GameRenderer1
         this.redraw();
     }
 
-
-
-
-
-
-
-
-
-    
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-    //                                     Event Listeners                                       //
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
-    end = (e) =>
+    //Swaps columns whose indexes are in the animation index array.
+    animSwap1 = (animIndexArray) =>
     {
-        if(this.animActive) return;
-        if(!this.isDown) return;
-
-        let yTop = this.scrollDiv.getBoundingClientRect().y;
-        let yBottom = this.scrollDiv.getBoundingClientRect().height + yTop;
-
-        if(this.mouseY > yBottom || this.mouseY < yTop)
+        this.animActive = true;
+        clearTimeout(this.animTimer);
+        if(animIndexArray.length === 2)
         {
-            this.isDown = false;
-            this.letterDiv.style.cursor = "pointer";
+            let xpos0 = parseFloat(this.columnArray[animIndexArray[0]].getBoundingClientRect().x);
+            let xpos1 = parseFloat(this.columnArray[animIndexArray[1]].getBoundingClientRect().x);
+            let xdiff = xpos0 - xpos1;
+
+            this.columnArray[animIndexArray[0]].style.backgroundColor = "rgba(0, 0, 0, 0)";
+            this.columnArray[animIndexArray[0]].style.transform = "translate(" + (-xdiff) + "px)";
+            this.columnArray[animIndexArray[0]].style.transitionDuration = ".4s";
+
+            this.columnArray[animIndexArray[1]].style.backgroundColor = "rgba(0, 0, 0, 0)";
+            this.columnArray[animIndexArray[1]].style.transform = "translate(" + xdiff + "px)";
+            this.columnArray[animIndexArray[1]].style.transitionDuration = ".4s";
         }
+        this.animTimer = setTimeout(() => this.evalSwap(animIndexArray), 500);   
     }
 
-    release = (e) =>
+    animSwap2 = () =>
     {
-        if(this.animActive) return;
-        this.isDown = false;
-        this.letterDiv.style.cursor = "pointer";
-
-        //Check if there was a quick click, indicating a column swap is desired.
-        if(this.singleClick)
-        {
-            this.columnSwap();
-        }
-        else //Cancel any column swap if second click was a long click.
-        {
-            this.colIndex1 = undefined;
-            this.colIndex2 = undefined;
-        }
+        this.redraw();
+        this.animActive = false;
+        clearTimeout(this.animTimer);
     }
-
-    start = (e) =>
-    {
-        if(this.animActive) return;
-
-        //Set a timer to check for a column swap(single fast click).
-        setTimeout(this.checkColumnSwap, 200);
-        this.singleClick = true; 
-        this.isDown = true;
-        this.scrollDiv = e.target.parentNode;
-        this.letterDiv = e.target;
-        this.letterDiv.style.cursor = "grab";
-        this.startY = e.pageY || e.touches[0].pageY - this.scrollDiv.offsetTop;
-        this.scrollOffset = this.scrollDiv.scrollTop;
-
-        //Get the index of the clicked column for column swapping purposes.
-        this.tempIndex = parseInt(this.scrollDiv.getAttribute("index"));
-    }
-
-    move = (e) =>
-    {
-        //Exit if in middle of column swap.
-        if(this.colIndex1 !== undefined) return;
-
-        if(this.animActive) return;
-        if(!this.isDown) return;
-
-        e.preventDefault();
-
-        const bottom = this.scrollDiv.getBoundingClientRect().bottom;
-        const top = this.scrollDiv.getBoundingClientRect().top;
-        const y = e.pageY || e.touches[0].pageY - this.scrollDiv.offsetTop;
-        const dist = (y - this.startY);
-
-        //Don't scroll if above or below column.
-        if(y < bottom && y > top)
-        {
-            this.scrollDiv.scrollTop = this.scrollOffset - dist;
-        }
-    }
-
-    
-
-
-
-
-
-
-
-
-
-
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //                                   Evaluation Functions                                    //
