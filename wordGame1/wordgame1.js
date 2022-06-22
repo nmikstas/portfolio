@@ -229,16 +229,22 @@ document.addEventListener("mouseup", gr.updateColumnDrag);
 document.addEventListener("touchup", gr.updateColumnDrag);
 
 //Event listeners for the "Go" button.
-document.getElementById("go-btn").addEventListener("mousedown", () =>
+//document.getElementById("go-btn").addEventListener("mousedown", () =>
+//{
+//    gr.isGo = true;
+//    gr.colIndex1 = undefined;
+//    gr.colIndex2 = undefined;
+//});
+
+//document.getElementById("go-btn").addEventListener("touchstart", () =>
+//{
+//    gr.isGo = true;
+//});
+
+document.getElementById("go-btn").addEventListener("click", () =>
 {
     gr.isGo = true;
     gr.colIndex1 = undefined;
     gr.colIndex2 = undefined;
+    gr.evaluate();
 });
-
-document.getElementById("go-btn").addEventListener("touchstart", () =>
-{
-    gr.isGo = true;
-});
-
-document.getElementById("go-btn").addEventListener("click", gr.evaluate);
