@@ -75,7 +75,7 @@ class GameRenderer1
         this.letterHeight = 0; //Letter height in web presentation.
 
         //Resize event listener.
-        document.addEventListener("resize", this.redraw);
+        window.addEventListener("resize", this.redraw);
 
         //Go button event listener.
         this.goButton.addEventListener("click", () =>
@@ -85,116 +85,15 @@ class GameRenderer1
             this.colIndex2 = undefined;
             this.evaluate();
         });
-        
-        document.addEventListener("mousemove", (event) => 
-        {
-            if(this.animActive) return;
-            this.mouseX = event.clientX;
-            this.mouseY = event.clientY;
-            if(!this.isDown && this.letterDiv)this.letterDiv.style.cursor = "pointer";
-        });
-
-        document.addEventListener("touchmove", (event) => 
-        {
-            if(this.animActive) return;
-            this.mouseX = event.touches[0].clientX;
-            this.mouseY = event.touches[0].clientY;
-            if(!this.isDown && this.letterDiv)this.letterDiv.style.cursor = "pointer";
-        });
-
-        document.addEventListener("mouseup", (event) => 
-        {
-            if(this.animActive) return;
-            this.isDown = false;
-        });
-
-        document.addEventListener("touchup", (event) => 
-        {
-            if(this.animActive) return;
-            this.isDown = false;
-        });
-
-        document.addEventListener("mousemove", this.move);
-        document.addEventListener("touchmove", this.move);
-        document.addEventListener("mouseup", this.updateColumnDrag);
-        document.addEventListener("touchup", this.updateColumnDrag);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //                                     Event Listeners                                       //
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    end = (e) =>
+    letterClick = () =>
     {
-        if(this.animActive) return;
-        if(!this.isDown) return;
-
-        let yTop = this.scrollDiv.getBoundingClientRect().y;
-        let yBottom = this.scrollDiv.getBoundingClientRect().height + yTop;
-
-        if(this.mouseY > yBottom || this.mouseY < yTop)
-        {
-            this.isDown = false;
-            this.letterDiv.style.cursor = "pointer";
-        }
-    }
-
-    release = (e) =>
-    {
-        if(this.animActive) return;
-        this.isDown = false;
-        this.letterDiv.style.cursor = "pointer";
-
-        //Check if there was a quick click, indicating a column swap is desired.
-        if(this.singleClick)
-        {
-            this.columnSwap();
-        }
-        else //Cancel any column swap if second click was a long click.
-        {
-            this.colIndex1 = undefined;
-            this.colIndex2 = undefined;
-        }
-    }
-
-    start = (e) =>
-    {
-        if(this.animActive) return;
-
-        //Set a timer to check for a column swap(single fast click).
-        setTimeout(this.checkColumnSwap, 200);
-        this.singleClick = true; 
-        this.isDown = true;
-        this.scrollDiv = e.target.parentNode;
-        this.letterDiv = e.target;
-        this.letterDiv.style.cursor = "grab";
-        this.startY = e.pageY || e.touches[0].pageY - this.scrollDiv.offsetTop;
-        this.scrollOffset = this.scrollDiv.scrollTop;
-
-        //Get the index of the clicked column for column swapping purposes.
-        this.tempIndex = parseInt(this.scrollDiv.getAttribute("index"));
-    }
-
-    move = (e) =>
-    {
-        //Exit if in middle of column swap.
-        if(this.colIndex1 !== undefined) return;
-
-        if(this.animActive) return;
-        if(!this.isDown) return;
-
-        e.preventDefault();
-
-        const bottom = this.scrollDiv.getBoundingClientRect().bottom;
-        const top = this.scrollDiv.getBoundingClientRect().top;
-        const y = e.pageY || e.touches[0].pageY - this.scrollDiv.offsetTop;
-        const dist = (y - this.startY);
-
-        //Don't scroll if above or below column.
-        if(y < bottom && y > top)
-        {
-            this.scrollDiv.scrollTop = this.scrollOffset - dist;
-        }
+        console.log("Clicky")
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -215,9 +114,7 @@ class GameRenderer1
         //Update the number of tries remaining.
         this.RemainDiv.innerHTML = "Tries Remaining: " + gameObject.numTries;
 
-        let limitingFactor = (gameWidth > gameHeight) ? gameHeight : gameWidth;
-
-        //Need to transpose the letter array.
+        //Need to transpose the letter array for future processing.
         let transLetterArray = new Array(columns);
         for(let i = 0; i < transLetterArray.length; i++)
         {
@@ -238,31 +135,36 @@ class GameRenderer1
         //Clear out the game body div.
         this.gameBody.innerHTML = "";
 
+        let colWidth, colHeight, letterDivSide;
+        let colBorderWidth = 1;
+
         //Generate the column divs.
         for(let i = 0; i < gameObject.columns; i++)
         {
-            //Else draw whole column.
             let thisDiv = document.createElement("div");
             this.columnArray.push(thisDiv);
             thisDiv.classList.add("column-div");
             thisDiv.innerHTML = i;
-            thisDiv.style.fontSize = "2.5vw";
             thisDiv.setAttribute("index", i);
+            thisDiv.style.borderWidth = colBorderWidth + "px";
             this.gameBody.appendChild(thisDiv);
 
-            thisDiv.addEventListener("mousedown", this.start);
-            thisDiv.addEventListener("touchstart", this.start);
-
-            if(!gameObject.locksArray[i].letter)
+            //Calculate dimensions of the columns.
+            if(i === 0)
             {
-                //thisDiv.addEventListener("mousemove", this.move);
-                //thisDiv.addEventListener("touchmove", this.move);
-                thisDiv.addEventListener("mouseleave", this.end);
-                thisDiv.addEventListener("touchleave", this.end);
+                let colLeftMargin, colRightMargin, colTopMargin, colBotMargin;
+
+                colLeftMargin = window.getComputedStyle(thisDiv).marginLeft.split("px");
+                colRightMargin = window.getComputedStyle(thisDiv).marginRight.split("px");
+                colTopMargin = window.getComputedStyle(thisDiv).marginTop.split("px");
+                colBotMargin = window.getComputedStyle(thisDiv).marginBottom.split("px");
+                
+                colWidth = (gameWidth - (parseInt(colLeftMargin[0]) + parseInt(colRightMargin[0])) * gameObject.columns) / gameObject.columns;
+                colHeight = (gameHeight - parseInt(colTopMargin[0]) - parseInt(colBotMargin[0])) / gameObject.rows;
+                letterDivSide = (colHeight < colWidth) ? colHeight - 2 : colWidth - 2;
             }
-            
-            thisDiv.addEventListener("mouseup", this.release);
-            thisDiv.addEventListener("touchend", this.release);
+
+            thisDiv.style.width = letterDivSide + "px";
 
             //Check for column lock only.
             if(gameObject.locksArray[i].column && !gameObject.locksArray[i].letter)
@@ -279,15 +181,15 @@ class GameRenderer1
         }
 
         //Get the exact letter height. Need to subtract 2. Border, perhaps?
-        this.letterHeight = parseFloat(this.columnArray[0].getBoundingClientRect().height) - 2;
+        this.letterHeight = .9 * letterDivSide;
 
         //Calculate column height.
-        for(let i = 0; i < gameObject.columns; i++)
-        {
-            let thisColLetters = transLetterArray[i].length;
-            let newHeight = thisColLetters * this.letterHeight;
-            this.columnArray[i].style.height = newHeight + "px";
-        }
+        //for(let i = 0; i < gameObject.columns; i++)
+        //{
+        //    let thisColLetters = transLetterArray[i].length;
+        //    let newHeight = thisColLetters * this.letterHeight;
+        //    this.columnArray[i].style.height = newHeight + "px";
+        //}
 
         //Now go back in and fill the columns with the letters.
         for(let i = 0; i < gameObject.columns; i++)
@@ -295,21 +197,31 @@ class GameRenderer1
             this.columnArray[i].innerHTML = "";
 
             //Only put one copy of letter in box if it is letter locked.
-            let repeats = (gameObject.locksArray[i].letter) ? 1 : 3;
+            //let repeats = (gameObject.locksArray[i].letter) ? 1 : 3;
 
             //Push 3 copies into the array for scrolling.
-            for(let j = 0; j < repeats; j++)
-            {
+            //for(let j = 0; j < repeats; j++)
+            //{
                 for(let k = 0; k < transLetterArray[i].length; k++)
                 {
                     let thisDiv = document.createElement("div");
                     this.columnArray[i].appendChild(thisDiv);
                     thisDiv.classList.add("letter-div");
                     thisDiv.innerHTML = transLetterArray[i][k];
-                    thisDiv.style.fontSize = "2.5vw";
-                    thisDiv.style.height = this.letterHeight + "px"; //Explicitly assign letter div height for transition effect.
+                    thisDiv.style.fontSize = this.letterHeight + "px";
+
+                    //Explicitly assign letter div height for transition effect.
+                    thisDiv.style.height = letterDivSide + "px"; 
+                    thisDiv.style.width = (letterDivSide - 2 * colBorderWidth) + "px";
+
+                    thisDiv.addEventListener("click", this.letterClick);
+
+                    if(!gameObject.solvedArray[i])
+                    {
+                        thisDiv.classList.add("hov");
+                    }
                 }
-            }
+            //}
         }
 
         //Explicitly set the horizontal position of the columns for transition effects.
@@ -319,19 +231,18 @@ class GameRenderer1
         }
 
         //Calculate scroll offset.
-        for(let i = 0; i < gameObject.columns; i++)
-        {
-            if(!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter)
-            {
-                let scrollOffset = this.letterHeight * gameObject.remainArray[i];
-                this.columnArray[i].scrollTop = scrollOffset;
-            }
-            else
-            {
-                this.columnArray[i].scrollTop = 0;
-            }
-                 
-        }
+        //for(let i = 0; i < gameObject.columns; i++)
+        //{
+        //    if(!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter)
+        //    {
+        //        let scrollOffset = this.letterHeight * gameObject.remainArray[i];
+        //        this.columnArray[i].scrollTop = scrollOffset;
+        //    }
+        //    else
+        //    {
+        //        this.columnArray[i].scrollTop = 0;
+        //    }         
+        //}
 
         //Cycle through all the letters on the screen and bold the used letters.
         {
@@ -394,12 +305,6 @@ class GameRenderer1
                 animIndexArray.length = 0;
             break;
         }
-    }
-
-    //Column swap timer expired. Indicate single click did not happen.
-    checkColumnSwap = () =>
-    {
-        this.singleClick = false;
     }
 
     //Do column swap animation.
@@ -484,41 +389,6 @@ class GameRenderer1
                 this.colIndex2 = undefined;
             }
         }
-    }
-
-    //Update the rotation of the column after a user has clicked and dragged it.
-    updateColumnDrag = () =>
-    {
-        if(this.isGo)
-        {
-            this.isGo = false;
-            return;
-        }
-
-        if(this.animActive) return;
-        if(this.singleClick) return;
-
-        let gameObject = this.getGameObject();
-
-        for(let i = 0; i < gameObject.columns; i++)
-        {
-            //Get number of letters remaining in current column.
-            let lettersRemaining = gameObject.remainArray[i];
-
-            //Get the scroll offset for current column.
-            let thisScrollOffset = this.columnArray[i].scrollTop;
-
-            //Caclulate the scroll offset for the first character.
-            let zeroScroll = Math.floor(this.letterHeight * lettersRemaining);
-
-            //Calculate how many letters away from zero scroll.
-            let lettersOffset = Math.round((thisScrollOffset - zeroScroll) / this.letterHeight) % lettersRemaining;
-        
-            //Update the column in the game engine.
-            this.scrollColumn(i, lettersOffset);
-        }
-
-        this.redraw();
     }
 
     //Swaps columns whose indexes are in the animation index array.

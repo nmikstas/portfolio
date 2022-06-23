@@ -194,10 +194,11 @@
 {
     top: 0;
     display: inline-block;
-    border: .1vw;
-    width: 4vw;
     border-style: solid;
-    margin-right: .25vw;
+    margin-left: .15vw;
+    margin-right: .15vw;
+    margin-top: 1vh;
+    margin-bottom: 1vh;
     border-radius: .25vw;
     text-align: center;
     overflow: hidden;
@@ -222,4 +223,12 @@
     -moz-user-select: none; /* mozilla browsers */
     -khtml-user-select: none; /* webkit browsers */
     box-sizing: border-box;
+}
+
+.hov:hover
+{
+    border-width: 1px;
+    border-style: solid;
+    border-radius: .25vw;
+    background-color: rgba(0,0,0,0.05);
 }
