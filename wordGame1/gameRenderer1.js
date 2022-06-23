@@ -166,6 +166,12 @@ class GameRenderer1
 
             thisDiv.style.width = letterDivSide + "px";
 
+            //Normal background color.
+            if(!gameObject.locksArray[i].column && !gameObject.locksArray[i].letter)
+            {
+                thisDiv.style.backgroundColor = "rgb(255, 255, 255)";
+            }
+
             //Check for column lock only.
             if(gameObject.locksArray[i].column && !gameObject.locksArray[i].letter)
             {
@@ -183,45 +189,30 @@ class GameRenderer1
         //Get the exact letter height. Need to subtract 2. Border, perhaps?
         this.letterHeight = .9 * letterDivSide;
 
-        //Calculate column height.
-        //for(let i = 0; i < gameObject.columns; i++)
-        //{
-        //    let thisColLetters = transLetterArray[i].length;
-        //    let newHeight = thisColLetters * this.letterHeight;
-        //    this.columnArray[i].style.height = newHeight + "px";
-        //}
-
         //Now go back in and fill the columns with the letters.
         for(let i = 0; i < gameObject.columns; i++)
         {
             this.columnArray[i].innerHTML = "";
 
-            //Only put one copy of letter in box if it is letter locked.
-            //let repeats = (gameObject.locksArray[i].letter) ? 1 : 3;
+            for(let k = 0; k < transLetterArray[i].length; k++)
+            {
+                let thisDiv = document.createElement("div");
+                this.columnArray[i].appendChild(thisDiv);
+                thisDiv.classList.add("letter-div");
+                thisDiv.innerHTML = transLetterArray[i][k];
+                thisDiv.style.fontSize = this.letterHeight + "px";
 
-            //Push 3 copies into the array for scrolling.
-            //for(let j = 0; j < repeats; j++)
-            //{
-                for(let k = 0; k < transLetterArray[i].length; k++)
+                //Explicitly assign letter div height for transition effect.
+                thisDiv.style.height = letterDivSide + "px"; 
+                thisDiv.style.width = (letterDivSide - 2 * colBorderWidth) + "px";
+
+                thisDiv.addEventListener("click", this.letterClick);
+
+                if(!gameObject.solvedArray[i])
                 {
-                    let thisDiv = document.createElement("div");
-                    this.columnArray[i].appendChild(thisDiv);
-                    thisDiv.classList.add("letter-div");
-                    thisDiv.innerHTML = transLetterArray[i][k];
-                    thisDiv.style.fontSize = this.letterHeight + "px";
-
-                    //Explicitly assign letter div height for transition effect.
-                    thisDiv.style.height = letterDivSide + "px"; 
-                    thisDiv.style.width = (letterDivSide - 2 * colBorderWidth) + "px";
-
-                    thisDiv.addEventListener("click", this.letterClick);
-
-                    if(!gameObject.solvedArray[i])
-                    {
-                        thisDiv.classList.add("hov");
-                    }
+                    thisDiv.classList.add("hov");
                 }
-            //}
+            } 
         }
 
         //Explicitly set the horizontal position of the columns for transition effects.
@@ -229,20 +220,6 @@ class GameRenderer1
         {
             this.columnArray[i].style.left = this.columnArray[i].getBoundingClientRect().x;
         }
-
-        //Calculate scroll offset.
-        //for(let i = 0; i < gameObject.columns; i++)
-        //{
-        //    if(!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter)
-        //    {
-        //        let scrollOffset = this.letterHeight * gameObject.remainArray[i];
-        //        this.columnArray[i].scrollTop = scrollOffset;
-        //    }
-        //    else
-        //    {
-        //        this.columnArray[i].scrollTop = 0;
-        //    }         
-        //}
 
         //Cycle through all the letters on the screen and bold the used letters.
         {
