@@ -169,20 +169,20 @@ class GameRenderer1
             //Normal background color.
             if(!gameObject.locksArray[i].column && !gameObject.locksArray[i].letter)
             {
-                thisDiv.style.backgroundColor = "rgb(255, 255, 255)";
+                thisDiv.style.backgroundColor = "rgba(255, 255, 255, 1)";
             }
 
             //Check for column lock only.
             if(gameObject.locksArray[i].column && !gameObject.locksArray[i].letter)
             {
-                thisDiv.style.backgroundColor = "rgb(157, 188, 255)";
+                thisDiv.style.backgroundColor = "rgba(157, 188, 255, 1)";
             }
 
             //Check for word lock and column lock.
             if(gameObject.locksArray[i].column && gameObject.locksArray[i].letter)
             {
                 thisDiv.style.fontWeight = "bold";
-                thisDiv.style.backgroundColor = "rgb(169, 255, 158)";
+                thisDiv.style.backgroundColor = "rgba(169, 255, 158, 1)";
             }
         }
 
