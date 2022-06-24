@@ -73,6 +73,7 @@ class GameRenderer1
         this.isGo = false; //Go button pressed indicator.
         this.columnArray = new Array(0); //Array of letter columns.
         this.letterHeight = 0; //Letter height in web presentation.
+        this.letterDivSide;
 
         //Resize event listener.
         window.addEventListener("resize", this.redraw);
@@ -135,8 +136,8 @@ class GameRenderer1
         //Clear out the game body div.
         this.gameBody.innerHTML = "";
 
-        let colWidth, colHeight, letterDivSide;
-        let colBorderWidth = 1;
+        let colWidth, colHeight;
+        let colBorderWidth, letterDivWidth;
 
         //Generate the column divs.
         for(let i = 0; i < gameObject.columns; i++)
@@ -146,7 +147,6 @@ class GameRenderer1
             thisDiv.classList.add("column-div");
             thisDiv.innerHTML = i;
             thisDiv.setAttribute("index", i);
-            thisDiv.style.borderWidth = colBorderWidth + "px";
             this.gameBody.appendChild(thisDiv);
 
             //Calculate dimensions of the columns.
@@ -161,10 +161,16 @@ class GameRenderer1
                 
                 colWidth = (gameWidth - (parseInt(colLeftMargin[0]) + parseInt(colRightMargin[0])) * gameObject.columns) / gameObject.columns;
                 colHeight = (gameHeight - parseInt(colTopMargin[0]) - parseInt(colBotMargin[0])) / gameObject.rows;
-                letterDivSide = (colHeight < colWidth) ? colHeight - 2 : colWidth - 2;
+                this.letterDivSide = (colHeight < colWidth) ? colHeight - 2: colWidth - 2;
             }
 
-            thisDiv.style.width = letterDivSide + "px";
+            colBorderWidth = .02 * this.letterDivSide;
+            thisDiv.style.width = this.letterDivSide + "px";
+            thisDiv.style.borderWidth = colBorderWidth + "px";
+            thisDiv.style.borderRadius = (this.letterDivSide * .15) + "px";
+
+            //Get the width for the letter divs.
+            if(i === 0)letterDivWidth = window.getComputedStyle(thisDiv).width;
 
             //Normal background color.
             if(!gameObject.locksArray[i].column && !gameObject.locksArray[i].letter)
@@ -187,7 +193,7 @@ class GameRenderer1
         }
 
         //Get the exact letter height. Need to subtract 2. Border, perhaps?
-        this.letterHeight = .9 * letterDivSide;
+        this.letterHeight = .9 * this.letterDivSide;
 
         //Now go back in and fill the columns with the letters.
         for(let i = 0; i < gameObject.columns; i++)
@@ -203,8 +209,8 @@ class GameRenderer1
                 thisDiv.style.fontSize = this.letterHeight + "px";
 
                 //Explicitly assign letter div height for transition effect.
-                thisDiv.style.height = letterDivSide + "px"; 
-                thisDiv.style.width = (letterDivSide - 2 * colBorderWidth) + "px";
+                thisDiv.style.height = this.letterDivSide + "px"; 
+                thisDiv.style.width = (letterDivWidth) + "px";
 
                 thisDiv.addEventListener("click", this.letterClick);
 

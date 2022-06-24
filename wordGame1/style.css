@@ -199,7 +199,6 @@
     margin-right: .15vw;
     margin-top: 1vh;
     margin-bottom: 1vh;
-    border-radius: .25vw;
     text-align: center;
     overflow: hidden;
     vertical-align: top;
@@ -214,7 +213,7 @@
 .letter-div
 {
     margin: 0;
-    padding: 0;
+    padding-bottom: 10%;
     display: flex;
     text-align: center;
     align-items: center;
@@ -227,8 +226,9 @@
 
 .hov:hover
 {
-    border-width: 1px;
+    border-width: .5vw;
     border-style: solid;
-    border-radius: .25vw;
-    background-color: rgba(0,0,0,0.05);
+    border-color: rgb(87, 86, 86);
+    border-radius: 13%;
+    background-color: rgba(0,0,0,0.1);
 }
