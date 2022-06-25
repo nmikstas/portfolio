@@ -213,7 +213,7 @@
 .letter-div
 {
     margin: 0;
-    padding-bottom: 10%;
+    padding-bottom: 0;
     display: flex;
     text-align: center;
     align-items: center;
@@ -222,11 +222,11 @@
     -moz-user-select: none; /* mozilla browsers */
     -khtml-user-select: none; /* webkit browsers */
     box-sizing: border-box;
+    font-family: 'Courier New', Courier, monospace;
 }
 
-.hov:hover
+.hov
 {
-    border-width: .5vw;
     border-style: solid;
     border-color: rgb(87, 86, 86);
     border-radius: 13%;

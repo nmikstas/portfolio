@@ -210,13 +210,19 @@ class GameRenderer1
 
                 //Explicitly assign letter div height for transition effect.
                 thisDiv.style.height = this.letterDivSide + "px"; 
-                thisDiv.style.width = (letterDivWidth) + "px";
+                thisDiv.style.width = letterDivWidth + "px";
 
                 thisDiv.addEventListener("click", this.letterClick);
+                
 
                 if(!gameObject.solvedArray[i])
                 {
-                    thisDiv.classList.add("hov");
+                    thisDiv.addEventListener("mouseenter", () => 
+                    {
+                        thisDiv.classList.add("hov");
+                        thisDiv.style.borderWidth = (.05 * this.letterDivSide) + "px";
+                    });
+                    thisDiv.addEventListener("mouseleave", () => thisDiv.classList.remove("hov"));
                 }
             } 
         }
