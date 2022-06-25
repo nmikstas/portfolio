@@ -145,7 +145,6 @@ class GameRenderer1
             let thisDiv = document.createElement("div");
             this.columnArray.push(thisDiv);
             thisDiv.classList.add("column-div");
-            thisDiv.innerHTML = i;
             thisDiv.setAttribute("index", i);
             this.gameBody.appendChild(thisDiv);
 
