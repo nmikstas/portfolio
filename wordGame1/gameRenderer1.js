@@ -66,7 +66,6 @@ class GameRenderer1
         this.letterHeight = 0; //Letter height in web presentation.
         this.letterDivSide;
 
-
         //Resize event listener.
         window.addEventListener("resize", this.redraw);
 
@@ -335,6 +334,7 @@ class GameRenderer1
             {
                 let thisDiv = this.columnArray[i].childNodes[j];
                 thisDiv.removeEventListener("click", this.letterClick);
+                thisDiv.removeEventListener("touchstart", this.letterClick);
             }
         }
 
@@ -351,6 +351,7 @@ class GameRenderer1
             {
                 let thisDiv = this.columnArray[i].childNodes[j];
                 thisDiv.addEventListener("click", this.letterClick);
+                thisDiv.addEventListener("touchstart", this.letterClick);
             }
         }
 
@@ -479,6 +480,7 @@ class GameRenderer1
                 thisDiv.style.width = letterDivWidth + "px";
 
                 thisDiv.addEventListener("click", this.letterClick);
+                thisDiv.addEventListener("touchstart", this.letterClick);
 
                 //Add event listeners for mouse hovering.
                 if(!gameObject.solvedArray[i])
