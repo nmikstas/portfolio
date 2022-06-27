@@ -90,6 +90,7 @@ class GameRenderer1
         let selectedColumn, selectedLetter;
         let gameObject = ge.getGameObject();
         let animIndexArray = new Array(0);
+        let usedLettersArray = this.getUsedLettersArray();
 
         //Find the column selected.
         for(let i = 0; i < this.columnArray.length; i++)
@@ -228,6 +229,20 @@ class GameRenderer1
                     thisDiv.style.fontSize = this.letterHeight + "px";
                     thisDiv.style.height = this.letterDivSide + "px"; 
                     thisDiv.style.width = letterDivWidth + "px";
+                }
+
+                //Cycle through all the letters on the screen and bold the used letters.
+                for(let i = 0; i < this.columnArray.length; i++)
+                {
+                    for(let j = 0; j < this.columnArray[i].childNodes.length; j++)
+                    {
+                        let thisLetter = this.columnArray[i].childNodes[j].innerHTML;
+                        if(usedLettersArray.includes(thisLetter) && (!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter))
+                        {
+                            this.columnArray[i].childNodes[j].style.fontWeight = "bold";
+                            this.columnArray[i].childNodes[j].style.transitionDuration = "0s";
+                        }
+                    }
                 }
 
                 let letterDiv1 = this.columnArray[this.colIndex1].childNodes[this.letterIndex1];
@@ -495,17 +510,15 @@ class GameRenderer1
         }
 
         //Cycle through all the letters on the screen and bold the used letters.
+        for(let i = 0; i < this.columnArray.length; i++)
         {
-            for(let i = 0; i < this.columnArray.length; i++)
+            for(let j = 0; j < this.columnArray[i].childNodes.length; j++)
             {
-                for(let j = 0; j < this.columnArray[i].childNodes.length; j++)
+                let thisLetter = this.columnArray[i].childNodes[j].innerHTML;
+                if(usedLettersArray.includes(thisLetter) && (!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter))
                 {
-                    let thisLetter = this.columnArray[i].childNodes[j].innerHTML;
-                    if(usedLettersArray.includes(thisLetter) && (!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter))
-                    {
-                        this.columnArray[i].childNodes[j].style.fontWeight = "bold";
-                        this.columnArray[i].childNodes[j].style.transitionDuration = "0s";
-                    }
+                    this.columnArray[i].childNodes[j].style.fontWeight = "bold";
+                    this.columnArray[i].childNodes[j].style.transitionDuration = "0s";
                 }
             }
         }
