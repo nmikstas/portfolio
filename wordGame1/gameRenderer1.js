@@ -581,11 +581,8 @@ class GameRenderer1
             let xpos1 = parseFloat(this.columnArray[animIndexArray[1]].getBoundingClientRect().x);
             let xdiff = xpos0 - xpos1;
 
-            this.columnArray[animIndexArray[0]].style.backgroundColor = "rgba(0, 0, 0, 0)";
             this.columnArray[animIndexArray[0]].style.transform = "translate(" + (-xdiff) + "px)";
             this.columnArray[animIndexArray[0]].style.transitionDuration = ".4s";
-
-            this.columnArray[animIndexArray[1]].style.backgroundColor = "rgba(0, 0, 0, 0)";
             this.columnArray[animIndexArray[1]].style.transform = "translate(" + xdiff + "px)";
             this.columnArray[animIndexArray[1]].style.transitionDuration = ".4s";
         }
