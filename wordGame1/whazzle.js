@@ -122,6 +122,7 @@ settingsBtn.addEventListener("click", () =>
     numTries = setTries;
 
     ge.resetGame();
+    gr.resetGame();
     gr.redraw();
 });
 
@@ -155,5 +156,6 @@ gr.scrollColumn = ge.scrollColumn;
 gr.evalSwap = ge.evalSwap;
 
 ge.resetGame();
+gr.resetGame();
 gr.redraw();
 if(debug)ge.printGameObject(ge.gameObject);

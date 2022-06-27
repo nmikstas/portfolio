@@ -8,7 +8,7 @@
 
 .pal-select
 {
-    background-color: rgba(255, 0, 0, 0.5);
+    background-color: rgba(255, 145, 0, 0.5);
 }
 
 .header
@@ -231,4 +231,29 @@
     border-color: rgb(87, 86, 86);
     border-radius: 13%;
     background-color: rgba(0,0,0,0.1);
+}
+
+.selected-hov
+{
+    background-color: rgba(0,0,0,0.1);
+}
+
+.selected-leave
+{
+    background-color: rgba(0,0,0,0);
+}
+
+.unselected-letter
+{
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 13%;
+}
+
+.selected-letter
+{
+    border-style: solid;
+    border-color: rgb(87, 86, 86);
+    border-radius: 50%;
+    border-width: 5%;
 }

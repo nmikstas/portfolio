@@ -95,7 +95,7 @@ class GameEngine1
         return this.usedLettersArray;
     }
 
-    //Rotates the columns off letters up and down by a given offset.
+    //Rotates the columns of letters up and down by a given offset.
     scrollColumn = (column, lettersOffset) =>
     {
         //Get the remaining letters from the current column.
