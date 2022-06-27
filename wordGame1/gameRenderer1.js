@@ -86,9 +86,9 @@ class GameRenderer1
     letterClick = (e) =>
     {
         e.preventDefault();
-        
-        let target = e.originalTarget;
-        let parent = e.originalTarget.parentElement;
+
+        let target = e.srcElement || e.originalTarget;
+        let parent = target.parentElement;
         let selectedColumn, selectedLetter;
         let gameObject = ge.getGameObject();
         let animIndexArray = new Array(0);
@@ -266,7 +266,7 @@ class GameRenderer1
     //Special case for letter selected after first click.
     selectedOver = (e) =>
     {
-        let thisDiv = e.originalTarget;
+        let thisDiv = e.srcElement || e.originalTarget;
         thisDiv.classList.remove("selected-leave");
         thisDiv.classList.add("selected-hov");
     }
@@ -274,7 +274,7 @@ class GameRenderer1
     //Special case for mouse leaving a selected letter.
     selectedLeave = (e) =>
     {
-        let thisDiv = e.originalTarget;
+        let thisDiv = e.srcElement || e.originalTarget;
         thisDiv.classList.remove("selected-hov");
         thisDiv.classList.add("selected-leave");
     } 
@@ -282,7 +282,7 @@ class GameRenderer1
     //Mouse hovering over a non-selected letter.
     hoverOver = (e) =>
     {
-        let thisDiv = e.originalTarget;
+        let thisDiv = e.srcElement || e.originalTarget;
         thisDiv.classList.add("hov");
         thisDiv.style.borderWidth = (.05 * this.letterDivSide) + "px";
     }
@@ -290,7 +290,7 @@ class GameRenderer1
     //Mouse leaving a non-selected letter.
     mouseLeave = (e) =>
     {
-        let thisDiv = e.originalTarget;
+        let thisDiv = e.srcElement || e.originalTarget;
         thisDiv.classList.remove("hov");
     }
 
