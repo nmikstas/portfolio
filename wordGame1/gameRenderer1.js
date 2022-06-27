@@ -413,6 +413,7 @@ class GameRenderer1
 
         let colWidth, colHeight;
         let colBorderWidth, letterDivWidth;
+        let colTopBorder, colBottomBorder;
 
         //Generate the column divs.
         for(let i = 0; i < gameObject.columns; i++)
@@ -432,6 +433,8 @@ class GameRenderer1
                 colRightMargin = window.getComputedStyle(thisDiv).marginRight.split("px");
                 colTopMargin = window.getComputedStyle(thisDiv).marginTop.split("px");
                 colBotMargin = window.getComputedStyle(thisDiv).marginBottom.split("px");
+                colTopBorder = window.getComputedStyle(thisDiv).borderTop.split("px");
+                colBottomBorder = window.getComputedStyle(thisDiv).borderBottom.split("px");
                 
                 colWidth = (gameWidth - (parseInt(colLeftMargin[0]) + parseInt(colRightMargin[0])) * gameObject.columns) / gameObject.columns;
                 colHeight = (gameHeight - parseInt(colTopMargin[0]) - parseInt(colBotMargin[0])) / gameObject.rows;
@@ -442,6 +445,16 @@ class GameRenderer1
             thisDiv.style.width = this.letterDivSide + "px";
             thisDiv.style.borderWidth = colBorderWidth + "px";
             thisDiv.style.borderRadius = (this.letterDivSide * .15) + "px";
+
+            if(i === 0)
+            {
+                colTopBorder = window.getComputedStyle(thisDiv).borderTop.split("px");
+                colBottomBorder = window.getComputedStyle(thisDiv).borderBottom.split("px");
+                colTopBorder = parseFloat(colTopBorder[0]);
+                colBottomBorder = parseFloat(colBottomBorder[0]);
+            }
+
+            thisDiv.style.height = ((this.letterDivSide * gameObject.remainArray[i]) + colTopBorder + colBottomBorder) + "px";
 
             //Get the width for the letter divs.
             if(i === 0)letterDivWidth = window.getComputedStyle(thisDiv).width;
@@ -467,7 +480,6 @@ class GameRenderer1
             //Check for word lock and column lock.
             if(gameObject.locksArray[i].column && gameObject.locksArray[i].letter)
             {
-                thisDiv.style.fontWeight = "bold";
                 thisDiv.style.backgroundColor = "rgba(169, 255, 158, 1)";
             }
         }
@@ -492,6 +504,15 @@ class GameRenderer1
                 thisDiv.style.height = this.letterDivSide + "px"; 
                 thisDiv.style.width = letterDivWidth + "px";
 
+                if(gameObject.locksArray[i].column && gameObject.locksArray[i].letter)
+                {
+                    thisDiv.style.fontWeight = "bold";
+                }
+                else
+                {
+                    thisDiv.style.fontWeight = "normal";
+                }
+                
                 thisDiv.addEventListener("click", this.letterClick);
 
                 //Add event listeners for mouse hovering.
@@ -517,8 +538,8 @@ class GameRenderer1
                 let thisLetter = this.columnArray[i].childNodes[j].innerHTML;
                 if(usedLettersArray.includes(thisLetter) && (!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter))
                 {
-                    this.columnArray[i].childNodes[j].style.fontWeight = "bold";
                     this.columnArray[i].childNodes[j].style.transitionDuration = "0s";
+                    this.columnArray[i].childNodes[j].style.fontWeight = "bold";
                 }
             }
         }
@@ -605,7 +626,7 @@ class GameRenderer1
     evaluate = () =>
     {
         this.animActive = true;
-        this.goButton.removeEventListener("click", this.evaluate);
+        this.removeAllListeners();
         this.doEvaluations();
     }
 
@@ -627,6 +648,7 @@ class GameRenderer1
         }
         else
         {
+            this.redraw();
             this.evalDoneColumn();
         }
     }
@@ -657,19 +679,28 @@ class GameRenderer1
         else
         {
             this.animDoneColumn2(newDoneColumnArray);
-        }
-        
+        } 
     }
 
     animDoneColumn2 = (newDoneColumnArray) =>
     {
-        //Transition background color to green.
+        let thisDiv = this.columnArray[0];
+        let colTopBorder, colBottomBorder;
+
+        //Calculate border widths.
+        colTopBorder = window.getComputedStyle(thisDiv).borderTop.split("px");
+        colBottomBorder = window.getComputedStyle(thisDiv).borderBottom.split("px");
+        colTopBorder = parseFloat(colTopBorder[0]);
+        colBottomBorder = parseFloat(colBottomBorder[0]);
+
+        //Transition background color to green and resize column to a single letter height plus border.
         for(let i = 0; i < newDoneColumnArray.length; i++)
         {
-            this.columnArray[newDoneColumnArray[i]].style.fontWeight = "bold";
-            this.columnArray[newDoneColumnArray[i]].style.backgroundColor = "rgba(169, 255, 158, 1)";
+            this.columnArray[newDoneColumnArray[i]].childNodes[0].style.transitionDuration = ".4s";
             this.columnArray[newDoneColumnArray[i]].style.transitionDuration = ".4s";
-            this.columnArray[newDoneColumnArray[i]].style.height = this.letterHeight + "px";
+            this.columnArray[newDoneColumnArray[i]].childNodes[0].style.fontWeight = "bold";
+            this.columnArray[newDoneColumnArray[i]].style.backgroundColor = "rgba(169, 255, 158, 1)";
+            this.columnArray[newDoneColumnArray[i]].style.height = (this.letterDivSide + colTopBorder + colBottomBorder) + "px";
         }
    
         //Only delay if work was done.
@@ -687,16 +718,63 @@ class GameRenderer1
 
     animRightLetWrongCol1 = (scrollArray, moveChainArray) =>
     {
+        let usedLettersArray = this.getUsedLettersArray();
+        let gameObject = this.getGameObject();
+
         //Set smooth scrolling for all columns.
         for(let i = 0; i < this.columnArray.length; i++)
         {
             this.columnArray[i].classList.add("smooth-scroll");
         }
 
+        //Double up the letters in each column.
+        for(let i = 0; i < this.columnArray.length; i++)
+        {
+            let numColItems = this.columnArray[i].childNodes.length;
+            let letterDivWidth = window.getComputedStyle(this.columnArray[i]).width;
+
+            let totalHeight = window.getComputedStyle(this.columnArray[i]).height.split("px");
+            let topBorder = window.getComputedStyle(this.columnArray[i]).borderTop.split("px");
+            let bottomBorder = window.getComputedStyle(this.columnArray[i]).borderBottom.split("px");
+            totalHeight = parseFloat(totalHeight[0]);
+            topBorder = parseFloat(topBorder[0]);
+            bottomBorder = parseFloat(bottomBorder[0]);
+            this.columnArray[i].style.height = totalHeight + "px";
+
+            //Make sure column does not end up with a scroll bar.
+            this.columnArray[i].style.overflowY = "hidden";
+        
+            for(let j = 0; j < numColItems; j++)
+            {
+                let tempLetter = this.columnArray[i].childNodes[j].innerHTML;
+                let thisDiv = document.createElement("div");
+                this.columnArray[i].appendChild(thisDiv);
+                thisDiv.classList.add("letter-div");
+                thisDiv.innerHTML = tempLetter;
+                thisDiv.style.fontSize = this.letterHeight + "px";
+                thisDiv.style.height = this.letterDivSide + "px"; 
+                thisDiv.style.width = letterDivWidth + "px";
+            }
+        }
+
+        //Cycle through all the letters on the screen and bold the used letters.
+        for(let i = 0; i < this.columnArray.length; i++)
+        {
+            for(let j = 0; j < this.columnArray[i].childNodes.length; j++)
+            {
+                let thisLetter = this.columnArray[i].childNodes[j].innerHTML;
+                if(usedLettersArray.includes(thisLetter) && (!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter))
+                {
+                    this.columnArray[i].childNodes[j].style.fontWeight = "bold";
+                    this.columnArray[i].childNodes[j].style.transitionDuration = "0s";
+                }
+            }
+        }
+
         //Adjust scroll offset of columns to scroll.
         for(let i = 0; i < scrollArray.length; i++)
         {
-            this.columnArray[scrollArray[i].colIndex].scrollTop += this.letterHeight * scrollArray[i].scrollIndex;
+            this.columnArray[scrollArray[i].colIndex].scrollTop += this.letterDivSide * scrollArray[i].scrollIndex;
         }
 
         //Swap columns.
@@ -747,8 +825,8 @@ class GameRenderer1
                 let thisLetter = this.columnArray[i].childNodes[j].innerHTML;
                 if(usedLettersArray.includes(thisLetter) && (!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter))
                 {
-                    this.columnArray[i].childNodes[j].style.fontWeight = "bold";
                     this.columnArray[i].childNodes[j].style.transitionDuration = ".4s";
+                    this.columnArray[i].childNodes[j].style.fontWeight = "bold";
                     workDone = true;
                 }
             }
@@ -784,10 +862,7 @@ class GameRenderer1
         {
             //Only work on columns that have not already been solved
             if(!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter)
-            {
-                //Reset scroll for animation effects.
-                this.columnArray[i].scrollTop = 0;
-    
+            {    
                 for(let j = 0; j < this.columnArray[i].childNodes.length; j++)
                 {
                     let thisLetter = this.columnArray[i].childNodes[j].innerHTML;
@@ -846,7 +921,7 @@ class GameRenderer1
                     //Letter is still present. Move it up, if necessary.
                     if(missingLetters)
                     {
-                        let dy = -missingLetters * this.letterHeight;
+                        let dy = -missingLetters * this.letterDivSide;
                         this.columnArray[i].childNodes[j].style.transitionDuration = ".4s";
                         this.columnArray[i].childNodes[j].style.transform = "translateY(" + dy + "px)";
                     }
@@ -856,8 +931,13 @@ class GameRenderer1
             //Resize column, if necessary.
             if(missingLetters)
             {
+                let colTopBorder = window.getComputedStyle(this.columnArray[i]).borderTop.split("px");
+                let colBottomBorder = window.getComputedStyle(this.columnArray[i]).borderBottom.split("px");
+                colTopBorder = parseFloat(colTopBorder[0]);
+                colBottomBorder = parseFloat(colBottomBorder[0]);
+
                 this.columnArray[i].style.transitionDuration = ".4s";
-                this.columnArray[i].style.height = ((ge.gameObject.remainArray[i] - missingLetters) * this.letterHeight) + "px";
+                this.columnArray[i].style.height = ((ge.gameObject.remainArray[i] - missingLetters) * this.letterDivSide + colTopBorder + colBottomBorder) + "px";
                 workDone = true;
             }
         }
@@ -883,6 +963,6 @@ class GameRenderer1
     evalFinished = () =>
     {   
         this.animActive = false;
-        this.goButton.addEventListener("click", this.evaluate);
+        this.addAllListeners();
     } 
 }

@@ -565,7 +565,7 @@ class GameEngine1
         if(this.didSwap)
         {
             this.updateColumns(); //Consolidate columns.   
-            this.doEvaluations();
+            setTimeout(this.doEvaluations(), 500);
         }
         else
         {

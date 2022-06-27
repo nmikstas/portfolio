@@ -222,7 +222,8 @@
     -moz-user-select: none; /* mozilla browsers */
     -khtml-user-select: none; /* webkit browsers */
     box-sizing: border-box;
-    font-family: 'Courier New', Courier, monospace;
+    font-family:'Courier New', Courier, monospace;
+    font-weight: normal;
 }
 
 .hov
