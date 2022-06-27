@@ -85,9 +85,7 @@ class GameRenderer1
 
     letterClick = (e) =>
     {
-        e.preventDefault();
-
-        let target = e.srcElement || e.originalTarget;
+        let target = e.srcElement;
         let parent = target.parentElement;
         let selectedColumn, selectedLetter;
         let gameObject = ge.getGameObject();
@@ -266,7 +264,7 @@ class GameRenderer1
     //Special case for letter selected after first click.
     selectedOver = (e) =>
     {
-        let thisDiv = e.srcElement || e.originalTarget;
+        let thisDiv = e.srcElement;
         thisDiv.classList.remove("selected-leave");
         thisDiv.classList.add("selected-hov");
     }
@@ -274,7 +272,7 @@ class GameRenderer1
     //Special case for mouse leaving a selected letter.
     selectedLeave = (e) =>
     {
-        let thisDiv = e.srcElement || e.originalTarget;
+        let thisDiv = e.srcElement;
         thisDiv.classList.remove("selected-hov");
         thisDiv.classList.add("selected-leave");
     } 
@@ -282,7 +280,7 @@ class GameRenderer1
     //Mouse hovering over a non-selected letter.
     hoverOver = (e) =>
     {
-        let thisDiv = e.srcElement || e.originalTarget;
+        let thisDiv = e.srcElement;
         thisDiv.classList.add("hov");
         thisDiv.style.borderWidth = (.05 * this.letterDivSide) + "px";
     }
@@ -290,7 +288,7 @@ class GameRenderer1
     //Mouse leaving a non-selected letter.
     mouseLeave = (e) =>
     {
-        let thisDiv = e.srcElement || e.originalTarget;
+        let thisDiv = e.srcElement;
         thisDiv.classList.remove("hov");
     }
 
@@ -336,7 +334,6 @@ class GameRenderer1
             {
                 let thisDiv = this.columnArray[i].childNodes[j];
                 thisDiv.removeEventListener("click", this.letterClick);
-                thisDiv.removeEventListener("touchstart", this.letterClick);
             }
         }
 
@@ -353,7 +350,6 @@ class GameRenderer1
             {
                 let thisDiv = this.columnArray[i].childNodes[j];
                 thisDiv.addEventListener("click", this.letterClick);
-                thisDiv.addEventListener("touchstart", this.letterClick);
             }
         }
 
@@ -482,7 +478,6 @@ class GameRenderer1
                 thisDiv.style.width = letterDivWidth + "px";
 
                 thisDiv.addEventListener("click", this.letterClick);
-                thisDiv.addEventListener("touchstart", this.letterClick);
 
                 //Add event listeners for mouse hovering.
                 if(!gameObject.solvedArray[i])
