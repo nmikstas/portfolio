@@ -4,8 +4,8 @@
 let debug = true;
 
 //Initial state of game parameters.
-let rows = 7;
-let columns = 7;
+let rows = 5;
+let columns = 6;
 let numWords = 1;
 let minLength = 5;
 let numTries = 4;
