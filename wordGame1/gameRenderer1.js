@@ -85,6 +85,8 @@ class GameRenderer1
 
     letterClick = (e) =>
     {
+        e.preventDefault();
+        
         let target = e.originalTarget;
         let parent = e.originalTarget.parentElement;
         let selectedColumn, selectedLetter;
