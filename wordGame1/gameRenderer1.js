@@ -204,6 +204,15 @@ class GameRenderer1
                     }
                 }
 
+                //Make the first column being selected be a higher index than the rest.
+                for(let i = 0; i < this.columnArray.length; i++)
+                {
+                    if(i !== this.colIndex1)
+                    {
+                        this.columnArray[i].style.zIndex = "-1";
+                    }
+                }
+                
                 let letterDiv1 = this.columnArray[this.colIndex1].childNodes[this.letterIndex1];
                 let letterDiv2 = this.columnArray[this.colIndex2].childNodes[this.letterIndex2];
 

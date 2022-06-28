@@ -192,6 +192,7 @@
 
 .column-div
 {
+    position: relative;
     top: 0;
     display: inline-block;
     border-style: solid;
