@@ -57,7 +57,6 @@ class GameRenderer1
         this.letterIndex2 = undefined;
 
         //Animation variables.
-        this.animActive = false;
         this.animState = 0;
         this.animTimer;
 
@@ -551,7 +550,6 @@ class GameRenderer1
         switch(this.animState)
         {
             case 0:
-                this.animActive = true;
                 clearTimeout(this.animTimer);
                 for(let i = 0; i < animIndexArray.length; i++)
                 {
@@ -583,7 +581,6 @@ class GameRenderer1
             break;
 
             default:
-                this.animActive = false;
                 clearTimeout(this.animTimer);
                 this.animState = 0;
                 animIndexArray.length = 0;
@@ -594,7 +591,6 @@ class GameRenderer1
     //Swaps columns whose indexes are in the animation index array.
     animSwap1 = (animIndexArray) =>
     {
-        this.animActive = true;
         clearTimeout(this.animTimer);
         if(animIndexArray.length === 2)
         {
@@ -613,7 +609,6 @@ class GameRenderer1
     animSwap2 = () =>
     {
         this.redraw();
-        this.animActive = false;
         clearTimeout(this.animTimer);
     }
 
@@ -625,7 +620,6 @@ class GameRenderer1
 
     evaluate = () =>
     {
-        this.animActive = true;
         this.removeAllListeners();
         this.doEvaluations();
     }
@@ -895,6 +889,11 @@ class GameRenderer1
         for(let i = 0; i < gameObject.columns; i++)
         {
             let missingLetters = 0;
+
+            //Set column height explicitly.
+            let totalHeight = window.getComputedStyle(this.columnArray[i]).height.split("px");
+            totalHeight = parseFloat(totalHeight[0]);
+            this.columnArray[i].style.height = totalHeight + "px";
     
             //Go through only the first repitition of letters.
             for(let j = 0; j < gameObject.remainArray[i]; j++)
@@ -962,7 +961,6 @@ class GameRenderer1
 
     evalFinished = () =>
     {   
-        this.animActive = false;
         this.addAllListeners();
     } 
 }
