@@ -163,6 +163,58 @@ class GameRenderer1
             //2 different columns selected.
             else if(this.colIndex2 !== this.colIndex1)
             {
+                //Double the letters in the column for scrolling.
+                let numColItems = this.columnArray[this.colIndex1].childNodes.length;
+                let thisDiv = this.columnArray[this.colIndex1];
+                let letterDivWidth = window.getComputedStyle(thisDiv).width;
+                let totalHeight = window.getComputedStyle(thisDiv).height.split("px");
+                let topBorder = window.getComputedStyle(thisDiv).borderTop.split("px");
+                let bottomBorder = window.getComputedStyle(thisDiv).borderBottom.split("px");
+                totalHeight = parseFloat(totalHeight[0]);
+                topBorder = parseFloat(topBorder[0]);
+                bottomBorder = parseFloat(bottomBorder[0]);
+                thisDiv.style.height = totalHeight + "px";
+
+                //Make sure column does not end up with a scroll bar.
+                this.columnArray[this.colIndex1].style.overflowY = "hidden";
+                
+                for(let i = 0; i < numColItems; i++)
+                {
+                    let tempLetter = this.columnArray[this.colIndex1].childNodes[i].innerHTML;
+                    let thisDiv = document.createElement("div");
+                    this.columnArray[this.colIndex1].appendChild(thisDiv);
+                    thisDiv.classList.add("letter-div");
+                    thisDiv.innerHTML = tempLetter;
+                    thisDiv.style.fontSize = this.letterHeight + "px";
+                    thisDiv.style.height = this.letterDivSide + "px"; 
+                    thisDiv.style.width = letterDivWidth + "px";
+                }
+
+                //Cycle through all the letters on the screen and bold the used letters.
+                for(let i = 0; i < this.columnArray.length; i++)
+                {
+                    for(let j = 0; j < this.columnArray[i].childNodes.length; j++)
+                    {
+                        let thisLetter = this.columnArray[i].childNodes[j].innerHTML;
+                        if(usedLettersArray.includes(thisLetter) && (!gameObject.locksArray[i].column || !gameObject.locksArray[i].letter))
+                        {
+                            this.columnArray[i].childNodes[j].style.fontWeight = "bold";
+                            this.columnArray[i].childNodes[j].style.transitionDuration = "0s";
+                        }
+                    }
+                }
+
+                let letterDiv1 = this.columnArray[this.colIndex1].childNodes[this.letterIndex1];
+                let letterDiv2 = this.columnArray[this.colIndex2].childNodes[this.letterIndex2];
+
+                //Clear out the borders on the letters selected.
+                letterDiv1.style.transitionDuration = "0s";
+                letterDiv1.style.borderWidth = 0;
+                letterDiv1.style.backgroundColor = "rgba(0, 0, 0, 0)";
+                letterDiv2.style.transitionDuration = "0s";
+                letterDiv2.style.borderWidth = 0;
+                letterDiv2.style.backgroundColor = "rgba(0, 0, 0, 0)";
+
                 //Check if one column is a solved column.
                 if((gameObject.locksArray[this.colIndex1].column && gameObject.locksArray[this.colIndex1].letter) ||
                     (gameObject.locksArray[this.colIndex2].column && gameObject.locksArray[this.colIndex2].letter))
@@ -170,7 +222,7 @@ class GameRenderer1
                     animIndexArray.push(this.colIndex1);
                     animIndexArray.push(this.colIndex2);
                     this.doShakeAnimations(animIndexArray);
-                    setTimeout(this.solvedLetterClicked, 200);
+                    setTimeout(this.solvedLetterClicked, 300);
                 }
                 //Check if one column is a locked column.
                 else if(gameObject.locksArray[this.colIndex1].column || gameObject.locksArray[this.colIndex2].column)
@@ -178,24 +230,40 @@ class GameRenderer1
                     animIndexArray.push(this.colIndex1);
                     animIndexArray.push(this.colIndex2);
                     this.doShakeAnimations(animIndexArray);
-                    setTimeout(this.solvedLetterClicked, 200);
+                    setTimeout(this.solvedLetterClicked, 300);
                 }
                 //Move columns if they are not locked or solved.
                 else
                 {
-                    let letterDiv1 = this.columnArray[this.colIndex1].childNodes[this.letterIndex1];
-                    let letterDiv2 = this.columnArray[this.colIndex2].childNodes[this.letterIndex2];
+                    //The same index is clicked on both columns.
+                    if(this.letterIndex1 === this.letterIndex2)
+                    {
+                        animIndexArray.push(this.colIndex1);
+                        animIndexArray.push(this.colIndex2);
+                    }
+                    //The second index is less than the first index.
+                    else if(this.letterIndex1 >  this.letterIndex2)
+                    {
+                        animIndexArray.push(this.colIndex1);
+                        animIndexArray.push(this.colIndex2);
+                        this.columnArray[this.colIndex1].classList.add("smooth-scroll");
+                        this.columnArray[this.colIndex1].scrollTop = this.letterDivSide * (this.letterIndex1 - this.letterIndex2);
+                        this.scrollColumn(this.colIndex1, this.letterIndex1 - this.letterIndex2);
+                    }
+                    //The second index is greater than the first index.
+                    else
+                    {
+                        let maxIndex = this.columnArray[this.colIndex1].childNodes.length / 2 - 1;
+                        let targetIndex = (maxIndex < this.letterIndex2) ? maxIndex : this.letterIndex2;
+                        console.log("Col 2 index: %s, Max index: %s, Target index: %s", this.letterIndex2, maxIndex, targetIndex)
+                        animIndexArray.push(this.colIndex1);
+                        animIndexArray.push(this.colIndex2);
+                        this.columnArray[this.colIndex1].scrollTop = totalHeight - topBorder - bottomBorder;
+                        this.columnArray[this.colIndex1].classList.add("smooth-scroll");
+                        this.columnArray[this.colIndex1].scrollTop -= this.letterDivSide * (targetIndex - this.letterIndex1);
+                        this.scrollColumn(this.colIndex1, this.letterIndex1 - targetIndex);
+                    }
 
-                    //Clear out the borders on the letters selected.
-                    letterDiv1.style.transitionDuration = "0s";
-                    letterDiv1.style.borderWidth = 0;
-                    letterDiv1.style.backgroundColor = "rgba(0, 0, 0, 0)";
-                    letterDiv2.style.transitionDuration = "0s";
-                    letterDiv2.style.borderWidth = 0;
-                    letterDiv2.style.backgroundColor = "rgba(0, 0, 0, 0)";
-
-                    animIndexArray.push(this.colIndex1);
-                    animIndexArray.push(this.colIndex2);
                     this.animSwap1(animIndexArray);
                     setTimeout(this.solvedLetterClicked, 500);
                 }
@@ -258,7 +326,6 @@ class GameRenderer1
                 //Scroll up.
                 if(this.letterIndex1 > this.letterIndex2)
                 {
-                    this.columnArray[this.colIndex1].scrollTop = 0;
                     this.columnArray[this.colIndex1].classList.add("smooth-scroll");
                     this.columnArray[this.colIndex1].scrollTop = this.letterDivSide * (this.letterIndex1 - this.letterIndex2);
                 }
