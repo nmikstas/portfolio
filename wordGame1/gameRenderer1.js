@@ -60,7 +60,6 @@ class GameRenderer1
         this.animState = 0;
         this.animTimer;
 
-        this.isGo = false; //Go button pressed indicator.
         this.columnArray = new Array(0); //Array of letter columns.
         this.letterHeight = 0; //Letter height in web presentation.
         this.letterDivSide;
@@ -69,13 +68,7 @@ class GameRenderer1
         window.addEventListener("resize", this.redraw);
 
         //Go button event listener.
-        this.goButton.addEventListener("click", () =>
-        {
-            this.isGo = true;
-            this.colIndex1 = undefined;
-            this.colIndex2 = undefined;
-            this.evaluate();
-        });
+        this.goButton.addEventListener("click", this.evaluate);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -427,8 +420,10 @@ class GameRenderer1
             }
         }
 
+        this.goButton.classList.remove("go-icon");
+        this.goButton.classList.add("go-icon2");
+        this.goButton.src = "./images/GoButton2.png";
         this.goButton.removeEventListener("click", this.evaluate);
-        this.goButton.disabled = true; 
     }
 
     //Add all listeners back to the game board after animations finish.
@@ -443,8 +438,10 @@ class GameRenderer1
             }
         }
 
+        this.goButton.classList.remove("go-icon2");
+        this.goButton.classList.add("go-icon");
+        this.goButton.src = "./images/GoButton1.png";
         this.goButton.addEventListener("click", this.evaluate);
-        this.goButton.disabled = false;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -463,7 +460,7 @@ class GameRenderer1
         let gameHeight = this.gameBody.clientHeight;
         
         //Update the number of tries remaining.
-        this.RemainDiv.innerHTML = "Tries Remaining: " + gameObject.numTries;
+        this.RemainDiv.innerHTML = "Left: " + gameObject.numTries;
 
         //Need to transpose the letter array for future processing.
         let transLetterArray = new Array(columns);
@@ -696,6 +693,10 @@ class GameRenderer1
 
     evaluate = () =>
     {
+        this.colIndex1 = undefined;
+        this.colIndex2 = undefined;
+        this.letterIndex1 = undefined;
+        this.letterIndex2 = undefined;
         this.removeAllListeners();
         this.doEvaluations();
     }

@@ -66,6 +66,39 @@
     border-radius: 50%;
 }
 
+.stats-icon
+{
+    max-width: 100%;
+    max-height: 100%;
+    float: left;
+}
+
+.stats-icon:hover
+{
+    background-color: rgb(36, 38, 146, .2);
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.go-icon
+{
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.go-icon2
+{
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.go-icon:hover
+{
+    background-color: rgb(36, 38, 146, .2);
+    cursor: pointer;
+    border-radius: 50%;
+}
+
 .footer
 {
     position: absolute;
@@ -80,10 +113,8 @@
     display: flex;
     width: 100%;
     height: 100%;
-    border: .1vh;
     align-items: center;
     justify-content: center;
-    border-style: solid none none none;
     background-color: rgb(211, 201, 247);
 }
 
@@ -180,9 +211,20 @@
     text-align: center;
     align-items: center;
     justify-content: center;
+    border: .1vh;
+    border-style: solid none none none;
+    background-color: rgb(211, 201, 247);
 }
 
 #remain-span
+{
+    margin-left: 2.5vw;
+    margin-bottom: 0;
+    font-size: 3vh;
+    font-weight: bold;
+}
+
+#score-span
 {
     margin-left: 2.5vw;
     margin-bottom: 0;
