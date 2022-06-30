@@ -152,6 +152,7 @@ gr.evalRightLetWrongCol2 = ge.evalRightLetWrongCol2;
 gr.evalUsedLetters = ge.evalUsedLetters;
 gr.evalUnusedLetters1 = ge.evalUnusedLetters1;
 gr.evalUnusedLetters2 = ge.evalUnusedLetters2;
+gr.evalUnusedLetters3 = ge.evalUnusedLetters3;
 gr.scrollColumn = ge.scrollColumn;
 gr.evalSwap = ge.evalSwap;
 

@@ -218,6 +218,7 @@
 
 #remain-span
 {
+    display: inline-block;
     margin-left: 2.5vw;
     margin-bottom: 0;
     font-size: 3vh;
@@ -226,6 +227,7 @@
 
 #score-span
 {
+    display: inline-block;
     margin-left: 2.5vw;
     margin-bottom: 0;
     font-size: 3vh;

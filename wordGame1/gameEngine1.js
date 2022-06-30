@@ -684,8 +684,45 @@ class GameEngine1
         }
     }
 
-    evalUnusedLetters2 = () =>
+    evalUnusedLetters2 = (unusedLettersArray) =>
     {
+        let newSolvedArray = new Array(0);
+
+        //Check if letter lock needs to be applied to the current column.      
+        for(let i = 0; i < this.gameObject.columns; i++)
+        {
+            let colLetterCount = 0;
+            for(let j = 0; j < this.gameObject.rows; j++)
+            {
+                if(this.gameObject.letterArray[j][i] !== " ")
+                {
+                    colLetterCount++;
+                }
+            }
+
+            //Need to take into account a special case where column is solved when correct letter slides up into place.
+            if(colLetterCount === 1 && !this.gameObject.locksArray[i].letter && this.gameObject.locksArray[i].column)
+            {
+                newSolvedArray.push(i);
+                this.gameObject.locksArray[i].letter = true;
+            }
+        }
+
+        this.animUnusedLetters2(unusedLettersArray, newSolvedArray);
+    }
+
+    evalUnusedLetters3 = (newSolvedArray) =>
+    {
+        //Used to clear the border on solved columns where the correct letter slid up into place.
+        for(let i = 0; i < this.gameObject.remainArray.length; i++)
+        {
+            if(newSolvedArray.includes(i))
+            {
+                this.gameObject.remainArray[i] = 1;
+                this.gameObject.solvedArray[i] = true;
+            }
+        }
+
         this.updateColumns(); //Consolidate columns.   
         this.checkLetterLock(); //Check for letter lock only.
         this.animUnusedLetters3();

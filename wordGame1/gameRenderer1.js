@@ -28,6 +28,7 @@ class GameRenderer1
             evalUsedLetters = null,
             evalUnusedLetters1 = null,
             evalUnusedLetters2 = null,
+            evalUnusedLetters3 = null,
             doEvaluations = null,
             scrollColumn = null,
             evalSwap = null,
@@ -46,6 +47,7 @@ class GameRenderer1
         this.evalUsedLetters = evalUsedLetters;
         this.evalUnusedLetters1 = evalUnusedLetters1;
         this.evalUnusedLetters2 = evalUnusedLetters2;
+        this.evalUnusedLetters3 = evalUnusedLetters3;
         this.doEvaluations = doEvaluations;
         this.scrollColumn = scrollColumn;
         this.evalSwap = evalSwap;
@@ -949,15 +951,15 @@ class GameRenderer1
     
         if(workDone)
         {
-            setTimeout(() => this.animUnusedLetters2(unusedLettersArray), 500);
+            setTimeout(() => this.evalUnusedLetters2(unusedLettersArray), 500);
         }
         else
         {
-            this.animUnusedLetters2(unusedLettersArray);
+            this.evalUnusedLetters2(unusedLettersArray);
         } 
     }
 
-    animUnusedLetters2 = (unusedLettersArray) =>
+    animUnusedLetters2 = (unusedLettersArray, newSolvedArray) =>
     {
         let workDone = false; //Only delay if some animations set.
         let gameObject = this.getGameObject();
@@ -966,6 +968,7 @@ class GameRenderer1
         for(let i = 0; i < gameObject.columns; i++)
         {
             let missingLetters = 0;
+            let newSolved = newSolvedArray.includes(i);
 
             //Set column height explicitly.
             let totalHeight = window.getComputedStyle(this.columnArray[i]).height.split("px");
@@ -1016,15 +1019,21 @@ class GameRenderer1
                 this.columnArray[i].style.height = ((ge.gameObject.remainArray[i] - missingLetters) * this.letterDivSide + colTopBorder + colBottomBorder) + "px";
                 workDone = true;
             }
+
+            if(newSolved)
+            {                
+                this.columnArray[i].style.transitionDuration = ".4s";
+                this.columnArray[i].style.backgroundColor = "rgba(169, 255, 158, 1)";
+            }
         }
     
         if(workDone)
         {
-            setTimeout(this.evalUnusedLetters2, 500);
+            setTimeout(() => this.evalUnusedLetters3(newSolvedArray), 500);
         }
         else
         {
-            this.evalUnusedLetters2();
+            this.evalUnusedLetters3(newSolvedArray);
         } 
     }
 
