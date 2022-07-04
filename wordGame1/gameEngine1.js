@@ -8,7 +8,10 @@ class GameEngine1
     //                                Enumerations and Constants                                 //
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    
+    static get STATE_PLAY() {return 0}
+    static get STATE_WIN() {return 1}
+    static get STATE_LOSE() {return 2}
+
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //                                        Constructor                                        //
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -29,8 +32,10 @@ class GameEngine1
             animUnusedLetters2 = null,
             animUnusedLetters3 = null,
             newGameObject = null,
-            evalFinished = null,
             animSwap2 = null,
+            gamePlay = null,
+            gameWon = null,
+            gameLost = null
         } = {}
     )
     {
@@ -47,8 +52,10 @@ class GameEngine1
         this.animUnusedLetters2 = animUnusedLetters2;
         this.animUnusedLetters3 = animUnusedLetters3;
         this.newGameObject = newGameObject;
-        this.evalFinished = evalFinished;
         this.animSwap2 = animSwap2;
+        this.gamePlay = gamePlay;
+        this.gameWon = gameWon;
+        this.gameLost = gameLost;
 
         this.didSwap = false;
         this.usedLettersArray = new Array(0);
@@ -58,9 +65,9 @@ class GameEngine1
     //                                      Class Functions                                      //
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    resetGame = () =>
+    resetGame = (rows, columns, numTries) =>
     {
-        this.copyGameObject(this.newGameObject(rows, columns, numWords, minLength, numTries));
+        this.copyGameObject(this.newGameObject(rows, columns, 1, 2, numTries));
         this.usedLettersArray.length = 0;
     }
 
@@ -80,7 +87,9 @@ class GameEngine1
                 columnArray: gameObject.hasOwnProperty("columnArray") ? [...gameObject.columnArray] : null,
                 locksArray:  gameObject.hasOwnProperty("locksArray") ? [...gameObject.locksArray] : null,
                 remainArray: gameObject.hasOwnProperty("remainArray") ? [...gameObject.remainArray] : null,
-                solvedArray: gameObject.hasOwnProperty("solvedArray") ? [...gameObject.solvedArray] : null
+                solvedArray: gameObject.hasOwnProperty("solvedArray") ? [...gameObject.solvedArray] : null,
+                gameState:   gameObject.hasOwnProperty("gameState") ? gameObject.gameState : null,
+                score:       gameObject.hasOwnProperty("score") ? gameObject.score : null
             }
         }
     }
@@ -236,6 +245,45 @@ class GameEngine1
         this.animSwap2();
     }
 
+    loseSwap = (swapArray) =>
+    {
+        for(let i = 0; i < this.gameObject.letterArray.length; i++)
+        {
+            [this.gameObject.letterArray[i][swapArray[0]], this.gameObject.letterArray[i][swapArray[1]]] = 
+            [this.gameObject.letterArray[i][swapArray[1]], this.gameObject.letterArray[i][swapArray[0]]];
+        }
+
+        //Swap items in the column order.
+        [this.gameObject.columnArray[swapArray[0]], this.gameObject.columnArray[swapArray[1]]] =
+        [this.gameObject.columnArray[swapArray[1]], this.gameObject.columnArray[swapArray[0]]];
+
+        //Swap items in the locks array.
+        [this.gameObject.locksArray[swapArray[0]], this.gameObject.locksArray[swapArray[1]]] =
+        [this.gameObject.locksArray[swapArray[1]], this.gameObject.locksArray[swapArray[0]]];
+
+        //Swap items in letters remaining array.
+        [this.gameObject.remainArray[swapArray[0]], this.gameObject.remainArray[swapArray[1]]] =
+        [this.gameObject.remainArray[swapArray[1]], this.gameObject.remainArray[swapArray[0]]];
+
+        if(debug)this.printGameObject(this.gameObject);
+    }
+
+    setGameLost = () =>
+    {
+        for(let i = 0; i < this.gameObject.columns; i++)
+        {
+            this.gameObject.letterArray[0][i] = this.gameObject.winningRow[i];
+            this.gameObject.remainArray[i] = 1;
+            this.gameObject.locksArray[i].letter = true;
+            this.gameObject.locksArray[i].column = true;
+
+            for(let j = 1; j < this.gameObject. rows; j++)
+            {
+                this.gameObject.letterArray[j][i] = " ";
+            }
+        }
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //                                   Evaluation Functions                                    //
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -322,7 +370,7 @@ class GameEngine1
         //Get array of the right letters but wrong columns.
         let moveArray = new Array(0);
 
-        for(let i = 0; i < columns; i++)
+        for(let i = 0; i < this.gameObject.columns; i++)
         {
             if(this.gameObject.letterArray[0][i] === this.gameObject.winningRow[i] && !this.gameObject.locksArray[i].column)
             {
@@ -680,7 +728,7 @@ class GameEngine1
         }
         else
         {
-            this.evalFinished();
+            this.updateGameState();
         }
     }
 
@@ -728,6 +776,38 @@ class GameEngine1
         this.animUnusedLetters3();
     }
 
-    //-------------------- Finished Evaluations --------------------
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    //                                   Game State Functions                                    //
+    ///////////////////////////////////////////////////////////////////////////////////////////////
 
+    updateGameState = () =>
+    {
+        this.gameObject.numTries--;
+
+        let gameWon = true;
+
+        for(let i = 0; i < this.gameObject.solvedArray.length; i++)
+        {
+            if(!this.gameObject.solvedArray[i])
+            {
+                gameWon = false;
+            }
+        }
+
+        if(gameWon)
+        {
+            this.gameObject.gameState = GameEngine1.STATE_WIN;
+            this.gameWon(this.gameObject);
+        }
+        else if(this.gameObject.numTries === 0)
+        {
+            this.gameObject.gameState = GameEngine1.STATE_LOSE;
+            this.gameLost(this.gameObject);
+        }
+        else
+        {
+            this.gameObject.gameState = GameEngine1.STATE_PLAY;
+            this.gamePlay();
+        }
+    }
 }

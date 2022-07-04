@@ -18,6 +18,9 @@ class GameGenerator1
     static get MIN_WORDS() {return 1}
     static get MAX_LENGTH() {return 20}
     static get MIN_LENGTH() {return 2}
+    static get STATE_PLAY() {return 0}
+    static get STATE_WIN() {return 1}
+    static get STATE_LOSE() {return 2}
    
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //                                        Constructor                                        //
@@ -48,14 +51,16 @@ class GameGenerator1
         //Generated game object.
         this.gameObject;
 
-        //This can possibly be used for giving a heavier bias to words starting 
-        //with certain letters by putting those letters in this array multiple times.
         this.alphabet =
         [
             "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
             "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
             "U", "V", "W", "X", "Y", "Z"
         ];
+
+        //This is used for giving a heavier bias to words starting with certain 
+        //letters by putting those letters in this array multiple times.
+        this.distributionArray = new Array(0);
 
         this.gameObject = this.generateGameObject();
     }
@@ -76,6 +81,31 @@ class GameGenerator1
         return this.gameObject;
     }
 
+    //Build an array that has a distribution equal to the starting letter ratio in the word array.
+    setupDistributionArray = () =>
+    {
+        let wordArrayLength = 0;
+        let wordPercentageArray = new Array(0);
+
+        for(let i = 0; i < wordArray.length; i++)
+        {
+            wordArrayLength += wordArray[i].length;
+        }
+
+        for(let i = 0; i < wordArray.length; i++)
+        {
+            wordPercentageArray.push(parseInt(Math.ceil(wordArray[i].length / wordArrayLength * 1000)));
+        }
+
+        for(let i = 0; i < this.alphabet.length; i++)
+        {
+            for(let j = 0; j < wordPercentageArray[i]; j++)
+            {
+                this.distributionArray.push(this.alphabet[i]);
+            }
+        }
+    }
+
     generateGameObject = () =>
     {
         //Calculate to see if game parameters are valid.
@@ -86,6 +116,8 @@ class GameGenerator1
             if(this.debug)console.log("GameGenerator1: Invalid game parameters");
             return GameGenerator1.INVALID;
         }
+
+        this.setupDistributionArray();
 
         //Create an unshuffled letter array.
         let letterArray = this.get2DLetterArray(this.rows, this.columns, this.numWords, this.minLength);
@@ -154,20 +186,25 @@ class GameGenerator1
         {
             solvedArray.push(false);
         }
+
+        let gameState = GameGenerator1.STATE_PLAY;
+        let score = 0;
     
         //Bundle everything inside an object and return it.
         return {
-            rows:        rows,
-            columns:     columns, 
-            numWords:    numWords, 
-            minLength:   minLength,
-            numTries:    numTries,
+            rows:        this.rows,
+            columns:     this.columns, 
+            numWords:    this.numWords, 
+            minLength:   this.minLength,
+            numTries:    this.numTries,
             letterArray: letterArray,
             winningRow:  winningRow,
             columnArray: columnArray,
             locksArray:  locksArray,
             remainArray: remainArray,
-            solvedArray: solvedArray
+            solvedArray: solvedArray,
+            gameState  : gameState,
+            score:       score
         }
     }
 
@@ -260,15 +297,15 @@ class GameGenerator1
     //Gets a single row of words.
     getWordRow = (wordLengthsArray) =>
     {
-        let wordArray = new Array(0);
-
+        let thisWordArray = new Array(0);
+        
         for(let i = 0; i < wordLengthsArray.length; i++)
         {
             //Get first word.
             if(i === 0)
             {
-                let index = Math.floor(Math.random() * this.alphabet.length);
-                let chosenWord = this.getWord(wordLengthsArray[i], this.alphabet[index]);
+                let index = Math.floor(Math.random() * this.distributionArray.length);
+                let chosenWord = this.getWord(wordLengthsArray[i], this.distributionArray[index]);
                 if(chosenWord === GameGenerator1.FAILED)
                 {
                     //Return if failed.
@@ -276,13 +313,13 @@ class GameGenerator1
                 }
                 else
                 {
-                    wordArray.push(chosenWord);
+                    thisWordArray.push(chosenWord);
                 }
             }
             else
             {
                 //Get last letter in previous entry in the word array.
-                let prevWord = wordArray[i-1];
+                let prevWord = thisWordArray[i-1];
                 let lastWordLength = prevWord.length;
                 let lastLetter = prevWord[lastWordLength - 1];
                 let chosenWord = this.getWord(wordLengthsArray[i], lastLetter);
@@ -293,12 +330,12 @@ class GameGenerator1
                 }
                 else
                 {
-                    wordArray.push(chosenWord);
+                    thisWordArray.push(chosenWord);
                 }
             }    
         }
 
-        return wordArray;
+        return thisWordArray;
     }
 
     //Generates a 2D matrix of words for the game.

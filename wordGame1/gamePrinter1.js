@@ -60,5 +60,8 @@ class GamePrinter1
         }
         console.log(solvedLetters, ...colNum);
 
+        console.log("Tries Remaining: ", go.numTries);
+        console.log("Game State: ", go.gameState);
+        console.log("Score: ", go.score);
     }
 }

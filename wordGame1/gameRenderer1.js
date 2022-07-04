@@ -32,6 +32,12 @@ class GameRenderer1
             doEvaluations = null,
             scrollColumn = null,
             evalSwap = null,
+            disableReset = null,
+            enableReset = null,
+            updateGameState = null,
+            resetFunction = null,
+            loseSwap = null,
+            setGameLost = null
         } = {}
     )
     {
@@ -51,6 +57,12 @@ class GameRenderer1
         this.doEvaluations = doEvaluations;
         this.scrollColumn = scrollColumn;
         this.evalSwap = evalSwap;
+        this.disableReset = disableReset;
+        this.enableReset = enableReset;
+        this.updateGameState = updateGameState;
+        this.resetFunction = resetFunction;
+        this.loseSwap = loseSwap;
+        this.setGameLost = setGameLost;
 
         //Column swap variables.
         this.colIndex1 = undefined;
@@ -61,6 +73,10 @@ class GameRenderer1
         //Animation variables.
         this.animState = 0;
         this.animTimer;
+
+        //Win/lose indicators.
+        this.win = false;
+        this.lost = false;
 
         this.columnArray = new Array(0); //Array of letter columns.
         this.letterHeight = 0; //Letter height in web presentation.
@@ -391,6 +407,10 @@ class GameRenderer1
     //Reset game variables.
     resetGame = () =>
     {
+        this.win = false;
+        this.lost = false;
+        this.goButton.removeEventListener("click", this.newGame);
+        this.goButton.addEventListener("click", this.evaluate);
         this.solvedLetterClicked();
     }
 
@@ -462,7 +482,7 @@ class GameRenderer1
         let gameHeight = this.gameBody.clientHeight;
         
         //Update the number of tries remaining.
-        this.RemainDiv.innerHTML = "Left: " + gameObject.numTries;
+        this.RemainDiv.innerHTML = "Tries: " + gameObject.numTries;
 
         //Need to transpose the letter array for future processing.
         let transLetterArray = new Array(columns);
@@ -534,27 +554,33 @@ class GameRenderer1
             if(i === 0)letterDivWidth = window.getComputedStyle(thisDiv).width;
 
             //Normal background color.
-            if(!gameObject.locksArray[i].column && !gameObject.locksArray[i].letter)
+            if(!gameObject.locksArray[i].column && !gameObject.locksArray[i].letter && !this.lost)
             {
                 thisDiv.style.backgroundColor = "rgba(255, 255, 255, 1)";
             }
 
             //Check for letter lock only.
-            if(!gameObject.locksArray[i].column && gameObject.locksArray[i].letter)
+            if(!gameObject.locksArray[i].column && gameObject.locksArray[i].letter && !this.lost)
             {
                 thisDiv.style.backgroundColor = "rgba(255, 255, 255, 1)";
             }
 
             //Check for column lock only.
-            if(gameObject.locksArray[i].column && !gameObject.locksArray[i].letter)
+            if(gameObject.locksArray[i].column && !gameObject.locksArray[i].letter && !this.lost)
             {
                 thisDiv.style.backgroundColor = "rgba(157, 188, 255, 1)";
             }
 
             //Check for word lock and column lock.
-            if(gameObject.locksArray[i].column && gameObject.locksArray[i].letter)
+            if(gameObject.locksArray[i].column && gameObject.locksArray[i].letter && !this.lost)
             {
                 thisDiv.style.backgroundColor = "rgba(169, 255, 158, 1)";
+            }
+
+            //check for game lost
+            if(this.lost)
+            {
+                thisDiv.style.backgroundColor = "rgb(255, 138, 134)";
             }
         }
 
@@ -573,6 +599,7 @@ class GameRenderer1
                 thisDiv.classList.add("letter-div");
                 thisDiv.innerHTML = transLetterArray[i][k];
                 thisDiv.style.fontSize = this.letterHeight + "px";
+                if(this.lost || this.win)thisDiv.style.cursor = "auto";
 
                 //Explicitly assign letter div height for transition effect.
                 thisDiv.style.height = this.letterDivSide + "px"; 
@@ -587,10 +614,13 @@ class GameRenderer1
                     thisDiv.style.fontWeight = "normal";
                 }
                 
-                thisDiv.addEventListener("click", this.letterClick);
-
+                if(!this.lost && !this.win)
+                {
+                    thisDiv.addEventListener("click", this.letterClick);
+                }
+                
                 //Add event listeners for mouse hovering.
-                if(!gameObject.solvedArray[i])
+                if(!gameObject.solvedArray[i] && !this.lost)
                 {
                     thisDiv.addEventListener("mouseenter", this.hoverOver);
                     thisDiv.addEventListener("mouseleave", this.mouseLeave);
@@ -699,6 +729,7 @@ class GameRenderer1
         this.colIndex2 = undefined;
         this.letterIndex1 = undefined;
         this.letterIndex2 = undefined;
+        this.disableReset();
         this.removeAllListeners();
         this.doEvaluations();
     }
@@ -1040,13 +1071,200 @@ class GameRenderer1
     animUnusedLetters3 = () =>
     {
         this.redraw();
-        this.evalFinished();
+        this.updateGameState();
     }
 
-    //-------------------- Finished Animations --------------------
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    //                                Win, Lose, Play Functions                                  //
+    ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    evalFinished = () =>
+    winLoseStyleChange = (numTries) =>
+    {
+        this.RemainDiv.innerHTML = "Tries: " + numTries;
+        this.enableReset();
+
+        //Remove all event listeners from game field.
+        for(let i = 0; i < this.columnArray.length; i++)
+        {
+            for(let j = 0; j < this.columnArray[i].childNodes.length; j++)
+            {
+                this.columnArray[i].childNodes[j].removeEventListener("click", this.letterClick);
+                this.columnArray[i].childNodes[j].removeEventListener("mouseenter", this.hoverOver);
+                this.columnArray[i].childNodes[j].removeEventListener("mouseleave", this.mouseLeave);
+                this.columnArray[i].childNodes[j].style.cursor = "auto";
+            }
+        }
+    }
+
+    //Reset the game.
+    newGame = () =>
+    {
+        this.win = false;
+        this.lost = false;
+        this.goButton.removeEventListener("click", this.newGame);
+        this.goButton.addEventListener("click", this.evaluate);
+        this.goButton.src = "./images/GoButton1.png"
+        this.resetFunction();
+    }
+
+    //Replace the go button with the next button.
+    showNextButton = () =>
+    {
+        this.goButton.removeEventListener("click", this.evaluate);
+        this.goButton.src = "./images/NextButton.png";
+        this.goButton.addEventListener("click", this.newGame);
+        this.goButton.classList.add("go-icon");
+        this.enableReset();
+    }
+
+    gamePlay = () =>
     {   
+        this.redraw();
+        this.enableReset();
         this.addAllListeners();
     } 
+
+    gameWon = (gameObject) =>
+    {
+        this.winLoseStyleChange(gameObject.numTries);
+        this.disableReset();
+
+        //Rotate letters and slightly enlarge.
+        for(let i = 0; i < this.columnArray.length; i++)
+        {
+            this.columnArray[i].style.transitionDuration = ".2s";
+            this.columnArray[i].style.transform = "rotate(45deg) scale(1.1)";
+        }
+
+        setTimeout(this.animGameWon1, 300);
+    }
+
+    animGameWon1 = () =>
+    {
+        //Put letters back in original state.
+        for(let i = 0; i < this.columnArray.length; i++)
+        {
+            this.columnArray[i].style.transitionDuration = ".7s";
+            this.columnArray[i].style.transform = "rotate(-360deg) scale(1.0)";
+        }
+
+        this.win = true;
+        setTimeout(this.showNextButton, 700);
+    }
+
+    gameLost = () =>
+    {
+        setTimeout(this.animGameLost0, 500);
+    }
+
+    animGameLost0 = () =>
+    {
+        let gameObject = this.getGameObject();
+        this.winLoseStyleChange(gameObject.numTries);
+        this.disableReset();
+
+        for(let i = 0; i < this.columnArray.length; i++)
+        {
+            //Check if column is in the right position.
+            if(gameObject.columnArray[i] !== i)
+            {
+                let targetPosition = this.columnArray[gameObject.columnArray[i]].getBoundingClientRect().x;
+                let startPosition = this.columnArray[i].getBoundingClientRect().x;
+
+                let dx = targetPosition - startPosition;
+
+                this.columnArray[i].style.transitionDuration = ".4s";
+                this.columnArray[i].style.transform = "translateX(" + dx + "px)";
+            }
+
+            this.columnArray[i].style.transitionDuration = ".4s";
+            this.columnArray[i].style.backgroundColor = "rgb(255, 138, 134)";
+        }
+
+        //Move and incorrect columns in the game object.
+        let isOrdered = true;
+
+        do
+        {
+            isOrdered = true;
+            for(let i = 0; i < gameObject.columns; i++)
+            {
+                if(gameObject.columnArray[i] !== i)
+                {
+                    this.loseSwap([i, gameObject.columnArray[i]]);
+                    isOrdered = false;
+                }
+            }
+
+        }while(!isOrdered);
+
+        setTimeout(this.animGameLost1, 500);
+    }
+
+    animGameLost1 = () =>
+    {
+        let gameObject = this.getGameObject();
+        let letterIndexArray = new Array(0);
+
+        this.lost = true;
+        this.redraw();
+        this.winLoseStyleChange(gameObject.numTries);
+        this.disableReset();
+        
+        //Get the index of the child nodes for each of the correct letters.
+        for(let i = 0; i < this.columnArray.length; i++)
+        {
+            for(let j = 0; j < this.columnArray[i].childNodes.length; j++)
+            {
+                if(this.columnArray[i].childNodes[j].innerHTML === gameObject.winningRow[i])
+                {
+                    letterIndexArray.push(j);
+                    break;
+                }
+            }
+        }
+
+        //Shrink away all letters that are not part of the solution.
+        for(let i = 0; i < this.columnArray.length; i++)
+        {
+            for(let j = 0; j < this.columnArray[i].childNodes.length; j++)
+            {
+                if(letterIndexArray[i] !== j)
+                {
+                    this.columnArray[i].childNodes[j].style.transitionDuration = "0.4s";
+                    this.columnArray[i].childNodes[j].style.transform = "scale(0)";
+                }
+            }
+        }
+
+        setTimeout(() => this.animGameLost2(letterIndexArray), 500);
+    }
+
+    animGameLost2 = (letterIndexArray) =>
+    {
+        //Move all letters to the top row.
+        for(let i = 0; i < this.columnArray.length; i++)
+        {
+            let dy = -letterIndexArray[i] * this.letterDivSide;   
+            this.columnArray[i].childNodes[letterIndexArray[i]].style.transitionDuration = "0.4s";
+            this.columnArray[i].childNodes[letterIndexArray[i]].style.transform = "translateY(" + dy + "px)";
+            this.columnArray[i].childNodes[letterIndexArray[i]].style.fontWeight = "bold";
+        }
+
+        //Shrink the columns to the correct size.
+        for(let i = 0; i < this.columnArray.length; i++)
+        {
+            let colTopBorder = window.getComputedStyle(this.columnArray[i]).borderTop.split("px");
+            let colBottomBorder = window.getComputedStyle(this.columnArray[i]).borderBottom.split("px");
+            colTopBorder = parseFloat(colTopBorder[0]);
+            colBottomBorder = parseFloat(colBottomBorder[0]);
+
+            this.columnArray[i].style.transitionDuration = ".4s";
+            this.columnArray[i].style.height = (this.letterDivSide + colTopBorder + colBottomBorder) + "px";
+        }
+
+        //Make sure presentation stays consistent after a screen resize.
+        this.setGameLost();
+        setTimeout(this.showNextButton, 700);
+    }
 }

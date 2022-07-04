@@ -6,9 +6,7 @@ let debug = true;
 //Initial state of game parameters.
 let rows = 5;
 let columns = 6;
-let numWords = 1;
-let minLength = 5;
-let numTries = 4;
+let numTries = 5;
 
 let gg = new GameGenerator1(); //Create a new game generator.
 let gp = new GamePrinter1(); //Create a new game printer.
@@ -24,24 +22,18 @@ let gr = new GameRenderer1 //Create a new game renderer.
 /**************************** Top Level Event Listeners and Functions ****************************/
 
 //Set the selections in the game settings modal.
-const setSelections = (rows, columns, numWords, minLength, numTries) =>
+const setSelections = (rows, columns, numTries) =>
 {
     const minRows = 3;
     const minColumns = 5;
-    const minWords = 1;
-    const minLen = 2;
     const minTries = 2;
 
     let selRows = document.getElementById("sel-rows");
     let selColumns = document.getElementById("sel-columns");
-    let selWords = document.getElementById("sel-words");
-    let selLength = document.getElementById("sel-length");
     let selTries = document.getElementById("sel-tries");
 
     selRows.selectedIndex = rows - minRows;
     selColumns.selectedIndex = columns - minColumns;
-    selWords.selectedIndex = numWords - minWords;
-    selLength.selectedIndex = minLength - minLen;
     selTries.selectedIndex = numTries - minTries;
 }
 
@@ -75,12 +67,10 @@ closeBtn[1].addEventListener("click", () =>
 const settings = document.getElementById("settings");
 settings.addEventListener("click", () =>
 {
-    setSelections(rows, columns, numWords, minLength, numTries);
+    setSelections(rows, columns, numTries);
     let modal = document.getElementById("settings-modal");
     modal.style.display = "block";
     document.getElementById("sel-columns").style.borderColor = "";
-    document.getElementById("sel-words").style.borderColor = "";
-    document.getElementById("sel-length").style.borderColor = "";
 });
 
 //Event listener that brings up the help modal.
@@ -91,6 +81,32 @@ help.addEventListener("click", () =>
     modal.style.display = "block";
 });
 
+//Event listener for the reset button.
+const resetFunction = () =>
+{
+    ge.resetGame(rows, columns, numTries);
+    gr.resetGame();
+    gr.redraw();
+}
+const reset = document.getElementById("reset");
+reset.addEventListener("click", resetFunction);
+
+const disableReset = () =>
+{
+    reset.style.opacity = 0.3;
+    reset.removeEventListener("click", resetFunction);
+    reset.classList.remove("reset-icon");
+    reset.classList.add("reset-no-hov");
+}
+
+const enableReset = () =>
+{
+    reset.style.opacity = 1;
+    reset.addEventListener("click", resetFunction);
+    reset.classList.remove("reset-no-hov");
+    reset.classList.add("reset-icon");
+}
+
 //Event listener that updates the game settings.
 const settingsBtn = document.getElementById("settings-btn");
 settingsBtn.addEventListener("click", () =>
@@ -98,30 +114,15 @@ settingsBtn.addEventListener("click", () =>
     //Get values of all the text boxes.
     const setRows = parseInt(document.getElementById("sel-rows").value);
     const setColumns = parseInt(document.getElementById("sel-columns").value);
-    const setWords = parseInt(document.getElementById("sel-words").value);
-    const setLength = parseInt(document.getElementById("sel-length").value);
     const setTries = parseInt(document.getElementById("sel-tries").value);
-
-    //Calculate to see if user values are valid.
-    const remainder = setColumns + setWords * (1 - setLength) - 1;
-
-    if(remainder < 0)
-    {
-        document.getElementById("sel-columns").style.borderColor = "rgb(255, 0, 0)";
-        document.getElementById("sel-words").style.borderColor = "rgb(255, 0, 0)";
-        document.getElementById("sel-length").style.borderColor = "rgb(255, 0, 0)";
-        return;
-    }
     
     //User entered values are correct. Update game variables and recalculate everything.
     settingsModal.style.display = "none";
     rows = setRows;
     columns = setColumns;
-    numWords = setWords;
-    minLength = setLength;
     numTries = setTries;
 
-    ge.resetGame();
+    ge.resetGame(rows, columns, numTries);
     gr.resetGame();
     gr.redraw();
 });
@@ -140,8 +141,10 @@ ge.animUnusedLetters1 = gr.animUnusedLetters1;
 ge.animUnusedLetters2 = gr.animUnusedLetters2;
 ge.animUnusedLetters3 = gr.animUnusedLetters3;
 ge.newGameObject = gg.newGameObject;
-ge.evalFinished = gr.evalFinished;
 ge.animSwap2 = gr.animSwap2;
+ge.gamePlay = gr.gamePlay;
+ge.gameWon = gr.gameWon;
+ge.gameLost = gr.gameLost;
 
 gr.getGameObject = ge.getGameObject;
 gr.doEvaluations = ge.doEvaluations;
@@ -155,8 +158,14 @@ gr.evalUnusedLetters2 = ge.evalUnusedLetters2;
 gr.evalUnusedLetters3 = ge.evalUnusedLetters3;
 gr.scrollColumn = ge.scrollColumn;
 gr.evalSwap = ge.evalSwap;
+gr.disableReset = disableReset;
+gr.enableReset = enableReset;
+gr.updateGameState = ge.updateGameState;
+gr.resetFunction = resetFunction;
+gr.loseSwap = ge.loseSwap;
+gr.setGameLost = ge.setGameLost;
 
-ge.resetGame();
+ge.resetGame(rows, columns, numTries);
 gr.resetGame();
 gr.redraw();
 if(debug)ge.printGameObject(ge.gameObject);
