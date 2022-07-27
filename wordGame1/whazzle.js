@@ -16,6 +16,7 @@ let gr = new GameRenderer1 //Create a new game renderer.
     document.getElementById("game-body"),
     document.getElementById("go-btn"),
     document.getElementById("remain-span"),
+    document.getElementById("score-span"),
     {debug: debug}
 );
 

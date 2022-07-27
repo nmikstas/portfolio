@@ -8,7 +8,7 @@
 
 .pal-select
 {
-    background-color: rgb(255, 138, 134);
+    background-color: rgb(162, 0, 255);
 }
 
 .header
@@ -271,6 +271,14 @@
     box-sizing: border-box;
 }
 
+.column-score
+{
+    position: absolute;
+    
+    
+    
+}
+
 .smooth-scroll
 {
     scroll-behavior: smooth;
@@ -278,6 +286,7 @@
 
 .letter-div
 {
+    position: relative;
     margin: 0;
     padding-bottom: 0;
     display: flex;

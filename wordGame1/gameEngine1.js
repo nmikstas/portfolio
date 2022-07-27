@@ -59,6 +59,37 @@ class GameEngine1
 
         this.didSwap = false;
         this.usedLettersArray = new Array(0);
+
+        //Scoring arrays.
+        //The scores are in arrays as chain events cause all the scoring to increase. The index in the arrays are the chain numbers.
+
+        //Score for unices lertters that are removed in the 5th stage of evaluation.
+        this.unusedLettersScores = [30, 50, 80, 120, 180, 270, 270, 270, 270, 270, 270, 270, 270, 270, 270, 270, 270, 270, 270, 270];
+        this.solvedLettersScores = [100, 150, 250, 400, 600, 900, 900, 900, 900, 900, 900, 900, 900, 900, 900, 900, 900, 900, 900, 900];
+        this.solvedColumnScores = [500, 750, 1250, 2000, 3000, 4500, 4500, 4500, 4500, 4500, 4500, 4500, 4500, 4500, 4500, 4500, 4500, 4500, 4500, 4500];
+        this.solvedColumnMultipliers = [1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9];
+        this.triesRemainingMultipliers = [1, 1.2, 1.5, 1.9, 2.4, 3, 3.7, 4.5, 5.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3];
+        this.chainIndex = 0;
+        
+        /*
+        The 5 stages of evaluation:
+        
+        1 - Check for columns in the correct locations.
+            Apply solved column points to each solved column. Apply solved column multiplier.
+        
+        2 - Check for solved letters. Right column AND right letter.
+            Apply solved letters scores to every letter removed under the solved letter.
+        
+        3 - Check for correct letters in the wrong column.
+            Swap to correct columns and solve letters.
+            Increment index into score arrays.
+            CHAIN EVENT - Go back to step 1.
+        
+        4 - Highlight letters that are in the solution but are not in the correct spot.
+        
+        5 - Remove unused letters.
+            Apply unused letter scores to each letter removed.
+        */
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -317,7 +348,10 @@ class GameEngine1
 
         if(newColumnLocksArray.length > 0)
         {
-            this.animColumnLocks(newColumnLocksArray);
+            let multiplier = this.solvedColumnMultipliers[newColumnLocksArray.length - 1];
+            let scorePerColumn = parseInt(this.solvedColumnScores[this.chainIndex] * multiplier);
+            this.gameObject.score += parseInt(scorePerColumn * newColumnLocksArray.length);
+            this.animColumnLocks(newColumnLocksArray, scorePerColumn);
         }
         else
         {
@@ -343,19 +377,24 @@ class GameEngine1
                 //Only process changes on newly solved letters.
                 if(!this.gameObject.solvedArray[i])
                 {
+                    //Calculate the score for all the newly removed letters.
+                    let scorePerRemovedLetter = parseInt(this.solvedLettersScores[this.chainIndex]);
+                    this.gameObject.score += parseInt(scorePerRemovedLetter * (this.gameObject.remainArray[i] - 1));
+
+                    //Update game object.
                     this.gameObject.solvedArray[i] = true;
                     this.gameObject.locksArray[i].letter = true;
                     this.gameObject.remainArray[i] = 1;
+                    newDoneColumnArray.push(i);
                     workDone = true;
                 }
-                
-                newDoneColumnArray.push(i);
             }
         }
 
         if(workDone)
         {
-            this.animDoneColumn1(newDoneColumnArray);
+            let scorePerRemovedLetter = parseInt(this.solvedLettersScores[this.chainIndex]);
+            this.animDoneColumn1(newDoneColumnArray, scorePerRemovedLetter);
         }
         else
         {
@@ -612,6 +651,7 @@ class GameEngine1
     {
         if(this.didSwap)
         {
+            this.chainIndex++;
             this.updateColumns(); //Consolidate columns.   
             setTimeout(this.doEvaluations(), 500);
         }
@@ -783,6 +823,7 @@ class GameEngine1
     updateGameState = () =>
     {
         this.gameObject.numTries--;
+        this.chainIndex = 0;
 
         let gameWon = true;
 

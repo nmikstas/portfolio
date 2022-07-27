@@ -18,6 +18,7 @@ class GameRenderer1
         gameBody,
         goButton,
         RemainDiv,
+        scoreDiv,
         {
             debug = false,
             getGameObject = null,
@@ -44,6 +45,7 @@ class GameRenderer1
         this.gameBody = gameBody;
         this.goButton = goButton;
         this.RemainDiv = RemainDiv;
+        this.scoreDiv = scoreDiv;
         this.debug = debug;
         this.getGameObject = getGameObject;
         this.getUsedLettersArray = getUsedLettersArray;
@@ -647,6 +649,9 @@ class GameRenderer1
                 }
             }
         }
+
+        //Update the score
+        this.scoreDiv.innerHTML = "Score: " + gameObject.score;
     }
 
     //Shake columns whose indexes are in the animation index array.
@@ -717,6 +722,21 @@ class GameRenderer1
         clearTimeout(this.animTimer);
     }
 
+    //Shrink the score away.
+    shrinkScore = (scoreDiv) =>
+    {
+        scoreDiv.style.transform = "scale(1.5, 1.5)";
+        scoreDiv.style.color = "rgba(162, 0, 255, 0)";
+        scoreDiv.style.transitionDuration = ".8s";
+        setTimeout(() => this.removeScore(scoreDiv), 400);
+    }
+
+    //Remove the score div.
+    removeScore = (scoreDiv) =>
+    {
+        scoreDiv.remove();
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //                                   Evaluation Functions                                    //
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -736,19 +756,36 @@ class GameRenderer1
 
     //-------------------- Column Lock Animations --------------------
 
-    animColumnLocks = (newColumnLocksArray) =>
+    animColumnLocks = (newColumnLocksArray, scorePerColumn) =>
     {
-            
+        let gameObject = this.getGameObject();
+
         for(let i = 0; i < newColumnLocksArray.length; i++)
         {
             this.columnArray[newColumnLocksArray[i]].style.backgroundColor = "rgba(157, 188, 255, 1)";
             this.columnArray[newColumnLocksArray[i]].style.transitionDuration = ".4s";
+
+            //Add the score added to the top of each column.
+            let colScoreDiv = document.createElement("div");
+            let fontSize = .3 * this.letterDivSide;
+            colScoreDiv.style.fontSize = fontSize + "px";
+            colScoreDiv.style.fontWeight = "bold";
+            colScoreDiv.style.color = "rgba(162, 0, 255, 1)";
+            colScoreDiv.style.top = (.2 * this.letterDivSide) + "px";
+            colScoreDiv.style.left = "0px";
+            colScoreDiv.innerHTML = "+" + scorePerColumn;
+            colScoreDiv.classList.add("column-score");
+            this.columnArray[newColumnLocksArray[i]].appendChild(colScoreDiv);
+
+            //Shrink the score away after a period of time.
+            setTimeout(() => this.shrinkScore(colScoreDiv), 1);
         }
 
         //Only delay if work was done.
         if(newColumnLocksArray.length > 0)
         {
-            setTimeout(this.evalDoneColumn, 500);
+            this.scoreDiv.innerHTML = "Score: " + gameObject.score;
+            setTimeout(this.evalDoneColumn, 700);
         }
         else
         {
@@ -759,8 +796,12 @@ class GameRenderer1
 
     //-------------------- Completed Columns Animations --------------------
 
-    animDoneColumn1 = (newDoneColumnArray) =>
+    animDoneColumn1 = (newDoneColumnArray, scorePerRemovedLetter) =>
     {
+        //Update the score.
+        let gameObject = this.getGameObject();
+        this.scoreDiv.innerHTML = "Score: " + gameObject.score;
+
         //Cycle through the solved columns and remove all the letters except for the top one.
         for(let i = 0; i < newDoneColumnArray.length; i++)
         {
@@ -771,14 +812,49 @@ class GameRenderer1
             for(let j = 1; j < this.columnArray[newDoneColumnArray[i]].childNodes.length; j++)
             {
                 this.columnArray[newDoneColumnArray[i]].childNodes[j].style.transform = "scale(0, 0)";
-                this.columnArray[newDoneColumnArray[i]].childNodes[j].style.transitionDuration = ".4s";
+                this.columnArray[newDoneColumnArray[i]].childNodes[j].style.transitionDuration = ".8s";
             }
+
+            //Add score divs to each letter to be removed.
+            let numNodes = this.columnArray[newDoneColumnArray[i]].childNodes.length;
+            for(let j = 1; j < numNodes; j++)
+            {
+                let ypos = this.columnArray[newDoneColumnArray[i]].childNodes[j].getBoundingClientRect().height * j;
+                ypos += .25 * this.letterDivSide;
+                let scoreDiv = document.createElement("div");
+                let fontSize = .3 * this.letterDivSide;
+                scoreDiv.style.fontSize = fontSize + "px";
+                scoreDiv.style.fontWeight = "bold";
+                scoreDiv.style.color = "rgba(162, 0, 255, 1)";
+                scoreDiv.style.top = ypos + "px";
+                scoreDiv.style.left = "0px";
+                scoreDiv.innerHTML = "+" + scorePerRemovedLetter;
+                scoreDiv.classList.add("column-score");
+                this.columnArray[newDoneColumnArray[i]].appendChild(scoreDiv);
+                setTimeout(() => this.shrinkScore(scoreDiv), 1);
+            }
+
+            //Add scores to the columns.
+            //Add the score added to the top of each letter.
+            /* let scoreDiv = document.createElement("div");
+            let fontSize = .3 * this.letterDivSide;
+            scoreDiv.style.fontSize = fontSize + "px";
+            scoreDiv.style.fontWeight = "bold";
+            scoreDiv.style.color = "rgba(162, 0, 255, 1)";
+            scoreDiv.style.top = "0px";
+            scoreDiv.style.left = "0px";
+            scoreDiv.innerHTML = "+" + scorePerRemovedLetter;
+            scoreDiv.classList.add("column-score");
+            this.columnArray[newDoneColumnArray[i]].childNodes[j].appendChild(scoreDiv);*/
+
+            //Shrink the score away after a period of time.
+            //setTimeout(() => this.shrinkScore(scoreDiv), 20);
         }
 
         //Only delay if work was done.
         if(newDoneColumnArray.length > 0)
         {
-            setTimeout(() => this.animDoneColumn2(newDoneColumnArray), 500);
+            setTimeout(() => this.animDoneColumn2(newDoneColumnArray), 800);
         }
         else
         {
