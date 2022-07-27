@@ -756,6 +756,11 @@ class GameEngine1
             {
                 if(unusedLettersArray.includes(this.gameObject.letterArray[i][j]))
                 {
+                    if(!this.gameObject.locksArray[j].column || !this.gameObject.locksArray[j].letter)
+                    {   
+                        let scorePerUnusedLetter = parseInt(this.unusedLettersScores[this.chainIndex]);
+                        this.gameObject.score += scorePerUnusedLetter;
+                    }
                     this.gameObject.letterArray[i][j] = " ";
                 }
             }
@@ -764,7 +769,8 @@ class GameEngine1
         //Shrink unused letters away from screen.
         if(unusedLettersArray.length !== 0)
         {
-            this.animUnusedLetters1(unusedLettersArray);
+            let scorePerUnusedLetter = parseInt(this.unusedLettersScores[this.chainIndex]);
+            this.animUnusedLetters1(unusedLettersArray, scorePerUnusedLetter);
         }
         else
         {

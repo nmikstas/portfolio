@@ -833,22 +833,6 @@ class GameRenderer1
                 this.columnArray[newDoneColumnArray[i]].appendChild(scoreDiv);
                 setTimeout(() => this.shrinkScore(scoreDiv), 1);
             }
-
-            //Add scores to the columns.
-            //Add the score added to the top of each letter.
-            /* let scoreDiv = document.createElement("div");
-            let fontSize = .3 * this.letterDivSide;
-            scoreDiv.style.fontSize = fontSize + "px";
-            scoreDiv.style.fontWeight = "bold";
-            scoreDiv.style.color = "rgba(162, 0, 255, 1)";
-            scoreDiv.style.top = "0px";
-            scoreDiv.style.left = "0px";
-            scoreDiv.innerHTML = "+" + scorePerRemovedLetter;
-            scoreDiv.classList.add("column-score");
-            this.columnArray[newDoneColumnArray[i]].childNodes[j].appendChild(scoreDiv);*/
-
-            //Shrink the score away after a period of time.
-            //setTimeout(() => this.shrinkScore(scoreDiv), 20);
         }
 
         //Only delay if work was done.
@@ -1030,10 +1014,13 @@ class GameRenderer1
 
     //-------------------- Unused Letter Animations --------------------
 
-    animUnusedLetters1 = (unusedLettersArray) =>
+    animUnusedLetters1 = (unusedLettersArray, scorePerUnusedLetter) =>
     {
         let workDone = false; //Only delay if some animations set.
         let gameObject = this.getGameObject();
+
+        //Update the score.
+        this.scoreDiv.innerHTML = "Score: " + gameObject.score;
     
         if(this.debug)console.log("Unused Letters:");
         if(this.debug)console.log(unusedLettersArray);
@@ -1051,6 +1038,30 @@ class GameRenderer1
                         this.columnArray[i].childNodes[j].style.transform = "scale(0, 0)";
                         this.columnArray[i].childNodes[j].style.transitionDuration = ".4s";
                         workDone = true;
+                    }
+                }
+
+                //Add score divs to each letter to be removed.
+                let numNodes = this.columnArray[i].childNodes.length;
+                for(let j = 0; j < numNodes; j++)
+                {
+                    let thisLetter = this.columnArray[i].childNodes[j].innerHTML;
+                    if(unusedLettersArray.includes(thisLetter))
+                    {
+                        let ypos = this.columnArray[i].childNodes[j].getBoundingClientRect().height * j;
+                        ypos += .25 * this.letterDivSide;
+                        let xpos = .15 * this.letterDivSide;
+                        let scoreDiv = document.createElement("div");
+                        let fontSize = .3 * this.letterDivSide;
+                        scoreDiv.style.fontSize = fontSize + "px";
+                        scoreDiv.style.fontWeight = "bold";
+                        scoreDiv.style.color = "rgba(162, 0, 255, 1)";
+                        scoreDiv.style.top = ypos + "px";
+                        scoreDiv.style.left = xpos + "px";
+                        scoreDiv.innerHTML = "+" + scorePerUnusedLetter;
+                        scoreDiv.classList.add("column-score");
+                        this.columnArray[i].appendChild(scoreDiv);
+                        setTimeout(() => this.shrinkScore(scoreDiv), 1);
                     }
                 }
             }
