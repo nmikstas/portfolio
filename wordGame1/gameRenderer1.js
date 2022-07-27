@@ -17,7 +17,7 @@ class GameRenderer1
     (
         gameBody,
         goButton,
-        RemainDiv,
+        remainDiv,
         scoreDiv,
         {
             debug = false,
@@ -44,7 +44,7 @@ class GameRenderer1
     {
         this.gameBody = gameBody;
         this.goButton = goButton;
-        this.RemainDiv = RemainDiv;
+        this.remainDiv = remainDiv;
         this.scoreDiv = scoreDiv;
         this.debug = debug;
         this.getGameObject = getGameObject;
@@ -484,7 +484,7 @@ class GameRenderer1
         let gameHeight = this.gameBody.clientHeight;
         
         //Update the number of tries remaining.
-        this.RemainDiv.innerHTML = "Tries: " + gameObject.numTries;
+        this.remainDiv.innerHTML = "Tries: " + gameObject.numTries;
 
         //Need to transpose the letter array for future processing.
         let transLetterArray = new Array(columns);
@@ -1167,7 +1167,7 @@ class GameRenderer1
 
     winLoseStyleChange = (numTries) =>
     {
-        this.RemainDiv.innerHTML = "Tries: " + numTries;
+        this.remainDiv.innerHTML = "Tries: " + numTries;
         this.enableReset();
 
         //Remove all event listeners from game field.
@@ -1211,8 +1211,33 @@ class GameRenderer1
         this.addAllListeners();
     } 
 
-    gameWon = (gameObject) =>
+    gameWon = (gameObject, multiplier) =>
     {
+        //Update the score.
+        this.scoreDiv.innerHTML = "Score: " + gameObject.score;
+
+        //Show score multiplier, if there is one.
+        if(multiplier > 1)
+        {
+            let scoreDiv = document.createElement("div");
+            let fontSize = .05 * this.gameBody.getBoundingClientRect().width;
+            scoreDiv.style.fontSize = fontSize + "px";
+            scoreDiv.style.fontWeight = "bold";
+            scoreDiv.style.color = "rgba(162, 0, 255, 1)";
+            scoreDiv.innerHTML = "Score Multiplier X" + multiplier;
+            scoreDiv.classList.add("column-score");
+            this.gameBody.appendChild(scoreDiv);
+            console.log(scoreDiv.getBoundingClientRect().width)
+
+            //Center multiplier text in game body.
+            let xpos = this.gameBody.getBoundingClientRect().width / 2 - scoreDiv.getBoundingClientRect().width / 2;
+            let ypos = this.gameBody.getBoundingClientRect().height / 2;
+            scoreDiv.style.top = ypos + "px";
+            scoreDiv.style.left = xpos + "px";
+
+            setTimeout(() => this.shrinkScore(scoreDiv), 1);
+        }
+
         this.winLoseStyleChange(gameObject.numTries);
         this.disableReset();
 

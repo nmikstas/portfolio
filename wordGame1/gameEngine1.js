@@ -844,7 +844,8 @@ class GameEngine1
         if(gameWon)
         {
             this.gameObject.gameState = GameEngine1.STATE_WIN;
-            this.gameWon(this.gameObject);
+            this.gameObject.score = parseInt(this.gameObject.score * this.triesRemainingMultipliers[this.gameObject.numTries]);
+            this.gameWon(this.gameObject, this.triesRemainingMultipliers[this.gameObject.numTries]);
         }
         else if(this.gameObject.numTries === 0)
         {
