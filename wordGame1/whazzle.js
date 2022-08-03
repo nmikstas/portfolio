@@ -128,7 +128,7 @@ settingsBtn.addEventListener("click", () =>
     gr.redraw();
 });
 
-//Can be used for special formatting on different modile platforms.
+//Can be used for special formatting on different mobile platforms.
 const getMobileOS = () =>
 {
     const ua = navigator.userAgent
