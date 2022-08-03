@@ -257,35 +257,54 @@ class GameRenderer1
                 //Move columns if they are not locked or solved.
                 else
                 {
+                    let milliseconds = 200; //Total time of animation.
+                    let dt = 10; //Time between animation frames.
+
                     //The same index is clicked on both columns.
                     if(this.letterIndex1 === this.letterIndex2)
                     {
-                        animIndexArray.push(this.colIndex1);
-                        animIndexArray.push(this.colIndex2);
+                        //Nothing to do.
                     }
+
                     //The second index is less than the first index.
                     else if(this.letterIndex1 >  this.letterIndex2)
                     {
-                        animIndexArray.push(this.colIndex1);
-                        animIndexArray.push(this.colIndex2);
-                        this.columnArray[this.colIndex1].classList.add("smooth-scroll");
-                        this.columnArray[this.colIndex1].scrollTop = this.letterDivSide * (this.letterIndex1 - this.letterIndex2);
-                        this.scrollColumn(this.colIndex1, this.letterIndex1 - this.letterIndex2);
+                        let scrollEnd = this.letterDivSide * (this.letterIndex1 - this.letterIndex2);
+                        let numCalls = milliseconds / dt; //Total number of frames for animation.
+                        let dy = scrollEnd / numCalls; //Vertical distance moved for each frame of animation.
+
+                        setTimeout(() => this.animScrollUp(0, scrollEnd, dy, this.columnArray[this.colIndex1], dt), dt);
+                        setTimeout(() => this.scrollColumn(this.colIndex1, this.letterIndex1 - this.letterIndex2), 500);
                     }
+
                     //The second index is greater than the first index.
                     else
                     {
+                        //Some browswers do not support the above calculation for border widths.
+                        if(isNaN(topBorder))
+                        {
+                            topBorder = parseFloat(window.getComputedStyle(thisDiv).getPropertyValue("border-top-width").split("px")[0]);
+                            bottomBorder = parseFloat(window.getComputedStyle(thisDiv).getPropertyValue("border-bottom-width").split("px")[0]);
+                        }
+
                         let maxIndex = this.columnArray[this.colIndex1].childNodes.length / 2 - 1;
                         let targetIndex = (maxIndex < this.letterIndex2) ? maxIndex : this.letterIndex2;
                         console.log("Col 2 index: %s, Max index: %s, Target index: %s", this.letterIndex2, maxIndex, targetIndex)
-                        animIndexArray.push(this.colIndex1);
-                        animIndexArray.push(this.colIndex2);
-                        this.columnArray[this.colIndex1].scrollTop = totalHeight - topBorder - bottomBorder;
-                        this.columnArray[this.colIndex1].classList.add("smooth-scroll");
-                        this.columnArray[this.colIndex1].scrollTop -= this.letterDivSide * (targetIndex - this.letterIndex1);
+                        
+                        //Set the initial scroll location.
+                        let scrollStart = totalHeight - topBorder - bottomBorder;
+                        this.columnArray[this.colIndex1].scrollTop = scrollStart
+
+                        let scrollEnd = this.columnArray[this.colIndex1].scrollTop - this.letterDivSide * (targetIndex - this.letterIndex1);
+                        let numCalls = milliseconds / dt; //Total number of frames for animation.
+                        let dy = (scrollStart - scrollEnd) / numCalls; //Vertical distance moved for each frame of animation.
+
+                        setTimeout(() => this.animScrollDown(scrollStart, scrollEnd, dy, this.columnArray[this.colIndex1], dt), dt);
                         this.scrollColumn(this.colIndex1, this.letterIndex1 - targetIndex);
                     }
 
+                    animIndexArray.push(this.colIndex1);
+                    animIndexArray.push(this.colIndex2);
                     this.animSwap1(animIndexArray);
                     setTimeout(this.solvedLetterClicked, 500);
                 }
@@ -298,8 +317,8 @@ class GameRenderer1
                 let thisDiv = this.columnArray[this.colIndex1];
                 let letterDivWidth = window.getComputedStyle(thisDiv).width;
                 let totalHeight = window.getComputedStyle(thisDiv).height.split("px");
-                let topBorder = window.getComputedStyle(thisDiv).borderTop.split("px");
-                let bottomBorder = window.getComputedStyle(thisDiv).borderBottom.split("px");
+                let topBorder = window.getComputedStyle(thisDiv).borderTop.split("px") || window.getComputedStyle(thisDiv).getPropertyValue("border-top-width").split("px");
+                let bottomBorder = window.getComputedStyle(thisDiv).borderBottom.split("px") || window.getComputedStyle(thisDiv).getPropertyValue("border-bottom-width").split("px");
                 totalHeight = parseFloat(totalHeight[0]);
                 topBorder = parseFloat(topBorder[0]);
                 bottomBorder = parseFloat(bottomBorder[0]);
@@ -353,7 +372,14 @@ class GameRenderer1
                 }
                 //Scroll down.
                 else
-                {   
+                { 
+                    //Some browswers do not support the above calculation for border widths.
+                    if(isNaN(topBorder))
+                    {
+                        topBorder = parseFloat(window.getComputedStyle(thisDiv).getPropertyValue("border-top-width").split("px")[0]);
+                        bottomBorder = parseFloat(window.getComputedStyle(thisDiv).getPropertyValue("border-bottom-width").split("px")[0]);
+                    }
+
                     this.columnArray[this.colIndex1].scrollTop = totalHeight - topBorder - bottomBorder;
                     this.columnArray[this.colIndex1].classList.add("smooth-scroll");
                     this.columnArray[this.colIndex1].scrollTop -= this.letterDivSide * (this.letterIndex2 - this.letterIndex1);
@@ -698,6 +724,38 @@ class GameRenderer1
         }
     }
 
+    animScrollUp = (thisScroll, endOffset, dy, thisDiv, dt) =>
+    {
+        thisScroll += dy;
+
+        if(thisScroll >= endOffset)
+        {
+            thisScroll = endOffset;
+        }
+        else
+        {
+            setTimeout(() => this.animScrollUp(thisScroll, endOffset, dy, thisDiv, dt), dt);
+        }
+
+        thisDiv.scrollTop = thisScroll;
+    }
+
+    animScrollDown = (thisScroll, endOffset, dy, thisDiv, dt) =>
+    {
+        thisScroll -= dy;
+
+        if(thisScroll <= endOffset)
+        {
+            thisScroll = endOffset;
+        }
+        else
+        {
+            setTimeout(() => this.animScrollDown(thisScroll, endOffset, dy, thisDiv, dt), dt);
+        }
+
+        thisDiv.scrollTop = thisScroll;
+    }
+
     //Swaps columns whose indexes are in the animation index array.
     animSwap1 = (animIndexArray) =>
     {
@@ -713,7 +771,8 @@ class GameRenderer1
             this.columnArray[animIndexArray[1]].style.transform = "translate(" + xdiff + "px)";
             this.columnArray[animIndexArray[1]].style.transitionDuration = ".4s";
         }
-        this.animTimer = setTimeout(() => this.evalSwap(animIndexArray), 500);   
+        this.animTimer = setTimeout(() => this.evalSwap(animIndexArray), 500);
+         
     }
 
     animSwap2 = () =>
@@ -778,7 +837,7 @@ class GameRenderer1
             this.columnArray[newColumnLocksArray[i]].appendChild(colScoreDiv);
 
             //Shrink the score away after a period of time.
-            setTimeout(() => this.shrinkScore(colScoreDiv), 1);
+            setTimeout(() => this.shrinkScore(colScoreDiv), 10);
         }
 
         //Only delay if work was done.
@@ -831,7 +890,7 @@ class GameRenderer1
                 scoreDiv.innerHTML = "+" + scorePerRemovedLetter;
                 scoreDiv.classList.add("column-score");
                 this.columnArray[newDoneColumnArray[i]].appendChild(scoreDiv);
-                setTimeout(() => this.shrinkScore(scoreDiv), 1);
+                setTimeout(() => this.shrinkScore(scoreDiv), 10);
             }
         }
 
@@ -1061,7 +1120,7 @@ class GameRenderer1
                         scoreDiv.innerHTML = "+" + scorePerUnusedLetter;
                         scoreDiv.classList.add("column-score");
                         this.columnArray[i].appendChild(scoreDiv);
-                        setTimeout(() => this.shrinkScore(scoreDiv), 1);
+                        setTimeout(() => this.shrinkScore(scoreDiv), 10);
                     }
                 }
             }
@@ -1227,7 +1286,6 @@ class GameRenderer1
             scoreDiv.innerHTML = "Score Multiplier X" + multiplier;
             scoreDiv.classList.add("column-score");
             this.gameBody.appendChild(scoreDiv);
-            console.log(scoreDiv.getBoundingClientRect().width)
 
             //Center multiplier text in game body.
             let xpos = this.gameBody.getBoundingClientRect().width / 2 - scoreDiv.getBoundingClientRect().width / 2;
@@ -1235,7 +1293,7 @@ class GameRenderer1
             scoreDiv.style.top = ypos + "px";
             scoreDiv.style.left = xpos + "px";
 
-            setTimeout(() => this.shrinkScore(scoreDiv), 1);
+            setTimeout(() => this.shrinkScore(scoreDiv), 10);
         }
 
         this.winLoseStyleChange(gameObject.numTries);
