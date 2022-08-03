@@ -557,6 +557,13 @@ class GameRenderer1
                 colBotMargin = window.getComputedStyle(thisDiv).marginBottom.split("px");
                 colTopBorder = window.getComputedStyle(thisDiv).borderTop.split("px");
                 colBottomBorder = window.getComputedStyle(thisDiv).borderBottom.split("px");
+
+                //Some browswers do not support the above calculation for border widths.
+                if(isNaN(colTopBorder))
+                {
+                    colTopBorder = parseFloat(window.getComputedStyle(thisDiv).getPropertyValue("border-top-width").split("px")[0]);
+                    colBottomBorder = parseFloat(window.getComputedStyle(thisDiv).getPropertyValue("border-bottom-width").split("px")[0]);
+                }
                 
                 colWidth = (gameWidth - (parseInt(colLeftMargin[0]) + parseInt(colRightMargin[0])) * gameObject.columns) / gameObject.columns;
                 colHeight = (gameHeight - parseInt(colTopMargin[0]) - parseInt(colBotMargin[0])) / gameObject.rows;
@@ -574,6 +581,13 @@ class GameRenderer1
                 colBottomBorder = window.getComputedStyle(thisDiv).borderBottom.split("px");
                 colTopBorder = parseFloat(colTopBorder[0]);
                 colBottomBorder = parseFloat(colBottomBorder[0]);
+
+                //Some browswers do not support the above calculation for border widths.
+                if(isNaN(colTopBorder))
+                {
+                    colTopBorder = parseFloat(window.getComputedStyle(thisDiv).getPropertyValue("border-top-width").split("px")[0]);
+                    colBottomBorder = parseFloat(window.getComputedStyle(thisDiv).getPropertyValue("border-bottom-width").split("px")[0]);
+                }
             }
 
             thisDiv.style.height = ((this.letterDivSide * gameObject.remainArray[i]) + colTopBorder + colBottomBorder) + "px";
@@ -916,12 +930,20 @@ class GameRenderer1
         colTopBorder = parseFloat(colTopBorder[0]);
         colBottomBorder = parseFloat(colBottomBorder[0]);
 
+        //Some browswers do not support the above calculation for border widths.
+        if(isNaN(colTopBorder))
+        {
+            colTopBorder = parseFloat(window.getComputedStyle(thisDiv).getPropertyValue("border-top-width").split("px")[0]);
+            colBottomBorder = parseFloat(window.getComputedStyle(thisDiv).getPropertyValue("border-bottom-width").split("px")[0]);
+        }
+
         //Transition background color to green and resize column to a single letter height plus border.
         for(let i = 0; i < newDoneColumnArray.length; i++)
         {
             this.columnArray[newDoneColumnArray[i]].childNodes[0].style.transitionDuration = ".4s";
-            this.columnArray[newDoneColumnArray[i]].style.transitionDuration = ".4s";
             this.columnArray[newDoneColumnArray[i]].childNodes[0].style.fontWeight = "bold";
+
+            this.columnArray[newDoneColumnArray[i]].style.transitionDuration = ".4s";
             this.columnArray[newDoneColumnArray[i]].style.backgroundColor = "rgba(169, 255, 158, 1)";
             this.columnArray[newDoneColumnArray[i]].style.height = (this.letterDivSide + colTopBorder + colBottomBorder) + "px";
         }
@@ -1192,6 +1214,13 @@ class GameRenderer1
                 colTopBorder = parseFloat(colTopBorder[0]);
                 colBottomBorder = parseFloat(colBottomBorder[0]);
 
+                //Some browswers do not support the above calculation for border widths.
+                if(isNaN(colTopBorder))
+                {
+                    colTopBorder = parseFloat(window.getComputedStyle(this.columnArray[i]).getPropertyValue("border-top-width").split("px")[0]);
+                    colBottomBorder = parseFloat(window.getComputedStyle(this.columnArray[i]).getPropertyValue("border-bottom-width").split("px")[0]);
+                }
+
                 this.columnArray[i].style.transitionDuration = ".4s";
                 this.columnArray[i].style.height = ((ge.gameObject.remainArray[i] - missingLetters) * this.letterDivSide + colTopBorder + colBottomBorder) + "px";
                 workDone = true;
@@ -1428,6 +1457,13 @@ class GameRenderer1
             let colBottomBorder = window.getComputedStyle(this.columnArray[i]).borderBottom.split("px");
             colTopBorder = parseFloat(colTopBorder[0]);
             colBottomBorder = parseFloat(colBottomBorder[0]);
+
+            //Some browswers do not support the above calculation for border widths.
+            if(isNaN(colTopBorder))
+            {
+                colTopBorder = parseFloat(window.getComputedStyle(this.columnArray[i]).getPropertyValue("border-top-width").split("px")[0]);
+                colBottomBorder = parseFloat(window.getComputedStyle(this.columnArray[i]).getPropertyValue("border-bottom-width").split("px")[0]);
+            }
 
             this.columnArray[i].style.transitionDuration = ".4s";
             this.columnArray[i].style.height = (this.letterDivSide + colTopBorder + colBottomBorder) + "px";

@@ -128,6 +128,21 @@ settingsBtn.addEventListener("click", () =>
     gr.redraw();
 });
 
+//Can be used for special formatting on different modile platforms.
+const getMobileOS = () =>
+{
+    const ua = navigator.userAgent
+    if (/android/i.test(ua))
+    {
+      return "Android"
+    }
+    else if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1))
+    {
+      return "iOS"
+    }
+    return "Other"
+}
+
 /************************************** Game Initialization **************************************/
 
 //Setup game engine and game renderer callbacks.
