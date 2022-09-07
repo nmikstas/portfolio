@@ -966,12 +966,6 @@ class GameRenderer1
         let usedLettersArray = this.getUsedLettersArray();
         let gameObject = this.getGameObject();
 
-        //Set smooth scrolling for all columns.
-        for(let i = 0; i < this.columnArray.length; i++)
-        {
-            this.columnArray[i].classList.add("smooth-scroll");
-        }
-
         //Double up the letters in each column.
         for(let i = 0; i < this.columnArray.length; i++)
         {
@@ -984,11 +978,20 @@ class GameRenderer1
             totalHeight = parseFloat(totalHeight[0]);
             topBorder = parseFloat(topBorder[0]);
             bottomBorder = parseFloat(bottomBorder[0]);
+
+            //Some browswers do not support the above calculation for border widths.
+            if(isNaN(topBorder))
+            {
+                topBorder = parseFloat(window.getComputedStyle(this.columnArray[i]).getPropertyValue("border-top-width").split("px")[0]);
+                bottomBorder = parseFloat(window.getComputedStyle(this.columnArray[i]).getPropertyValue("border-bottom-width").split("px")[0]);
+            }
+            
             this.columnArray[i].style.height = totalHeight + "px";
 
             //Make sure column does not end up with a scroll bar.
             this.columnArray[i].style.overflowY = "hidden";
         
+            //Double up the letters in the columns to scroll.
             for(let j = 0; j < numColItems; j++)
             {
                 let tempLetter = this.columnArray[i].childNodes[j].innerHTML;
@@ -1019,7 +1022,13 @@ class GameRenderer1
         //Adjust scroll offset of columns to scroll.
         for(let i = 0; i < scrollArray.length; i++)
         {
-            this.columnArray[scrollArray[i].colIndex].scrollTop += this.letterDivSide * scrollArray[i].scrollIndex;
+            let scrollEnd = this.columnArray[scrollArray[i].colIndex].scrollTop + this.letterDivSide * scrollArray[i].scrollIndex;
+            let milliseconds = 200; //Total time of animation.
+            let dt = 10; //Time between animation frames.
+            let numCalls = milliseconds / dt; //Total number of frames for animation.
+            let dy = scrollEnd / numCalls; //Vertical distance moved for each frame of animation.
+
+            setTimeout(() => this.animScrollUp(0, scrollEnd, dy, this.columnArray[scrollArray[i].colIndex], dt), dt);
         }
 
         //Swap columns.
