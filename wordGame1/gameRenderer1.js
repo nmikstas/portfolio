@@ -961,7 +961,7 @@ class GameRenderer1
 
     //-------------------- Right Letter Wrong Column Animations --------------------
 
-    animRightLetWrongCol1 = (scrollArray, moveChainArray) =>
+    animRightLetWrongCol1 = (scrollArray, moveChainArray, chainIndex) =>
     {
         let usedLettersArray = this.getUsedLettersArray();
         let gameObject = this.getGameObject();
@@ -1040,7 +1040,25 @@ class GameRenderer1
             this.columnArray[moveChainArray[i].from].style.transform = "translate(" + xDiff + "px)";
             this.columnArray[moveChainArray[i].from].style.transitionDuration = ".4s";
         }
-      
+
+        //Display chain event text.
+        let scoreDiv = document.createElement("div");
+        let fontSize = .05 * this.gameBody.getBoundingClientRect().width;
+        scoreDiv.style.fontSize = fontSize + "px";
+        scoreDiv.style.fontWeight = "bold";
+        scoreDiv.style.color = "rgba(162, 0, 255, 1)";
+        scoreDiv.innerHTML = (chainIndex + 1) + "X Score Chain!";
+        scoreDiv.classList.add("column-score");
+        this.gameBody.appendChild(scoreDiv);
+
+        //Center chain text in game body.
+        let xpos = this.gameBody.getBoundingClientRect().width / 2 - scoreDiv.getBoundingClientRect().width / 2;
+        let ypos = this.gameBody.getBoundingClientRect().height / 2;
+        scoreDiv.style.top = ypos + "px";
+        scoreDiv.style.left = xpos + "px";
+
+        setTimeout(() => this.shrinkScore(scoreDiv), 10);
+    
         //Only delay if work was done.
         if(moveChainArray.length > 0)
         {
@@ -1321,7 +1339,7 @@ class GameRenderer1
             scoreDiv.style.fontSize = fontSize + "px";
             scoreDiv.style.fontWeight = "bold";
             scoreDiv.style.color = "rgba(162, 0, 255, 1)";
-            scoreDiv.innerHTML = "Score Multiplier X" + multiplier;
+            scoreDiv.innerHTML = "Score Multiplier X" + multiplier + "!";
             scoreDiv.classList.add("column-score");
             this.gameBody.appendChild(scoreDiv);
 

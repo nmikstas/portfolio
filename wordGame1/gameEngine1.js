@@ -643,7 +643,7 @@ class GameEngine1
             this.gameObject.remainArray = [...remArray];
 
             this.checkLetterLock(); //Check for letter lock only.
-            this.animRightLetWrongCol1(scrollArray, moveChainArray);
+            this.animRightLetWrongCol1(scrollArray, moveChainArray, this.chainIndex);
         } 
     }
 
