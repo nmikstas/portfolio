@@ -56,9 +56,7 @@ class GameEngine1
         this.gamePlay = gamePlay;
         this.gameWon = gameWon;
         this.gameLost = gameLost;
-
         this.didSwap = false;
-        this.usedLettersArray = new Array(0);
 
         //Scoring arrays.
         //The scores are in arrays as chain events cause all the scoring to increase. The index in the arrays are the chain numbers.
@@ -97,7 +95,6 @@ class GameEngine1
     resetGame = (rows, columns, numTries) =>
     {
         this.copyGameObject(this.newGameObject(rows, columns, 1, 2, numTries));
-        this.usedLettersArray.length = 0;
     }
 
     copyGameObject = (gameObject) =>
@@ -106,19 +103,20 @@ class GameEngine1
         {
             this.gameObject = 
             {
-                rows:        gameObject.hasOwnProperty("rows") ? gameObject.rows : null,
-                columns:     gameObject.hasOwnProperty("columns") ? gameObject.columns : null, 
-                numWords:    gameObject.hasOwnProperty("numWords") ? gameObject.numWords : null, 
-                minLength:   gameObject.hasOwnProperty("minLength") ? gameObject.minLength : null,
-                numTries:    gameObject.hasOwnProperty("numTries") ? gameObject.numTries : null,
-                letterArray: gameObject.hasOwnProperty("letterArray") ? [...gameObject.letterArray] : null,
-                winningRow:  gameObject.hasOwnProperty("winningRow") ? [...gameObject.winningRow] : null,
-                columnArray: gameObject.hasOwnProperty("columnArray") ? [...gameObject.columnArray] : null,
-                locksArray:  gameObject.hasOwnProperty("locksArray") ? [...gameObject.locksArray] : null,
-                remainArray: gameObject.hasOwnProperty("remainArray") ? [...gameObject.remainArray] : null,
-                solvedArray: gameObject.hasOwnProperty("solvedArray") ? [...gameObject.solvedArray] : null,
-                gameState:   gameObject.hasOwnProperty("gameState") ? gameObject.gameState : null,
-                score:       gameObject.hasOwnProperty("score") ? gameObject.score : null
+                rows:             gameObject.hasOwnProperty("rows") ? gameObject.rows : null,
+                columns:          gameObject.hasOwnProperty("columns") ? gameObject.columns : null, 
+                numWords:         gameObject.hasOwnProperty("numWords") ? gameObject.numWords : null, 
+                minLength:        gameObject.hasOwnProperty("minLength") ? gameObject.minLength : null,
+                numTries:         gameObject.hasOwnProperty("numTries") ? gameObject.numTries : null,
+                letterArray:      gameObject.hasOwnProperty("letterArray") ? [...gameObject.letterArray] : null,
+                winningRow:       gameObject.hasOwnProperty("winningRow") ? [...gameObject.winningRow] : null,
+                columnArray:      gameObject.hasOwnProperty("columnArray") ? [...gameObject.columnArray] : null,
+                locksArray:       gameObject.hasOwnProperty("locksArray") ? [...gameObject.locksArray] : null,
+                remainArray:      gameObject.hasOwnProperty("remainArray") ? [...gameObject.remainArray] : null,
+                solvedArray:      gameObject.hasOwnProperty("solvedArray") ? [...gameObject.solvedArray] : null,
+                gameState:        gameObject.hasOwnProperty("gameState") ? gameObject.gameState : null,
+                score:            gameObject.hasOwnProperty("score") ? gameObject.score : null,
+                usedLettersArray: gameObject.hasOwnProperty("usedLettersArray") ? gameObject.usedLettersArray : null,
             }
         }
     }
@@ -135,7 +133,7 @@ class GameEngine1
 
     getUsedLettersArray = () =>
     {
-        return this.usedLettersArray;
+        return this.gameObject.usedLettersArray;
     }
 
     //Rotates the columns of letters up and down by a given offset.
@@ -668,7 +666,7 @@ class GameEngine1
 
     evalUsedLetters = () =>
     {
-        let prevLength = this.usedLettersArray.length;
+        let prevLength = this.gameObject.usedLettersArray.length;
     
         //Loop through the top row of letters and look for ones in the solution.
         for(let i = 0; i < this.gameObject.columns; i++)
@@ -685,9 +683,9 @@ class GameEngine1
                     if((thisLetter === this.gameObject.winningRow[j]) && (!this.gameObject.locksArray[j].column || !this.gameObject.locksArray[j].letter))
                     {
                         //Only add if its not already in there.
-                        if(!this.usedLettersArray.includes(thisLetter))
+                        if(!this.gameObject.usedLettersArray.includes(thisLetter))
                         {
-                            this.usedLettersArray.push(thisLetter);
+                            this.gameObject.usedLettersArray.push(thisLetter);
                         }
                     }
                 }
@@ -695,15 +693,15 @@ class GameEngine1
         }
     
         if(this.debug)console.log("Used Letters:");
-        if(this.debug)console.log(this.usedLettersArray);
+        if(this.debug)console.log(this.gameObject.usedLettersArray);
     
         this.updateColumns(); //Consolidate columns.   
         this.checkLetterLock(); //Check for letter lock only.
     
         //Run the used letters animation only if something has changed.
-        if(this.usedLettersArray.length !== prevLength)
+        if(this.gameObject.usedLettersArray.length !== prevLength)
         {
-            this.animUsedLetters1(this.usedLettersArray);
+            this.animUsedLetters1(this.gameObject.usedLettersArray);
         }
         else
         {

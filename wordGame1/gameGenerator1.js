@@ -192,19 +192,20 @@ class GameGenerator1
     
         //Bundle everything inside an object and return it.
         return {
-            rows:        this.rows,
-            columns:     this.columns, 
-            numWords:    this.numWords, 
-            minLength:   this.minLength,
-            numTries:    this.numTries,
-            letterArray: letterArray,
-            winningRow:  winningRow,
-            columnArray: columnArray,
-            locksArray:  locksArray,
-            remainArray: remainArray,
-            solvedArray: solvedArray,
-            gameState  : gameState,
-            score:       score
+            rows:             this.rows,
+            columns:          this.columns, 
+            numWords:         this.numWords, 
+            minLength:        this.minLength,
+            numTries:         this.numTries,
+            letterArray:      letterArray,
+            winningRow:       winningRow,
+            columnArray:      columnArray,
+            locksArray:       locksArray,
+            remainArray:      remainArray,
+            solvedArray:      solvedArray,
+            gameState:        gameState,
+            score:            score,
+            usedLettersArray: new Array(0)
         }
     }
 
