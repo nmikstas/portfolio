@@ -62,8 +62,6 @@ class GameEngine1
 
         //Scoring arrays.
         //The scores are in arrays as chain events cause all the scoring to increase. The index in the arrays are the chain numbers.
-
-        //Score for unices lertters that are removed in the 5th stage of evaluation.
         this.unusedLettersScores = [30, 50, 80, 120, 180, 270, 270, 270, 270, 270, 270, 270, 270, 270, 270, 270, 270, 270, 270, 270];
         this.solvedLettersScores = [100, 150, 250, 400, 600, 900, 900, 900, 900, 900, 900, 900, 900, 900, 900, 900, 900, 900, 900, 900];
         this.solvedColumnScores = [500, 750, 1250, 2000, 3000, 4500, 4500, 4500, 4500, 4500, 4500, 4500, 4500, 4500, 4500, 4500, 4500, 4500, 4500, 4500];
@@ -123,6 +121,11 @@ class GameEngine1
                 score:       gameObject.hasOwnProperty("score") ? gameObject.score : null
             }
         }
+    }
+
+    getGameObjectCopy = () =>
+    {
+        return JSON.stringify(this.gameObject);
     }
 
     getGameObject = () =>

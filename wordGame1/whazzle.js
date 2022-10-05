@@ -8,6 +8,9 @@ let rows = 5;
 let columns = 6;
 let numTries = 5;
 
+//Make a copy of the game object for printing purposes.
+let gameObjectCopy = null;
+
 let gg = new GameGenerator1(); //Create a new game generator.
 let gp = new GamePrinter1(); //Create a new game printer.
 let ge = new GameEngine1({debug: debug}); //Create a new game engine.
@@ -82,10 +85,19 @@ help.addEventListener("click", () =>
     modal.style.display = "block";
 });
 
+//Event listener for game object copying.
+const stats = document.getElementById("stats");
+stats.addEventListener("click", () => 
+{
+    navigator.clipboard.writeText(gameObjectCopy);
+    console.log(gameObjectCopy);
+});
+
 //Event listener for the reset button.
 const resetFunction = () =>
 {
     ge.resetGame(rows, columns, numTries);
+    gameObjectCopy = ge.getGameObjectCopy();
     gr.resetGame();
     gr.redraw();
 }
@@ -124,6 +136,7 @@ settingsBtn.addEventListener("click", () =>
     numTries = setTries;
 
     ge.resetGame(rows, columns, numTries);
+    gameObjectCopy = ge.getGameObjectCopy();
     gr.resetGame();
     gr.redraw();
 });
@@ -182,6 +195,7 @@ gr.loseSwap = ge.loseSwap;
 gr.setGameLost = ge.setGameLost;
 
 ge.resetGame(rows, columns, numTries);
+gameObjectCopy = ge.getGameObjectCopy();
 gr.resetGame();
 gr.redraw();
 if(debug)ge.printGameObject(ge.gameObject);
