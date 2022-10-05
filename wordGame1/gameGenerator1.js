@@ -186,9 +186,6 @@ class GameGenerator1
         {
             solvedArray.push(false);
         }
-
-        let gameState = GameGenerator1.STATE_PLAY;
-        let score = 0;
     
         //Bundle everything inside an object and return it.
         return {
@@ -203,8 +200,8 @@ class GameGenerator1
             locksArray:       locksArray,
             remainArray:      remainArray,
             solvedArray:      solvedArray,
-            gameState:        gameState,
-            score:            score,
+            gameState:        GameGenerator1.STATE_PLAY,
+            score:            0,
             usedLettersArray: new Array(0)
         }
     }
