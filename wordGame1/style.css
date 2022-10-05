@@ -222,7 +222,7 @@
     top: 7vh;
     padding-top: .25vh;
     text-align: center;
-    background-image: linear-gradient(to bottom right, rgb(232, 235, 255), rgb(190, 179, 255), rgb(232, 235, 255));
+    background-image: linear-gradient(to bottom right, rgb(232, 235, 255), rgb(179, 180, 255), rgb(232, 235, 255));
     z-index: 100;
 }
 
