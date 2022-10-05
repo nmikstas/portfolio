@@ -358,8 +358,15 @@
 
 .instruction-img
 {
-    max-width: 300px;
+    max-width: 100%;
     height: auto;
+}
+
+.img-center
+{
+    max-width: 300px;
+    text-align: center;
+    margin: 0 auto;
 }
 
 .instruction-center
