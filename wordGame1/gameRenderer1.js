@@ -100,7 +100,7 @@ class GameRenderer1
         let target = e.srcElement;
         let parent = target.parentElement;
         let selectedColumn, selectedLetter;
-        let gameObject = ge.getGameObject();
+        let gameObject = this.getGameObject();
         let animIndexArray = new Array(0);
         let usedLettersArray = this.getUsedLettersArray();
 
@@ -513,7 +513,7 @@ class GameRenderer1
         this.remainDiv.innerHTML = "Tries: " + gameObject.numTries;
 
         //Need to transpose the letter array for future processing.
-        let transLetterArray = new Array(columns);
+        let transLetterArray = new Array(gameObject.columns);
         for(let i = 0; i < transLetterArray.length; i++)
         {
             transLetterArray[i] = new Array(0);
@@ -1249,7 +1249,7 @@ class GameRenderer1
                 }
 
                 this.columnArray[i].style.transitionDuration = ".4s";
-                this.columnArray[i].style.height = ((ge.gameObject.remainArray[i] - missingLetters) * this.letterDivSide + colTopBorder + colBottomBorder) + "px";
+                this.columnArray[i].style.height = ((gameObject.remainArray[i] - missingLetters) * this.letterDivSide + colTopBorder + colBottomBorder) + "px";
                 workDone = true;
             }
 

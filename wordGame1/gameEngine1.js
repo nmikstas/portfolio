@@ -273,7 +273,7 @@ class GameEngine1
         [this.gameObject.remainArray[animIndexArray[0]], this.gameObject.remainArray[animIndexArray[1]]] =
         [this.gameObject.remainArray[animIndexArray[1]], this.gameObject.remainArray[animIndexArray[0]]];
 
-        if(debug)this.printGameObject(this.gameObject);
+        if(this.debug)this.printGameObject(this.gameObject);
         this.animSwap2();
     }
 
@@ -297,7 +297,7 @@ class GameEngine1
         [this.gameObject.remainArray[swapArray[0]], this.gameObject.remainArray[swapArray[1]]] =
         [this.gameObject.remainArray[swapArray[1]], this.gameObject.remainArray[swapArray[0]]];
 
-        if(debug)this.printGameObject(this.gameObject);
+        if(this.debug)this.printGameObject(this.gameObject);
     }
 
     setGameLost = () =>

@@ -176,7 +176,7 @@ class GameGenerator1
 
         for(let i = 0; i < this.columns; i++)
         {
-            remainArray.push(rows);
+            remainArray.push(this.rows);
         }
 
         //Generate array of solved letters.
