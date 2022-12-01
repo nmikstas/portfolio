@@ -45,6 +45,7 @@
                     <div class="col">
                         <label for="sel1" class="settings-text">Columns:</label>
                         <select class="form-control" id="sel-columns">
+                            <option>4</option>
                             <option>5</option>
                             <option>6</option>
                             <option>7</option>
@@ -97,123 +98,12 @@
         </div>
     </div>
 
-    <!--Help modal-->
-    <div class="modal" id="help-modal">
+    <!--Editor modal-->
+    <div class="modal" id="editor-modal">
         <!-- Modal content -->
         <div class="mod-content">
             <span class="close">&times;</span>
-            <p class="instruction-title">Objective of the Game</p>
-            <p class="instruction-p">The objective of Whazzle! is to find the hidden word among the random
-                letters and spell it out in the top row</p>
-            <div class="instruction-center"><div class="img-center"><img class="instruction-img" src="./images/inst1.png"></div></div>
-            <p class="instruction-p">Columns may be swapped and the letters within the columns may be rotated
-                up and down. After the player has moved the letters to the desired locations, the
-                <img class="instruction-icon" src="./images/GoButton1.png"> button can be clicked to reduce
-                the puzzle. Points will be added to the player's score for any reductions made to the puzzle.
-                If the player did not correctly guess the word, the turns remaining will be reduced by one and
-                the player will have the opportunity to guess again if they still have turns remaining. If
-                there are still further puzzles to play after the current puzzle ends, the
-                <img class="instruction-icon" src="./images/GoButton1.png"> button will change into the
-                <img class="instruction-icon" src="./images/NextButton.png"> button.
-            </p>
-
-            <p class="instruction-title">Color Codes</p>
-            <p class="instruction-p">The columns can be one of three colors: white, blue or green. Some
-                of the letters in the columns may also be bolded.
-            </p>
-            <div class="instruction-center"><div class="img-center"><img class="instruction-img" src="./images/inst2.png"></div></div>
-            <p class="instruction-p">The white columns indicate that the column is not in the correct
-                position. These columns may be swapped with other white columns and the letters
-                within the column can be rotated. Blue columns are in the correct location but the letter at
-                the top of the column is not correct. Blue columns are locked in place and cannot be
-                swapped with other columns. The letters in blue columns can still be rotated. Green columns
-                have been solved and cannot be further manipulated. Only a single letter will appear
-                in a green column. Bolded letters indicate the letters will be found somewhere in the solution.
-            </p>
-
-            <p class="instruction-title">Simplifying the Game Board</p>
-            <p class="instruction-p">After the player has set up the game board to their satisfaction,
-                they click the <img class="instruction-icon" src="./images/GoButton1.png"> button 
-                and the puzzle will reduce in complexity based on what letters appear at the top of
-                each column. If a letter at the top of the column is not found anywhere in the solution, 
-                all occurences of that letter will disappear from the game board.
-            </p>
-            <div class="instruction-center"><div class="img-center"><img class="instruction-img" src="./images/inst1.gif"></div></div>
-            <p class="instruction-p">
-                If the corret letter is at the top of the correct column, the column will reduce down to
-                a single green letter.
-            </p>
-            <div class="instruction-center"><div class="img-center"><img class="instruction-img" src="./images/inst2.gif"></div></div>
-            <p class="instruction-p">If the correct letter appears at the top of an incorrect column, the 
-                column will swap with the correct column and it will reduce down to a single green letter.
-            </p>
-            <div class="instruction-center"><div class="img-center"><img class="instruction-img" src="./images/inst3.gif"></div></div>
-
-            <p class="instruction-title">Game Controls</p>
-            <p class="instruction-p"> Columns may be swapped on the game board by first touching/clicking 
-                a desired column. A circle will appear around the letter that was touched. Touching/clicking 
-                a second column will cause the two columns to swap locations.
-            </p>
-            <div class="instruction-center"><div class="img-center"><img class="instruction-img" src="./images/inst4.gif"></div></div>
-            <p class="instruction-p">
-                If one of the columns is blue or green, the move will be cancelled.
-            </p>
-            <div class="instruction-center"><div class="img-center"><img class="instruction-img" src="./images/inst5.gif"></div></div>
-            <div class="instruction-center"><div class="img-center"><img class="instruction-img" src="./images/inst6.gif"></div></div>
-            <p class="instruction-p">If the second touch/click happens on the same column but different
-                letter, the letters in the column will rotate.
-            </p>
-            <div class="instruction-center"><div class="img-center"><img class="instruction-img" src="./images/inst7.gif"></div></div>
-            <p class="instruction-p">Touching/clicking the same letter in the same column twice will 
-                cancel the move.
-            </p>
-            <div class="instruction-center"><div class="img-center"><img class="instruction-img" src="./images/inst8.gif"></div></div>
-
-            <p class="instruction-title">Scoring</p>
-            <p class="instruction-p">
-                The game goes through a five step evaluation after the
-                <img class="instruction-icon" src="./images/GoButton1.png"> button is clicked.
-                <br><br><b>Step 1: Columns in the correct locations.</b><br>
-                All columns in the correct locations will be locked into place and a base score of
-                500 points per column will be given. The scores per column will increase based on
-                the number of columns locked into place.
-            </p>
-            <div class="instruction-center"><div class="img-center"><img class="instruction-img" src="./images/inst9.gif"></div></div>
-            <p class="instruction-p">
-                <br><b>Step 2: Correct letters at the top of locked columns.</b><br>
-                If the correct letter appears at the top of a locked column, the column will be solved 
-                and a base score of 100 points will be given for each remaining letter removed from 
-                the column.
-            </p>
-            <div class="instruction-center"><div class="img-center"><img class="instruction-img" src="./images/inst2.gif"></div></div>
-            <p class="instruction-p">
-                <br><b>Step 3: Correct letters at the top of the wrong columns.</b><br>
-                The correct column will be swapped into place and the correct letter rotated to the top.
-                This is called a chain event and adds bonuses to the base scores. Multiple chain events
-                can happen causing the player's score to be increased significantly!
-            </p>
-            <div class="instruction-center"><div class="img-center"><img class="instruction-img" src="./images/inst10.gif"></div></div>
-            <p class="instruction-p">
-                After a chain event occurs, the scoring evaluation will go back to step 1. This loop wiil 
-                continue until no more chain events occur.
-                <br><br><b>Step 4: Letters that appear in the solution but are not in the correct location.</b><br>
-                The letters will be bolded throughout the game board. No points are awarded for bolded letters.
-            </p>
-            <div class="instruction-center"><div class="img-center"><img class="instruction-img" src="./images/inst11.gif"></div></div>
-            <p class="instruction-p">
-                <br><b>Step 5: Letters that do not appear in the solution.</b><br>
-                Any letters that are at the tops of the columns but do not appear anywhere in the solution 
-                will be removed from the game board. A base score of 30 points will be awarded to the 
-                player for every letter removed in this fashion.
-            </p>
-            <div class="instruction-center"><div class="img-center"><img class="instruction-img" src="./images/inst1.gif"></div></div>
-            <p class="instruction-p">
-                <br><b>Solving the puzzle:</b><br>
-                Once the puzzle is solved, a score multiplier will be applied to the player's score 
-                based on how many turns they have remaining. The score multiplier can be significant 
-                if the puzzle is solved in a minimal number of turns.
-            </p>
-            <div class="instruction-center"><div class="img-center"><img class="instruction-img" src="./images/inst12.gif"></div></div>
+            <p class="text-title">GAME EDITOR</p>
         </div>
     </div>
     
@@ -222,9 +112,10 @@
         <div class="header">
             <div class="inner-header">
                 <img id="settings" class="settings-icon" src="./images/gear.png">
-                <img id="help" class="help-icon" src="./images/help.png">
-                <img id="stats" class="stats-icon" src="./images/StatsIcon.png">
+                <img id="stats" class="stats-icon" src="./images/CopyOriginalGame.png">
+                <img id="rstr-og-game" class="stats-icon" src="./images/RestoreOriginalGame.png">
                 <img id="reset" class="reset-icon" src="./images/Reset.png">
+                <img id="edit" class="reset-icon" src="./images/GameEditor.png">
                 <span><p class="title"><b>Whazzle!</b></p></span>
             </div>
         </div>
@@ -236,7 +127,12 @@
             <span id="remain-span">Tries: </span>
             <span id="score-span">Score: 0</span>
         </div>
-        <div class="spacer"></div>
+        <div class="spacer">
+            <img id="set-this" class="stats-icon" src="./images/SetThisState.png">
+            <img id="restore-this" class="stats-icon" src="./images/RestoreSetState.png">
+            <img id="copy-set" class="stats-icon" src="./images/CopySetState.png">
+            <img id="copy-current" class="reset-icon" src="./images/CopyCurrentState.png">
+        </div>
         <div class="footer">
             <div class="inner-footer">
                 <p class="copywright">&copy;2022-Nick Mikstas</p>

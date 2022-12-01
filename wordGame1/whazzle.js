@@ -10,6 +10,7 @@ let numTries = 5;
 
 //Make a copy of the game object for printing purposes.
 let gameObjectCopy = null;
+let setGameObject = null;
 
 let gg = new GameGenerator1(); //Create a new game generator.
 let gp = new GamePrinter1(); //Create a new game printer.
@@ -29,7 +30,7 @@ let gr = new GameRenderer1 //Create a new game renderer.
 const setSelections = (rows, columns, numTries) =>
 {
     const minRows = 3;
-    const minColumns = 5;
+    const minColumns = 4;
     const minTries = 2;
 
     let selRows = document.getElementById("sel-rows");
@@ -52,19 +53,19 @@ window.onclick = (event) =>
 
 //Event listeners that close modals if x is clicked.
 const settingsModal = document.getElementById("settings-modal");
-const helpModal = document.getElementById("help-modal");
+const editorModal = document.getElementById("editor-modal");
 let closeBtn = document.getElementsByClassName("close");
 
 closeBtn[0].addEventListener("click", () =>
 {
-    helpModal.style.display = "none";
     settingsModal.style.display = "none";
+    editorModal.style.display = "none";
 });
 
 closeBtn[1].addEventListener("click", () =>
 {
-    helpModal.style.display = "none";
     settingsModal.style.display = "none";
+    editorModal.style.display = "none";
 });
 
 //Event listener that brings up the settings modal.
@@ -77,11 +78,11 @@ settings.addEventListener("click", () =>
     document.getElementById("sel-columns").style.borderColor = "";
 });
 
-//Event listener that brings up the help modal.
-const help = document.getElementById("help");
-help.addEventListener("click", () =>
+//Event listener that brings up the editor modal.
+const editor = document.getElementById("edit");
+editor.addEventListener("click", () =>
 {
-    let modal = document.getElementById("help-modal");
+    let modal = document.getElementById("editor-modal");
     modal.style.display = "block";
 });
 
@@ -89,8 +90,60 @@ help.addEventListener("click", () =>
 const stats = document.getElementById("stats");
 stats.addEventListener("click", () => 
 {
+    console.log("Copy original game");
     navigator.clipboard.writeText(gameObjectCopy);
     console.log(gameObjectCopy);
+});
+
+//Event listener for original game restore.
+const rstrOgGame = document.getElementById("rstr-og-game");
+rstrOgGame.addEventListener("click", () => 
+{
+    console.log("Restore original game");
+    ge.copyGameObject(JSON.parse(gameObjectCopy));
+    gr.resetGame();
+    gr.redraw();
+    if(debug)ge.printGameObject(ge.gameObject);
+
+});
+
+//Event listener for set this state.
+const setThis = document.getElementById("set-this");
+setThis.addEventListener("click", () => 
+{
+    console.log("Set this state");
+    setGameObject = ge.getGameObjectCopy();
+    if(debug)console.log(setGameObject);
+});
+
+//Event listener for restore this state.
+const restoreThis = document.getElementById("restore-this");
+restoreThis.addEventListener("click", () => 
+{
+    console.log("Restore set state");
+    ge.copyGameObject(JSON.parse(setGameObject));
+    gr.resetGame();
+    gr.redraw();
+    if(debug)ge.printGameObject(ge.gameObject);
+});
+
+//Event listener for copy set state.
+const copySet = document.getElementById("copy-set");
+copySet.addEventListener("click", () => 
+{
+    console.log("Copy set state");
+    navigator.clipboard.writeText(setGameObject);
+    console.log(setGameObject);
+});
+
+//Event listener for copy current state.
+const copyCurrent = document.getElementById("copy-current");
+copyCurrent.addEventListener("click", () => 
+{
+    console.log("Copy current state");
+    let currentGameObject = ge.getGameObjectCopy();
+    navigator.clipboard.writeText(currentGameObject);
+    console.log(currentGameObject);
 });
 
 //Event listener for the reset button.
@@ -196,6 +249,7 @@ gr.setGameLost = ge.setGameLost;
 
 ge.resetGame(rows, columns, numTries);
 gameObjectCopy = ge.getGameObjectCopy();
+setGameObject = ge.getGameObjectCopy();
 gr.resetGame();
 gr.redraw();
 if(debug)ge.printGameObject(ge.gameObject);

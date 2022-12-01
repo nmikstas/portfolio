@@ -11,7 +11,7 @@ class GameGenerator1
     static get INVALID() {return -1}
     static get FAILED() {return -2}
     static get MAX_LETTERS() {return 20}
-    static get MIN_LETTERS() {return 5}
+    static get MIN_LETTERS() {return 4}
     static get MAX_ROWS() {return 10}
     static get MIN_ROWS() {return 3}
     static get MAX_WORDS() {return 5}
@@ -32,7 +32,7 @@ class GameGenerator1
             rows = 7,
             columns = 7,
             numWords = 1,
-            minLength = 5,
+            minLength = 4,
             numTries = 4,
             debug = false
         } = {}
