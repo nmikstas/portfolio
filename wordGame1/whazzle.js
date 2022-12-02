@@ -26,6 +26,116 @@ let gr = new GameRenderer1 //Create a new game renderer.
 
 /**************************** Top Level Event Listeners and Functions ****************************/
 
+const doEdit = () =>
+{
+    let editge = new GameEngine1();
+    editge.copyGameObject(JSON.parse(ge.getGameObjectCopy()));
+    let editDiv = document.getElementById("edit-div");
+    editDiv.innerHTML = "";
+    let textLettersArray = new Array(editge.gameObject.rows);
+
+    //Create text areas for each letter in the puzzle.
+    for(let i = 0; i < editge.gameObject.rows; i++)
+    {
+        textLettersArray[i] = new Array(editge.gameObject.column);
+        let thisSpan = document.createElement("span");
+        thisSpan.classList.add("letter-span");
+
+        for(let j = 0; j < editge.gameObject.columns; j++)
+        {
+            let thisText = document.createElement("textarea");
+            thisText.classList.add("game-letter");
+            thisText.setAttribute("maxlength", 1);
+            thisText.value = editge.gameObject.letterArray[i][j];
+            thisSpan.appendChild(thisText);
+            textLettersArray[i][j] = thisText;
+        }
+
+        editDiv.appendChild(thisSpan);
+        editDiv.appendChild(document.createElement("br"));
+    }
+
+    //Make correct letter in each column uneditable.
+    for(let i = 0; i < editge.gameObject.columns; i++)
+    {
+        let isFound = false;
+        let winningLetter = editge.gameObject.winningRow[editge.gameObject.columnArray[i]];
+        
+        for(let j = 0; j < editge.gameObject.rows; j++)
+        {
+            
+            if(textLettersArray[j][i].value === winningLetter && !isFound)
+            {
+                textLettersArray[j][i].style.backgroundColor = "rgb(255,222,222)";
+                textLettersArray[j][i].readOnly = true;
+                isFound = true;
+            }
+            else
+            {
+                //Force uppercase on letter change.
+                textLettersArray[j][i].addEventListener("keyup", () => 
+                {
+                    textLettersArray[j][i].value = textLettersArray[j][i].value.toUpperCase();
+                    updateLetters(editge.gameObject, textLettersArray);
+                    editge.updateColumns();
+                    
+                });
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+    const editorModal = document.getElementById("editor-modal");
+    let saveCancelDiv = document.createElement("div");
+    let save = document.createElement("button");
+    let cancel = document.createElement("button");
+    save.innerHTML = "Save";
+    cancel.innerHTML = "Cancel";
+
+    save.addEventListener("click", () =>
+    {
+        ge.copyGameObject(editge.gameObject);
+        gr.resetGame();
+        gr.redraw();
+        editorModal.style.display = "none";
+    });
+
+    cancel.addEventListener("click", () =>
+    {
+        editorModal.style.display = "none";
+    });
+
+    saveCancelDiv.appendChild(save);
+    saveCancelDiv.appendChild(cancel);
+    editDiv.appendChild(saveCancelDiv);
+}
+
+//Helper that updates edited letters.
+const updateLetters = (gameObject, letterArray) =>
+{
+    for(let i = 0; i < gameObject.rows; i++)
+    {
+        for(let j = 0; j < gameObject.columns; j++)
+        {
+            if(letterArray[i][j].value === "")
+            {
+                gameObject.letterArray[i][j] = " ";
+            }
+            else
+            {
+                gameObject.letterArray[i][j] = letterArray[i][j].value;
+            }
+        }
+    }
+    gameObject
+}
+
 //Set the selections in the game settings modal.
 const setSelections = (rows, columns, numTries) =>
 {
@@ -84,6 +194,7 @@ editor.addEventListener("click", () =>
 {
     let modal = document.getElementById("editor-modal");
     modal.style.display = "block";
+    doEdit();
 });
 
 //Event listener for game object copying.

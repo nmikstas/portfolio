@@ -381,3 +381,18 @@
 {
     margin: .5rem;
 }
+
+/*************************************** Game editor modal ***************************************/
+
+.game-letter
+{
+    width: 40px;
+    height: 40px;
+    resize: none;
+}
+
+.letter-span
+{
+    height: 40px;
+    display: inline-block;
+}
