@@ -395,4 +395,10 @@
 {
     height: 40px;
     display: inline-block;
+    padding: 0;
+}
+
+.column-button
+{
+    width: 40px;
 }

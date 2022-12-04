@@ -28,11 +28,207 @@ let gr = new GameRenderer1 //Create a new game renderer.
 
 const doEdit = () =>
 {
+    const editorModal = document.getElementById("editor-modal");
+
     let editge = new GameEngine1();
     editge.copyGameObject(JSON.parse(ge.getGameObjectCopy()));
+
     let editDiv = document.getElementById("edit-div");
     editDiv.innerHTML = "";
+
+    let matrixDiv = document.createElement("div");
+
+    //Put solution in the editing modal.
+    let solutionDiv = document.createElement("div");
+    let solutionText = document.createElement("textarea");
+    solutionText.classList.add("letter-span");
+    solutionText.setAttribute("maxlength", editge.gameObject.columns);
+    solutionText.style.backgroundColor = "rgb(222,255,222)";
+    solutionText.style.resize = "none";
+    solutionText.value = editge.gameObject.winningRow.join("");
+    let solutionButton = document.createElement("button");
+    solutionButton.innerHTML = "Set";
+    solutionDiv.appendChild(solutionText);
+    solutionDiv.appendChild(solutionButton);
+    editDiv.appendChild(solutionDiv);
+
+    solutionText.addEventListener("keyup", () =>
+    {
+        solutionText.value = solutionText.value.toLocaleUpperCase();
+
+        //Must be maximum length.
+        if(solutionText.value.length != editge.gameObject.columns)
+        {
+            solutionText.style.backgroundColor = "rgb(255,222,222)";
+            solutionButton.disabled = true;
+            return;
+        }
+
+        //Must all be valid characters.
+        for(let i = 0; i < solutionText.value.length; i++)
+        {
+            if(!validateChar(solutionText.value[i]))
+            {
+                solutionText.style.backgroundColor = "rgb(255,222,222)";
+                solutionButton.disabled = true;
+                return;
+            }
+        }
+
+        solutionText.style.backgroundColor = "rgb(222,255,222)";
+        solutionButton.disabled = false;
+        return;
+    });
+
+    //Put letter matrix on the editing modal.
     let textLettersArray = new Array(editge.gameObject.rows);
+    addMatrix(textLettersArray, editge, matrixDiv);
+    editDiv.appendChild(matrixDiv);
+
+    solutionButton.addEventListener("click", () =>
+    {
+        //Update the solution letters in the letter matrix.
+        for(let i = 0; i < editge.gameObject.columns; i++)
+        {
+            for(let j = 0; j < editge.gameObject.rows; j++)
+            {
+                if(textLettersArray[j][i].value === editge.gameObject.winningRow[editge.gameObject.columnArray[i]])
+                {
+                    textLettersArray[j][i].value = solutionText.value[editge.gameObject.columnArray[i]];
+                    break;
+                }
+            }
+        }
+
+        //Update the puzzle with the nex value.
+        updateLetters(editge.gameObject, textLettersArray);
+        for(let i = 0; i < editge.gameObject.columns; i++)
+        {
+            editge.gameObject.winningRow[i] = solutionText.value[i];
+        }
+    });
+
+    //Put up and down buttons on the editing modal.
+    let upDiv = document.createElement("div");
+    let rollTextUp = document.createElement("span");
+    rollTextUp.innerHTML = "Roll Columns Up";
+    for(let i = 0; i < editge.gameObject.columns; i++)
+    {
+        let upButton = document.createElement("button");
+        upButton.classList.add("column-button");
+        upButton.innerHTML = "Up";
+        upDiv.appendChild(upButton);
+
+        upButton.addEventListener("click", () =>
+        {
+            editge.scrollColumn(i, 1);
+            addMatrix(textLettersArray, editge, matrixDiv);
+        });
+    }
+    upDiv.appendChild(rollTextUp);
+
+    let downDiv = document.createElement("div");
+    let rollTextDown = document.createElement("span");
+    rollTextDown.innerHTML = "Roll Columns Down";
+    for(let i = 0; i < editge.gameObject.columns; i++)
+    {
+        let downButton = document.createElement("button");
+        downButton.classList.add("column-button");
+        downButton.innerHTML = "Dn";
+        downDiv.appendChild(downButton);
+
+        downButton.addEventListener("click", () =>
+        {
+            editge.scrollColumn(i, -1);
+            addMatrix(textLettersArray, editge, matrixDiv);
+        });
+    }
+    downDiv.appendChild(rollTextDown);
+
+    editDiv.appendChild(upDiv);
+    editDiv.appendChild(downDiv);
+
+    //Add swap check boxes to the editing modal.
+    let swapArray = new Array();
+    let swapDiv = document.createElement("div");
+    let swapText = document.createElement("span");
+    swapText.innerHTML = "Swap Columns";
+    for(let i = 0; i < editge.gameObject.columns; i++)
+    {
+        let checkbox = document.createElement('input');
+        checkbox.type = "checkbox";
+        checkbox.classList.add("column-button");
+        swapArray.push(checkbox);
+        swapDiv.appendChild(checkbox);
+        swapDiv.appendChild(swapText);
+
+        checkbox.addEventListener("click", () =>
+        {
+            let firstChecked = -1;
+            for(let j = 0; j < swapArray.length; j++)
+            {
+                if(swapArray[j].checked && firstChecked < 0)
+                {
+                    firstChecked = j;
+                }
+                else if(swapArray[j].checked)
+                {
+                    editge.evalSwap([firstChecked, j], false);
+                    addMatrix(textLettersArray, editge, matrixDiv);
+
+                    for(let k = 0; k < swapArray.length; k++)
+                    {
+                        swapArray[k].checked = false;
+                    }
+                }  
+            }
+        });
+    }
+
+    editDiv.appendChild(swapDiv);
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    //Put save and cancel buttons on the editing modal.
+    let saveCancelDiv = document.createElement("div");
+    let save = document.createElement("button");
+    let cancel = document.createElement("button");
+    save.innerHTML = "Apply";
+    cancel.innerHTML = "Cancel";
+
+    save.addEventListener("click", () =>
+    {
+        ge.copyGameObject(editge.gameObject);
+        gr.resetGame();
+        gr.redraw();
+        editorModal.style.display = "none";
+    });
+
+    cancel.addEventListener("click", () =>
+    {
+        editorModal.style.display = "none";
+    });
+
+    saveCancelDiv.appendChild(save);
+    saveCancelDiv.appendChild(cancel);
+    editDiv.appendChild(saveCancelDiv);
+}
+
+//Add letter matrix to the editing modal.
+const addMatrix = (textLettersArray, editge, matrixDiv) =>
+{
+    matrixDiv.innerHTML = "";
 
     //Create text areas for each letter in the puzzle.
     for(let i = 0; i < editge.gameObject.rows; i++)
@@ -51,8 +247,8 @@ const doEdit = () =>
             textLettersArray[i][j] = thisText;
         }
 
-        editDiv.appendChild(thisSpan);
-        editDiv.appendChild(document.createElement("br"));
+        matrixDiv.appendChild(thisSpan);
+        matrixDiv.appendChild(document.createElement("br"));
     }
 
     //Make correct letter in each column uneditable.
@@ -75,7 +271,9 @@ const doEdit = () =>
                 //Force uppercase on letter change.
                 textLettersArray[j][i].addEventListener("keyup", () => 
                 {
-                    textLettersArray[j][i].value = textLettersArray[j][i].value.toUpperCase();
+                    let validChar = validateChar(textLettersArray[j][i].value.toUpperCase(), true);
+
+                    textLettersArray[j][i].value = validChar ? textLettersArray[j][i].value.toUpperCase() : "";
                     updateLetters(editge.gameObject, textLettersArray);
                     editge.updateColumns();
                     
@@ -84,36 +282,24 @@ const doEdit = () =>
         }
     }
 
-
-
-
-
-
-
-
-    const editorModal = document.getElementById("editor-modal");
-    let saveCancelDiv = document.createElement("div");
-    let save = document.createElement("button");
-    let cancel = document.createElement("button");
-    save.innerHTML = "Save";
-    cancel.innerHTML = "Cancel";
-
-    save.addEventListener("click", () =>
+    //Put column numbers in editing modal.
+    let orderDiv = document.createElement("div");
+    let orderDivText = document.createElement("span");
+    orderDivText.innerHTML = "Column order";
+    for(let i = 0; i < editge.gameObject.columns; i++)
     {
-        ge.copyGameObject(editge.gameObject);
-        gr.resetGame();
-        gr.redraw();
-        editorModal.style.display = "none";
-    });
-
-    cancel.addEventListener("click", () =>
-    {
-        editorModal.style.display = "none";
-    });
-
-    saveCancelDiv.appendChild(save);
-    saveCancelDiv.appendChild(cancel);
-    editDiv.appendChild(saveCancelDiv);
+        let thisSpan = document.createElement("span");
+        thisSpan.classList.add("letter-span");
+        let thisText = document.createElement("textarea");
+        thisText.style.backgroundColor = "rgb(200,200,200)";
+        thisText.readOnly = true;
+        thisText.classList.add("game-letter");
+        thisText.value = editge.gameObject.columnArray[i];
+        thisSpan.appendChild(thisText);
+        orderDiv.appendChild(thisSpan);
+    }
+    orderDiv.appendChild(orderDivText);
+    matrixDiv.appendChild(orderDiv);
 }
 
 //Helper that updates edited letters.
@@ -134,6 +320,16 @@ const updateLetters = (gameObject, letterArray) =>
         }
     }
     gameObject
+}
+
+//Check if a character is valid.
+const validateChar = (char, allowSpace = false) =>
+{
+    const validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ_";
+    if(char === " " && allowSpace)return true;
+    if(char === " " && !allowSpace)return false;
+    if(validChars.includes(char))return true;
+    return false;
 }
 
 //Set the selections in the game settings modal.

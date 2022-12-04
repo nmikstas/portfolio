@@ -253,7 +253,7 @@ class GameEngine1
         }
     }
 
-    evalSwap = (animIndexArray) =>
+    evalSwap = (animIndexArray, animate = true) =>
     {
         for(let i = 0; i < this.gameObject.letterArray.length; i++)
         {
@@ -274,7 +274,7 @@ class GameEngine1
         [this.gameObject.remainArray[animIndexArray[1]], this.gameObject.remainArray[animIndexArray[0]]];
 
         if(this.debug)this.printGameObject(this.gameObject);
-        this.animSwap2();
+        if(animate)this.animSwap2();
     }
 
     loseSwap = (swapArray) =>
