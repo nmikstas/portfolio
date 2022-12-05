@@ -31,6 +31,11 @@ const doEdit = () =>
     const editorModal = document.getElementById("editor-modal");
 
     let editge = new GameEngine1();
+
+    //Column locks stuff.
+    let locksArray = new Array();
+    let columnLocksDiv = document.createElement("div");
+
     editge.copyGameObject(JSON.parse(ge.getGameObjectCopy()));
 
     let editDiv = document.getElementById("edit-div");
@@ -143,8 +148,8 @@ const doEdit = () =>
             addMatrix(textLettersArray, editge, matrixDiv);
         });
     }
-    downDiv.appendChild(rollTextDown);
 
+    downDiv.appendChild(rollTextDown);
     editDiv.appendChild(upDiv);
     editDiv.appendChild(downDiv);
 
@@ -173,8 +178,14 @@ const doEdit = () =>
                 }
                 else if(swapArray[j].checked)
                 {
+                    editge.gameObject.gameState = GameEngine1.STATE_PLAY;
+                    editge.gameObject.locksArray[firstChecked].letter = false;
+                    editge.gameObject.locksArray[firstChecked].column = false;
+                    editge.gameObject.locksArray[j].letter = false;
+                    editge.gameObject.locksArray[j].column = false;
                     editge.evalSwap([firstChecked, j], false);
                     addMatrix(textLettersArray, editge, matrixDiv);
+                    addColumnLocks(editge, columnLocksDiv, locksArray);
 
                     for(let k = 0; k < swapArray.length; k++)
                     {
@@ -186,20 +197,40 @@ const doEdit = () =>
     }
 
     editDiv.appendChild(swapDiv);
+
+    //Add column lock checkboxes to the editing modal.
+    editDiv.appendChild(columnLocksDiv);
+    addColumnLocks(editge, columnLocksDiv, locksArray);
     
+    //Add tries drop down text box to the editing modal.
+    let triesDiv = document.createElement("div");
+    let triesBox = document.createElement("select");
+    let triesText = document.createElement("span");
+    triesText.innerHTML = "Tries Remaining";
 
+    for(let i = 0; i < 21; i++)
+    {
+        let option = document.createElement("option");
+        option.value = i;
+        option.text = i;
+        triesBox.appendChild(option);
+    }
 
+    triesBox.options[editge.gameObject.numTries].selected = true;
+    triesDiv.appendChild(triesBox);
+    triesDiv.appendChild(triesText);
+    editDiv.appendChild(triesDiv);
 
+    //Add puzzle info to the editing modal.
+    let infoDiv = document.createElement("div");
+    let infoBox = document.createElement("textarea");
+    let infoText = document.createElement("span");
+    infoText.innerHTML = "Puzzle Info";
 
+    infoDiv.appendChild(infoBox);
+    infoDiv.appendChild(infoText);
+    editDiv.appendChild(infoDiv);
 
-
-
-
-
-
-
-
-    
     //Put save and cancel buttons on the editing modal.
     let saveCancelDiv = document.createElement("div");
     let save = document.createElement("button");
@@ -209,6 +240,40 @@ const doEdit = () =>
 
     save.addEventListener("click", () =>
     {
+        for(let i = 0; i < editge.gameObject.columns; i++)
+        {
+            //Unlock any letter locks that don't belong.
+            if(editge.gameObject.remainArray[i] > 1)
+            {
+                editge.gameObject.locksArray[editge.gameObject.columnArray[i]].letter = false;
+                editge.gameObject.solvedArray[editge.gameObject.columnArray[i]] = false;
+            }
+
+            //Unlock any false locked letters.
+            if(!editge.gameObject.locksArray[i].letter || !editge.gameObject.locksArray[i].column)
+            {
+                editge.gameObject.solvedArray[i] = false;
+            }
+
+            //Set solved letters.
+            if(editge.gameObject.locksArray[i].letter && editge.gameObject.locksArray[i].column)
+            {
+                editge.gameObject.solvedArray[i] = true;
+            }
+
+            //Special case to lock letters that have column locks and only one letter.
+            if(editge.gameObject.remainArray[i] === 1 && editge.gameObject.locksArray[i].column)
+            {
+                editge.gameObject.locksArray[editge.gameObject.columnArray[i]].letter = true;
+                editge.gameObject.solvedArray[i] = true;
+            }
+        }
+
+        editge.gameObject.usedLettersArray = [];
+        editge.gameObject.score = 0;
+        editge.gameObject.numTries = (triesBox.selectedIndex < 1) ? 1 : triesBox.selectedIndex;
+        editge.gameObject.info = infoBox.value;
+
         ge.copyGameObject(editge.gameObject);
         gr.resetGame();
         gr.redraw();
@@ -224,6 +289,70 @@ const doEdit = () =>
     saveCancelDiv.appendChild(cancel);
     editDiv.appendChild(saveCancelDiv);
 }
+
+const addColumnLocks = (ge, div, locksArray) =>
+{
+    div.innerHTML = "";
+    let columnText = document.createElement("span");
+    columnText.innerHTML = "Lock Column";
+    for(let i = 0; i < ge.gameObject.columns; i++)
+    {
+        let checkbox = document.createElement('input');
+        checkbox.type = "checkbox";
+        checkbox.classList.add("column-button");
+        locksArray.push(checkbox);
+        div.appendChild(checkbox);
+
+        //See if column locking is valid for this column.
+        if(i === ge.gameObject.columnArray[i])
+        {
+            checkbox.disabled = false;
+        }
+        else
+        {
+            checkbox.disabled = true;
+            checkbox.checked = false;
+        }
+
+        //See if this column is already locked.
+        if(ge.gameObject.locksArray[ge.gameObject.columnArray[i]].column)
+        {
+            checkbox.checked = true;
+        }
+        else
+        {
+            checkbox.checked = false;
+        }
+
+        //Lock/unlock column when checked.
+        checkbox.addEventListener("click", () =>
+        {
+            if(checkbox.checked)
+            {
+                ge.gameObject.locksArray[ge.gameObject.columnArray[i]].column = true;
+            }
+            else
+            {
+                ge.gameObject.locksArray[ge.gameObject.columnArray[i]].column = false;
+            }
+        });
+    }
+
+
+
+
+
+    div.appendChild(columnText);
+}
+
+
+
+
+
+
+
+
+
 
 //Add letter matrix to the editing modal.
 const addMatrix = (textLettersArray, editge, matrixDiv) =>
@@ -258,8 +387,7 @@ const addMatrix = (textLettersArray, editge, matrixDiv) =>
         let winningLetter = editge.gameObject.winningRow[editge.gameObject.columnArray[i]];
         
         for(let j = 0; j < editge.gameObject.rows; j++)
-        {
-            
+        {            
             if(textLettersArray[j][i].value === winningLetter && !isFound)
             {
                 textLettersArray[j][i].style.backgroundColor = "rgb(255,222,222)";

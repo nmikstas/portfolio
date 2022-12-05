@@ -117,6 +117,7 @@ class GameEngine1
                 gameState:        gameObject.hasOwnProperty("gameState") ? gameObject.gameState : null,
                 score:            gameObject.hasOwnProperty("score") ? gameObject.score : null,
                 usedLettersArray: gameObject.hasOwnProperty("usedLettersArray") ? gameObject.usedLettersArray : null,
+                info:             gameObject.hasOwnProperty("info") ? gameObject.info : null,
             }
         }
     }
