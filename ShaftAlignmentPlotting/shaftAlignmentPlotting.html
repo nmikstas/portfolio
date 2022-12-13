@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Belt Alignment</title>
+    <title>Shaft Alignment</title>
     
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
@@ -29,7 +29,7 @@
             </button>
 
             <div class="container text-center">
-                <h1>Belt Alignment</h1>
+                <h1>Shaft Alignment</h1>
             </div>
 
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -68,8 +68,16 @@
                 <div class="col-md-2"></div>
                 <div class="col-md-8">
                     <div class="hov">
-                        <img class="img-fluid img-item" src="./images/motors.png" alt="Motor Foot Distances">
-                        <div class="overlay overlay-text">Dimension A - Distance in inches between front and rear feet of driven device. Dimension B - Distance in inches between front and rear feet of driver device.</div>
+                        <img class="img-fluid img-item" src="./images/motors.png" alt="Precision Shaft Alignment">
+                        <div class="overlay overlay-text">
+                            All dimensions are in inches.
+                            Dimension A - Distance between stationary and movable dials.
+                            Dimension B - Distance from moveable device front feet to stationary dial.
+                            Dimension C - Distance from moveable device rear feet to stationary dial.
+                            Dimension D - Distance from stationary device front feet to stationary dial.
+                            Dimension E - Distance from stationary device rear feet to stationary dial.
+                            Dimension F - Distance from stationary device rear feet to moveable device rear feet.
+                        </div>
                     </div>
                 </div>
             </div>
@@ -94,74 +102,106 @@
                     <button type="button" id="clear-btn" style="float: right;" class="btn btn-outline-warning mb-2" onclick="clearData()">Clear Data</button>
                 </div>
             </div>
-
+           
             <div id="basic-use">
                 <div class="row">
-                    <div class="col-md-1"></div>
-                    <div class="col-md-4 belt-border">
-                        <h3>Driven</h3>
-
+                    <div class="col-md-12 belt-border">
                         <div class="row">
-                            <div class="col-md-9">
-                                <p>Foot distance, dimension A<br>(.1 to 100 inches):</p>
-                                <input id="driven-distance" class="form-control" maxlength="6" type="text" onkeypress="return isNumberKey(this, .1, 100, event)" onfocusout="validateNumber(this, .1, 100)"/>
-                                <div class="divider"></div>
-                                <input type="radio" id="driven-bubble-hi" name="driven-bubble" onchange="radioChange(this)" checked>
-                                <label for="dvn-bubble-hi">Bubble Up</label><br>
-                                <input type="radio" id="driven-bubble-lo" name="driven-bubble" onchange="radioChange(this)">
-                                <label for="dvn-bubble-lo">Bubble Down</label><br>
-                                <p>Bubble offset<br>(0 to 8 ticks):</p>
-                                <input id="driven-bubble" class="form-control" maxlength="5" type="text" onkeypress="return isNumberKey(this, 0, 8, event)" onfocusout="validateNumber(this, 0, 8)"/>
-                                <p id="driven-line">Line down ???</p>
+                            <div class="col-md-6">
+                                <p>Dimension A(.1 to 100 inches):</p>
+                                <input id="dial-dist" type="text" onkeypress="return isNumberKey(this, .1, 100, event)" onfocusout="validateNumber(this, .1, 100)"/>
+                                <p>Dimension B(Greater than A to 100 inches):</p>
+                                <input id="mff-to-dial" type="text" onkeypress="return isNumberKey(this, .1, 100, event)" onfocusout="validateNumber(this, .1, 100)"/>
+                                <p>Dimension C(Greater than B to 100 inches):</p>
+                                <input id="mrf-to-dial" type="text" onkeypress="return isNumberKey(this, .1, 100, event)" onfocusout="validateNumber(this, .1, 100)"/>
                             </div>
-
-                            <div class="col-md-3" id="driven-level"></div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-2"></div>
-
-                    <div class="col-md-4 belt-border">
-                        <h3>Driver</h3>
-                   
-                        <div class="row">
-                            <div class="col-md-9">
-                                <p>Foot distance, dimension B<br>(.1 to 100 inches):</p>
-                                <input id="driver-distance" class="form-control" maxlength="6" type="text" onkeypress="return isNumberKey(this, .1, 100, event)" onfocusout="validateNumber(this, .1, 100)"/>
-                                <div class="divider"></div>
-                                <input type="radio" id="driver-bubble-hi" name="driver-bubble" onchange="radioChange(this)" checked>
-                                <label for="dvr-bubble-hi">Bubble Up</label><br>
-                                <input type="radio" id="driver-bubble-lo" name="driver-bubble" onchange="radioChange(this)">
-                                <label for="dvr-bubble-lo">Bubble Down</label><br>
-                                <p>Bubble offset<br>(0 to 8 ticks):</p>
-                                <input id="driver-bubble" class="form-control" maxlength="5" type="text" onkeypress="return isNumberKey(this, 0, 8, event)" onfocusout="validateNumber(this, 0, 8)"/>
-                                <p id="driver-line">Line down ???</p>
+                            <div class="col-md-6">
+                                <p>Dimension D(.1 to 100 inches):</p>
+                                <input id="sff-to-dial" type="text" onkeypress="return isNumberKey(this, .1, 100, event)" onfocusout="validateNumber(this, .1, 100)"/>
+                                <p>Dimension E(Greater than D to 100 inches):</p>
+                                <input id="srf-to-dial" type="text" onkeypress="return isNumberKey(this, .1, 100, event)" onfocusout="validateNumber(this, .1, 100)"/>
+                                <p>Total length(Dimension F):</p>
+                                <p id="total-dist">???</p>
                             </div>
-
-                            <div class="col-md-3" id="driver-level"></div>
                         </div>
                     </div>
                 </div>
 
                 <div class="row mt-3">
-                    <div class="col-md-8 belt-border">
+                    <div class="col-md-6 belt-border">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <img class="img-fluid small-img" src="./images/stationary.png" alt="Stationary dial">
+                            </div>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p>TIR(-99 to 99):</p>
+                                <input id="s-tir" type="text" onkeypress="return isSignedNumberKey(this, -99, 99, event)" onfocusout="validateNumber(this, -99, 99)"/>
+                                <p>1/2 TIR: <span id="s-tir-1/2">???</span></p>
+                            </div>
+                            <div class="col-md-6" id="stationary-dial"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 belt-border">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <img class="img-fluid small-img" src="./images/movable.png" alt="Movable dial">
+                            </div>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p>TIR(-99 to 99):</p>
+                                <input id="m-tir" type="text" onkeypress="return isSignedNumberKey(this, -99, 99, event)" onfocusout="validateNumber(this, -99, 99)"/>
+                                <p>1/2 TIR: <span id="m-tir-1/2">???</span></p>
+                                <p>-1/2 TIR: <span id="m-tir-pm">???</span></p>
+                            </div>
+                            <div class="col-md-6" id="movable-dial"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-6 belt-border">
                         <h3>Option 1</h3>
                         <div class="divider"></div>
-                        <div class="row mt-3">
+                        <div class="row">
                             <div class="col-md-6">
-                                <h4>Driven to Level</h4>
-                                <p id="driven-to-level" class="align">???</p>
+                                <img class="img-fluid small-img" src="./images/mov.png" alt="Movable device inboard">
+                                <div class="divider"></div>
+                                <h4>Inboard</h4>
+                                <p id="mov-in1" class="align">???</p>
                             </div>
+
                             <div class="col-md-6">
-                                <h4>Driver to Level</h4>
-                                <p id="driver-to-level" class="align">???</p>
+                                <img class="img-fluid small-img" src="./images/mov.png" alt="Movable device outboard">
+                                <div class="divider"></div>
+                                <h4>Outboard</h4>
+                                <p id="mov-out1" class="align">???</p>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 belt-border">
-                        <h3 id="options">Option 2</h2>
+                    <div class="col-md-6 belt-border">
+                        <h3>Option 2</h3>
                         <div class="divider"></div>
-                        <p id="optimal-moves" class="align">???</p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img class="img-fluid small-img" src="./images/sta.png" alt="Stationary device inboard">
+                                <div class="divider"></div>
+                                <h4>Inboard</h4>
+                                <p id="sta-in1" class="align">???</p>
+                            </div>
+
+                            <div class="col-md-6">
+                                <img class="img-fluid small-img" src="./images/mov.png" alt="Movable device inboard">
+                                <div class="divider"></div>
+                                <h4>Inboard</h4>
+                                <p id="mov-in2" class="align">???</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -174,7 +214,7 @@
                 <div class="row">
                     <div class="col-md-12 belt-border">
                         <label for="report-title">Report Title (80 characters max)</label>
-                        <input type="text" id="report-title" class="form-control input-full" maxlength="80" onkeyup="updateTitle(this)">
+                        <input type="text" id="report-title" class="form-control input-fix" maxlength="80" onkeyup="updateTitle(this)">
                         <label for="report-comments">Report Comments (1024 characters max)</label>
                         <textarea id="report-comments" class="form-control" rows="2" maxlength="1024" onkeyup="updateComments(this)"></textarea>
                         <h3>Cost Data</h3>
@@ -183,15 +223,15 @@
                         <div class="row">
                             <div class="col-md-3">
                                 <p>Cost per KWh<br>(.01 to 100 dollars):</p>
-                                <input id="kwh" class="form-control bubble-input" maxlength="5" type="text" onkeypress="return isNumberKey(this, 0.01, 100, event)" onfocusout="validateNumber(this, 0.01, 100)"/>    
+                                <input id="kwh" maxlength="5" type="text" onkeypress="return isNumberKey(this, 0.01, 100, event)" onfocusout="validateNumber(this, 0.01, 100)"/>    
                             </div>
                             <div class="col-md-3">
                                 <p>Motor voltage<br>(208 to 600 volts):</p>
-                                <input id="volt" class="form-control bubble-input" maxlength="5" type="text" onkeypress="return isNumberKey(this, 208, 600, event)" onfocusout="validateNumber(this, 208, 600)"/>    
+                                <input id="volt" maxlength="5" type="text" onkeypress="return isNumberKey(this, 208, 600, event)" onfocusout="validateNumber(this, 208, 600)"/>    
                             </div>
                             <div class="col-md-3">
                                 <p>Usage multiplier<br>(.001 to 1.0):</p>
-                                <input id="mult" class="form-control bubble-input" maxlength="5" type="text" onkeypress="return isNumberKey(this, 0.001, 1.0, event)" onfocusout="validateNumber(this, 0.001, 1.0)"/>    
+                                <input id="mult" maxlength="5" type="text" onkeypress="return isNumberKey(this, 0.001, 1.0, event)" onfocusout="validateNumber(this, 0.001, 1.0)"/>    
                             </div>
                             <div class="col-md-3">
                                 <input type="radio" id="weekly-radio" name="cost-radios" value="weekly-radio" onchange="updateTime(0)">
@@ -220,6 +260,7 @@
                         <!--Container for measurements and adjustments-->
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -238,9 +279,10 @@
     <script src="./js/bootstrap.min.js"></script>
 
     <!--Javascript-->
-    <script src="./js/level.js"></script>
-    <script src="./js/beltPlot.js"></script>
-    <script src="./js/bam.js"></script>
-    <script src="./js/beltAlignmentPlotting.js"></script>
-</body>      
+    <script src="js/dial.js"></script>
+    <script src="js/shaftPlot.js"></script>
+    <script src="js/sam.js"></script>
+    <script src="js/shaftAlignmentPlotting.js"></script>
+</body>
+        
 </html>

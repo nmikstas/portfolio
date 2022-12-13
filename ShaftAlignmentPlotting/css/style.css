@@ -136,12 +136,27 @@ footer
 
 input
 {
-    max-width: calc(100% - 50px);
+    margin-left: 1.0rem;
+    margin-bottom: 1.0rem;
+    max-width: 90%;
 }
 
-.input-full
+.input-long
+{
+    max-width: calc(100% - 50px);
+    margin: 0 0;
+}
+
+.input-fix
 {
     max-width: 100%;
+    margin: 0 0;
+}
+
+.pad
+{
+    max-width: calc(100% - 35px);
+    margin: auto auto;
 }
 
 .center
@@ -173,6 +188,14 @@ input
     border-color: #707070;
     border-width: 5px;
     border-radius: 5px;
+}
+
+.small-img
+{
+    max-width: 100px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .border-2px

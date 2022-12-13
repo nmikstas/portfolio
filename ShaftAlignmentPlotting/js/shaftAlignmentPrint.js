@@ -1,7 +1,7 @@
 "use strict";
 
-let baa = JSON.parse(sessionStorage.getItem("beltAlignmentArray"));
-sessionStorage.removeItem("beltAlignmentArray");
+let saa = JSON.parse(sessionStorage.getItem("shaftAlignmentArray"));
+sessionStorage.removeItem("shaftAlignmentArray");
 sessionStorage.clear();
 
 //Graph watermarks.
@@ -15,9 +15,9 @@ let body = document.getElementById("report-body");
 let reportTitleDiv = document.createElement("div");
 reportTitleDiv.classList.add("title");
 let reportTitleH = document.createElement("h4");
-reportTitleH.innerHTML = baa[0].title;
+reportTitleH.innerHTML = saa[0].title;
 let reportCommentsP = document.createElement("p");
-reportCommentsP.innerHTML = baa[0].comments;
+reportCommentsP.innerHTML = saa[0].comments;
 reportTitleDiv.appendChild(reportTitleH);
 body.appendChild(reportTitleDiv);
 body.appendChild(reportCommentsP);
@@ -29,12 +29,12 @@ let costTitleH = document.createElement("h4");
 costTitleH.innerHTML = "Cost Data";
 
 let timePeriod;
-switch(baa[0].timePeriod)
+switch(saa[0].timePeriod)
 {
-    case Bam.WEEKLY:
+    case Sam.WEEKLY:
         timePeriod = "Weekly";
     break;
-    case Bam.YEARLY:
+    case Sam.YEARLY:
         timePeriod = "Yearly";
     break;
     default:
@@ -48,13 +48,13 @@ let costDiv = document.createElement("div");
 costDiv.classList.add("center-div", "pagebreak");
 costDiv.innerHTML = 
 "<span class='quarter'>" +
-"<p><b>Cost per KWh</b><br/>" + baa[0].costKwh + "</p>" +
+"<p><b>Cost per KWh</b><br/>" + saa[0].costKwh + "</p>" +
 "</span>" +
 "<span class='quarter'>" +
-"<p><b>Motor Voltage</b><br/>" + baa[0].motorVoltage + "</p>" +
+"<p><b>Motor Voltage</b><br/>" + saa[0].motorVoltage + "</p>" +
 "</span>" +
 "<span class='quarter'>" +
-"<p><b>Usage Multiplier</b><br/>" + baa[0].usageMultiplier + "</p>" +
+"<p><b>Usage Multiplier</b><br/>" + saa[0].usageMultiplier + "</p>" +
 "</span>" +
 "<span class='quarter'>" +
 "<p><b>Time Period</b><br/>" + timePeriod + "</p>" +
@@ -64,124 +64,106 @@ body.appendChild(costDiv);
 //Add adjustment block to page.
 let addAdjustment = (obj, num) =>
 {
-    //Bubble up or down variable.
-    let bubble = obj.drivenBubbleHi ? "<b>Bubble Up: </b>" : "<b>Bubble Down: </b>";
-
     let adjBlock = document.createElement("div");
     if(num !== 1)adjBlock.classList.add("pagebreak");
     adjBlock.innerHTML =
     "<div class='title'>" +
         "<h4>" + obj.title + "</h4>" +
     "</div>" +
-    "<p>" + obj.comments + "</p>";
+    "<p>" + obj.comments + "</p>" +
 
-    let bubbleDiv = document.createElement("div");
-    let pad1Div = document.createElement("span");
-    pad1Div.classList.add("fifth");
+    "<div class='belt-border'>" +
+        "<span class='third'>" +
+            "<p><b>Dimension A:</b> " + obj.dimA + " inches</p>" +
+            "<p><b>Dimension D:</b> " + obj.dimD + " inches</p>" +
+        "</span>" +
+        "<span class='third'>" +
+            "<p><b>Dimension B:</b> " + obj.dimB + " inches</p>" +
+            "<p><b>Dimension E:</b> " + obj.dimE + " inches</p>" +
+        "</span>" +
+        "<span class='third'>" +
+            "<p><b>Dimension C:</b> " + obj.dimC + " inches</p>" +
+            "<p><b>Dimension F:</b> " + obj.dimFString + "</p>" +
+        "</span>" +
+    "</div>";
 
-    //Driven bubble.
-    let drivenInfoDiv = document.createElement("span");
-    drivenInfoDiv.classList.add("quarter", "belt-border", "center-div");
-    drivenInfoDiv.innerHTML = "<p class='m-0 p-0'><b>Driven</b><p>" + "<p class='output m-0 p-0'><b>Foot Distance (A): </b>" +
-        obj.drivenFeetDistance + " Inches<br/>" + bubble + obj.drivenTicks + " Ticks</p>";
-    let drivenCanvasDiv = document.createElement("div");
-    drivenCanvasDiv.classList.add("bubble-canvas");
+    let dialBlock = document.createElement("div");
+    let leftSpan = document.createElement("span");
+    leftSpan.classList.add("belt-border", "half");
+    let rightSpan = document.createElement("span");
+    rightSpan.classList.add("belt-border", "half");
+    let staSpan = document.createElement("span");
+    staSpan.classList.add("third");
+    let movSpan = document.createElement("span");
+    movSpan.classList.add("third");
 
-    let pad2Div = document.createElement("span");
-    pad2Div.classList.add("tenth");
+    let staInfo = document.createElement("span");
+    staInfo.classList.add("two-thirds", "child-center");
+    staInfo.innerHTML =
+    "<img class='img-fluid small-img' src='./images/stationary.png' alt='Stationary dial'>" +
+    "<p class='my-0 py-0'><b>TIR: </b>" + obj.stationaryDial + "</p>" +
+    "<p class='my-0 py-0'><b>1/2 TIR:</b> " + (obj.stationaryDial / 2) + "</p>"; 
 
-    //Driver bubble.
-    let driverInfoDiv = document.createElement("span");
-    driverInfoDiv.classList.add("quarter", "belt-border", "center-div");
-    driverInfoDiv.innerHTML = "<p class='m-0 p-0'><b>Driver</b><p>" + "<p class='output m-0 p-0'><b>Foot Distance (B): </b>" +
-        obj.driverFeetDistance + " Inches<br/>" + bubble + obj.driverTicks + " Ticks</p>";
-    let driverCanvasDiv = document.createElement("div");
-    driverCanvasDiv.classList.add("bubble-canvas");
-  
-    //Add driver and driven bubbles to page.
+    let movInfo = document.createElement("span");
+    movInfo.classList.add("two-thirds", "child-center");
+    movInfo.innerHTML =
+    "<img class='img-fluid small-img' src='./images/movable.png' alt='Movable dial'>" +
+    "<p class='my-0 py-0'><b>TIR: </b>" + obj.movableDial + "</p>" +
+    "<p class='my-0 py-0'><b>-1/2 TIR:</b> " + (-obj.movableDial / 2) + "</p>"; 
+
+    let outBlock = document.createElement("div");
+    outBlock.innerHTML =
+    "<span class='half belt-border center-div px-1'>" +
+        "<h4>Option 1</h4>" +
+        "<span class='half px-1'>" +
+            "<img class='img-fluid small-img my-0 py-0' src='./images/mov.png' alt='Movable device inboard'>" +
+            "<div class='divider'></div>" +
+            "<p><b>Inboard: </b>" + obj.o1InboardString + "</p>" +
+        "</span>" +
+        "<span class='half px-1'>" +
+            "<img class='img-fluid small-img' src='./images/mov.png' alt='Movable device outboard'>" +
+            "<div class='divider'></div>" +
+            "<p><b>Outboard: </b>" + obj.o1OutboardString + "</p>" +
+        "</span>" +
+    "</span>" +
+
+    "<span class='half belt-border center-div px-1'>" +
+        "<h4>Option 2</h4>" +
+        "<span class='half px-1'>" +
+            "<img class='img-fluid small-img' src='./images/sta.png' alt='Stationary device inboard'>" +
+            "<div class='divider'></div>" +
+            "<p><b>Inboard: </b>" + obj.o2Inboard1String + "</p>" +
+        "</span>" +
+        "<span class='half px-1'>" +
+            "<img class='img-fluid small-img' src='./images/mov.png' alt='Movable device inboard'>" +
+            "<div class='divider'></div>" +
+            "<p><b>Inboard: </b>" + obj.o2Inboard2String + "</p>" +
+        "</span>" +
+    "</span>" +
+    "<div class='my-2'></div>";
+
     body.appendChild(adjBlock);
-    adjBlock.appendChild(bubbleDiv);
-    bubbleDiv.appendChild(pad1Div);
-    bubbleDiv.appendChild(drivenInfoDiv);
-    drivenInfoDiv.appendChild(drivenCanvasDiv);
-    bubbleDiv.appendChild(pad2Div);
-    bubbleDiv.appendChild(driverInfoDiv);
-    driverInfoDiv.appendChild(driverCanvasDiv);
-
-    let signedDrivenBubble = obj.drivenBubbleHi ? obj.drivenTicks : -obj.drivenTicks;
-    let signedDriverBubble = obj.driverBubbleHi ? obj.driverTicks : -obj.driverTicks;
-
-    let drivenLevel = new Level(drivenCanvasDiv, {bubbleColor: "#3030ff"});
-    drivenLevel.bubbleDraw(signedDrivenBubble);
-    let driverLevel = new Level(driverCanvasDiv);
-    driverLevel.bubbleDraw(signedDriverBubble);
-
-    let option1 = "<p>???</p>";
-    let option2 = "<p>???</p>";
-    let option3 = "<p>???</p>";
-
-    //Form the strings for the varous output options.
-    if(obj.drivenToLevel !== undefined)
-    {
-        option1 = "<p><b>Option1</b></p> <div class='divider'></div>" +
-        "<p class='output'>Driven to Level: " + obj.drivenToLevel + 
-        " mils <b>AND</b> Driver to Level: " + obj.driverToLevel + " mils</p>"; 
-    }
-    
-    if(obj.driverToDriven !== undefined && obj.drivenToDriver !== undefined)
-    {
-        option2 = "<p><b>Option2</b></p> <div class='divider'></div>" +
-        "<p class='output'>Driver to Driven: " + obj.driverToDriven + " mils</p>";
-
-        option3 = "<p><b>Option3</b></p> <div class='divider'></div>" +
-        "<p class='output'>Driven to Driver: " + obj.drivenToDriver + " mils</p>";
-    }
-
-    if(obj.driverToDriven !== undefined && obj.drivenToDriver === undefined)
-    {
-        option2 = "<p><b>Option2</b></p> <div class='divider'></div>" +
-        "<p class='output'>Driver to Driven: " + obj.driverToDriven + " mils</p>";
-        
-        option3 = "<p><b>Option3</b></p> <div class='divider'></div>" +
-        "<p class='output'>N/A</p>";
-    }
-
-    if(obj.driverToDriven === undefined && obj.drivenToDriver !== undefined)
-    {
-        option2 = "<p><b>Option2</b></p> <div class='divider'></div>" +
-        "<p class='output'>Driven to Driver: " + obj.drivenToDriver + " mils</p>";
-
-        option3 = "<p><b>Option3</b></p> <div class='divider'></div>" +
-        "<p class='output'>N/A</p>";
-    }
-
-    if(obj.driverToDriven === undefined && obj.drivenToDriver === undefined)
-    {
-        option1 = "<p><b>Option1</b></p> <div class='divider'></div>" +
-        "<p class='output'>???</p>";
-
-        option2 = "<p><b>Option2</b></p> <div class='divider'></div>" +
-        "<p class='output'>???</p>";
-
-        option3 = "<p><b>Option3</b></p> <div class='divider'></div>" +
-        "<p class='output'>???</p>";
-    }
-
-    let outputDiv = document.createElement("span");
-    outputDiv.innerHTML =
-    "<span class='half center-div my-2'>" + option1 + "</span>" +
-    "<span class='quarter center-div my-2'>" + option2 + "</span>" +
-    "<span class='quarter center-div my-2'>" + option3 + "</span>";
-
-    adjBlock.appendChild(outputDiv);
+    leftSpan.appendChild(staInfo);
+    leftSpan.appendChild(staSpan);
+    rightSpan.appendChild(movInfo);
+    rightSpan.appendChild(movSpan);
+    dialBlock.appendChild(leftSpan);
+    dialBlock.appendChild(rightSpan);
+    adjBlock.appendChild(dialBlock);
+    adjBlock.appendChild(outBlock);
 
     //Add plot to page.
     let plotDiv = document.createElement("div");
     adjBlock.appendChild(plotDiv);
     
-    let plot = new BeltPlot(plotDiv, {backgroundImg: bkImg, backgroundAlpha: bkOp});
-    plot.doCalcs(obj.driverFeetDistance, obj.drivenFeetDistance, signedDriverBubble, signedDrivenBubble);
-}
+    //Instatiate dials and plot.
+    let sDial = new Dial(staSpan, {numberColor: "#c0000070", needleColor: "#700000"});
+    let mDial = new Dial(movSpan, {numberColor: "#0000c070", needleColor: "#000070"});
+    let plot  = new ShaftPlot(plotDiv, {backgroundImg: bkImg, backgroundAlpha: bkOp});
+    sDial.setDial(obj.stationaryDial);
+    mDial.setDial(obj.movableDial);
+    plot.doCalcs(obj.dimA, obj.dimB, obj.dimC, obj.dimD, obj.dimE, obj.stationaryDial / 2, -obj.movableDial / 2);
+};
 
 //Add measurement block to page.
 let addMeasurement = (obj, num) =>
@@ -266,10 +248,8 @@ let addMeasurement = (obj, num) =>
         "<p class='cost-result'>" + obj.costString + "</p>" +
     "</span>" +
     "<span class='quarter'>" +
-        "<p><b>Driver RPM</b></p>" +
-        "<p>" + obj.rpmDriver + "</p>" +
-        "<p><b>Driven RPM</b></p>" +
-        "<p>" + obj.rpmDriven + "</p>" +
+        "<p><b>Shaft RPM</b></p>" +
+        "<p>" + obj.rpmShaft + "</p>" +
     "</span>" +
     "<span class='quarter'>" +
         "<p><b>Highest UE(dB)</b></p>" +
@@ -278,25 +258,25 @@ let addMeasurement = (obj, num) =>
         "<p>" + obj.highestSnd + "</p>" +
     "</span>" +
     "<span class='quarter'>" +
-        "<p><b>Belt Temperature</b></p>" +
-        "<p>" + obj.beltTemp + "</p>" +
+        "<p><b>Shaft Temperature</b></p>" +
+        "<p>" + obj.shaftTemp + "</p>" +
     "</span>";
 
     body.appendChild(measBlock);
     measBlock.appendChild(bearingsDiv);
     measBlock.appendChild(readingsDiv);
-}
+};
 
 //Add the adjustment and measurement data.
-for(let i = baa.length - 1; i > 0; i--)
+for(let i = saa.length - 1; i > 0; i--)
 {
-    switch(baa[i].type)
+    switch(saa[i].type)
     {
-        case Bam.ADJ:
-            addAdjustment(baa[i], i);
+        case Sam.ADJ:
+            addAdjustment(saa[i], i);
         break;
-        case Bam.MEAS:
-            addMeasurement(baa[i], i);
+        case Sam.MEAS:
+            addMeasurement(saa[i], i);
         break;
         default:
             console.log("Unrecognized Type");

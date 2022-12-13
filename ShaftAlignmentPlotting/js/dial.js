@@ -154,7 +154,7 @@ class Dial
         }
 
         //Draw the inner circle the needle attaches to.
-        this.drawArc(0, 2 * Math.PI, this.radius * .01, this.needleColor, this.radius * .15);
+        this.drawArc(0, 2 * Math.PI, this.radius * .1, this.needleColor, this.radius * .01, true);
     }
 
     //Sets the dial value.
@@ -212,12 +212,13 @@ class Dial
     }
 
     //Draw arcs in polar coordinates.
-    drawArc(startAngle, endAngle, radius, color, width)
+    drawArc(startAngle, endAngle, radius, color, width, isFill = false)
     {
         this.ctxDial.beginPath();
         this.ctxDial.lineWidth = width;
         this.ctxDial.strokeStyle = color;
+        this.ctxDial.fillStyle = color;
         this.ctxDial.arc(this.bodyMiddle, this.bodyMiddle, radius, startAngle, endAngle);
-        this.ctxDial.stroke();
+        isFill ? this.ctxDial.fill() : this.ctxDial.stroke();
     }
 }

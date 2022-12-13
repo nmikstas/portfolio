@@ -23,7 +23,8 @@ class BeltPlot
     (
         parentDiv,
         {
-            backgroundImg = null
+            backgroundImg   = null,
+            backgroundAlpha = 1.0
         } = {}
     )
     {
@@ -34,7 +35,8 @@ class BeltPlot
         this.bodyHeight = 100;
 
         //Background image of the plot.
-        this.backgroundImg = backgroundImg;
+        this.backgroundImg   = backgroundImg;
+        this.backgroundAlpha = backgroundAlpha;
 
         //Graphing variables.
         this.pixelsPerSquare;
@@ -247,11 +249,30 @@ class BeltPlot
         //Clear any existing drawings.
         this.ctxPlot.clearRect(0, 0, this.bodyWidth, this.bodyHeight);
 
-        //Ensure the backgroung is not transparent.
+        //Check for background image.
         if(this.backgroundImg)
         {
-            //Add background image, if applicable.
-            this.ctxPlot.drawImage(this.backgroundImg, 0, 0, this.bodyWidth, this.bodyHeight);
+            //Get dimensions of image.
+            let imgWidth  = this.backgroundImg.naturalWidth;
+            let imgHeight = this.backgroundImg.naturalHeight;
+            
+            //Calculate the multiplier to stretch the image.
+            let ratioX = imgWidth  / this.bodyWidth;
+            let ratioY = imgHeight / this.bodyHeight;
+            let imgMultiplier;
+            imgMultiplier = (ratioX > ratioY) ? ratioX : ratioY;
+
+            let offsetX = (this.bodyWidth  / 2) - (imgWidth  / imgMultiplier / 2);
+            let offsetY = (this.bodyHeight / 2) - (imgHeight / imgMultiplier / 2);
+
+            //Add background image.
+            this.ctxPlot.save();
+            this.ctxPlot.globalAlpha = this.backgroundAlpha;
+            this.ctxPlot.translate(offsetX, offsetY);
+            this.ctxPlot.rotate(this.backgroundAngle);
+            this.ctxPlot.drawImage(this.backgroundImg, 0, 0, imgWidth / imgMultiplier, imgHeight / imgMultiplier);
+            this.ctxPlot.globalAlpha = 1;
+            this.ctxPlot.restore();
         }
         else
         {

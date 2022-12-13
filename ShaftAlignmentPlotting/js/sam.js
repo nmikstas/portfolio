@@ -1,11 +1,11 @@
 "use strict";
 
-//Belt alignment manager.
-class Bam
+//Shaft alignment manager.
+class Sam
 {
     static get ADJ()     {return 0}
     static get MEAS()    {return 1}
-    static get COST()    {return 2}
+    static get COST()    {return 20} //Different than belt data so basic error checking can be done.
     static get WEEKLY()  {return 0}
     static get MONTHLY() {return 1}
     static get YEARLY()  {return 2}
@@ -15,8 +15,12 @@ class Bam
         parentDiv,
         changeCostData,
         {
-            backgroundImg   = null,
-            backgroundAlpha = 1
+            backgroundImg       = null,
+            backgroundAlpha     = 1,
+            movableObjectImg    = null,
+            stationaryObjectImg = null,
+            movableDialImg      = null,
+            stationaryDialImg   = null
         } = {}
     )
     {
@@ -32,13 +36,19 @@ class Bam
         this.costKwh         = undefined;
         this.motorVoltage    = undefined;
         this.usageMultiplier = undefined;
-        this.timePeriod      = Bam.MONTHLY;
+        this.timePeriod      = Sam.MONTHLY;
         this.reportTitle     = "";
         this.reportComments  = "";
 
         //Graphing background image.
         this.backgroundImg   = backgroundImg;
         this.backgroundAlpha = backgroundAlpha;
+
+        //Small images used in the adjustment blocks.
+        this.movableObjectImg    = movableObjectImg;
+        this.stationaryObjectImg = stationaryObjectImg;
+        this.movableDialImg      = movableDialImg;
+        this.stationaryDialImg   = stationaryDialImg;
     }
 
     clearData()
@@ -60,7 +70,7 @@ class Bam
 
         //Add title and comments.
         let txtTitle = document.createElement("input");
-        txtTitle.classList.add("form-control");
+        txtTitle.classList.add("form-control", "input-long");
         txtTitle.setAttribute("maxlength", 80);
         txtTitle.setAttribute("type", "text");
         txtTitle.setAttribute("id", "title" + this.entryNum);
@@ -81,181 +91,228 @@ class Bam
         delBtn.setAttribute("num", this.entryNum);
         delBtn.innerHTML = "X";
         delBtn.classList.add("btn", "btn-outline-danger", "float-btn", "m-1");
-        
-        //Pre-padding.
+
+        //Input dimensions div.
         let div1 = document.createElement("div");
-        div1.classList.add("row", "my-2");
+        div1.classList.add("row");
         let div2 = document.createElement("div");
-        div2.classList.add("col-md-1");
-
-        //Driven bubble box.
+        div2.classList.add("col-md-12", "belt-border", "my-2", "pad");
         let div3 = document.createElement("div");
-        div3.classList.add("col-md-4", "belt-border");
-        let h1 = document.createElement("h3");
-        h1.innerHTML = "Driven";
+        div3.classList.add("row");
         let div4 = document.createElement("div");
-        div4.classList.add("row");
-        let div5 = document.createElement("div");
-        div5.classList.add("col-md-9");
+        div4.classList.add("col-md-6");
         let p1 = document.createElement("p");
-        p1.innerHTML = "Foot distance, dimension A<br>(.1 to 100 inches):";
-        let txtDrivenDistance = document.createElement("input");
-        txtDrivenDistance.classList.add("form-control", "bubble-input");
-        txtDrivenDistance.setAttribute("maxlength", 6);
-        txtDrivenDistance.setAttribute("type", "text");
-        let div6 = document.createElement("div");
-        div6.classList.add("divider", "mx-3");
-        let radio1 = document.createElement("input");
-        radio1.type = "radio";
-        radio1.name = "driven-bubble" + this.entryNum
-        radio1.checked = true;
-        radio1.classList.add("mr-2", "bubble-input");
-        radio1.setAttribute("id", "driven-bubble-hi" + this.entryNum);
-        let label1 = document.createElement("label");
-        label1.setAttribute("for", "driven-bubble-hi" + this.entryNum);
-        label1.innerHTML = "Bubble Up";
-        let break1 = document.createElement("br");
-        let radio2 = document.createElement("input");
-        radio2.type = "radio";
-        radio2.name = "driven-bubble" + this.entryNum
-        radio2.classList.add("mr-2", "bubble-input");
-        radio2.setAttribute("id", "driven-bubble-lo" + this.entryNum);
-        let label2 = document.createElement("label");
-        label2.setAttribute("for", "driven-bubble-lo" + this.entryNum);
-        label2.innerHTML = "Bubble Down";
-        let break2 = document.createElement("br");
+        p1.innerHTML = "Dimension A(.1 to 100 inches):";
+        let dimA = document.createElement("input");
+        dimA.setAttribute("maxlength", 6);
+        dimA.setAttribute("type", "text");
+        dimA.setAttribute("valtype", "dimA");
         let p2 = document.createElement("p");
-        p2.innerHTML = "Bubble offset<br>(0 to 8 ticks):";
-        let txtDrivenBubble = document.createElement("input");
-        txtDrivenBubble.classList.add("form-control", "bubble-input");
-        txtDrivenBubble.setAttribute("maxlength", 6);
-        txtDrivenBubble.setAttribute("type", "text");
-        let pDrivenLine = document.createElement("p");
-        pDrivenLine.innerHTML = "Line down ???";
-        let divDrivenLevel = document.createElement("div");
-        divDrivenLevel.classList.add("col-md-3");
-
-        //Inner divider.
-        let div7 = document.createElement("div");
-        div7.classList.add("col-md-2");
-        
-        //Driver bubble box.
-        let div8 = document.createElement("div");
-        div8.classList.add("col-md-4", "belt-border");
-        let h2 = document.createElement("h3");
-        h2.innerHTML = "Driver";
-        let div9 = document.createElement("div");
-        div9.classList.add("row");
-        let div10 = document.createElement("div");
-        div10.classList.add("col-md-9");
+        p2.innerHTML = "Dimension B(Greater than A to 100 inches):";
+        let dimB = document.createElement("input");
+        dimB.setAttribute("maxlength", 6);
+        dimB.setAttribute("type", "text");
+        dimB.setAttribute("valtype", "dimB");
         let p3 = document.createElement("p");
-        p3.innerHTML = "Foot distance, dimension B<br>(.1 to 100 inches):";
-        let txtDriverDistance = document.createElement("input");
-        txtDriverDistance.classList.add("form-control", "bubble-input");
-        txtDriverDistance.setAttribute("maxlength", 6);
-        txtDriverDistance.setAttribute("type", "text");
-        let div11 = document.createElement("div");
-        div11.classList.add("divider", "mx-3");
-        let radio3 = document.createElement("input");
-        radio3.type = "radio";
-        radio3.name = "driver-bubble" + this.entryNum
-        radio3.checked = true;
-        radio3.classList.add("mr-2", "bubble-input");
-        radio3.setAttribute("id", "driver-bubble-hi" + this.entryNum);
-        let label3 = document.createElement("label");
-        label3.setAttribute("for", "driver-bubble-hi" + this.entryNum);
-        label3.innerHTML = "Bubble Up";
-        let break3 = document.createElement("br");
-        let radio4 = document.createElement("input");
-        radio4.type = "radio";
-        radio4.name = "driver-bubble" + this.entryNum
-        radio4.classList.add("mr-2", "bubble-input");
-        radio4.setAttribute("id", "driver-bubble-lo" + this.entryNum);
-        let label4 = document.createElement("label");
-        label4.setAttribute("for", "driven-bubble-lo" + this.entryNum);
-        label4.innerHTML = "Bubble Down";
-        let break4 = document.createElement("br");
+        p3.innerHTML = "Dimension C(Greater than B to 100 inches):";
+        let dimC = document.createElement("input");
+        dimC.setAttribute("maxlength", 6);
+        dimC.setAttribute("type", "text");
+        dimC.setAttribute("valtype", "dimC");
+        let div5 = document.createElement("div");
+        div5.classList.add("col-md-6");
         let p4 = document.createElement("p");
-        p4.innerHTML = "Bubble offset<br>(0 to 8 ticks):";
-        let txtDriverBubble = document.createElement("input");
-        txtDriverBubble.classList.add("form-control", "bubble-input");
-        txtDriverBubble.setAttribute("maxlength", 6);
-        txtDriverBubble.setAttribute("type", "text");
-        let pDriverLine = document.createElement("p");
-        pDriverLine.innerHTML = "Line down ???";
-        let divDriverLevel = document.createElement("div");
-        divDriverLevel.classList.add("col-md-3");
+        p4.innerHTML = "Dimension D(.1 to 100 inches):";
+        let dimD = document.createElement("input");
+        dimD.setAttribute("maxlength", 6);
+        dimD.setAttribute("type", "text");
+        dimD.setAttribute("valtype", "dimD");
+        let p5 = document.createElement("p");
+        p5.innerHTML = "Dimension E(Greater than D to 100 inches):";
+        let dimE = document.createElement("input");
+        dimE.setAttribute("maxlength", 6);
+        dimE.setAttribute("type", "text");
+        dimE.setAttribute("valtype", "dimE");
+        let p6 = document.createElement("p");
+        p6.innerHTML = "Total length(Dimension F):";
+        let pDimF = document.createElement("p");
+        pDimF.innerHTML = "??? inches";
 
-        //Calculation results row.
+        //Dials div.
+        let div6 = document.createElement("div");
+        div6.classList.add("row", "mt-3", "px-3");
+        let div7 = document.createElement("div");
+        div7.classList.add("col-md-6", "belt-border");
+        let div8 = document.createElement("div");
+        div8.classList.add("row");
+        let div9 = document.createElement("div");
+        div9.classList.add("col-md-12");
+        let img1 = document.createElement("img");
+        img1.classList.add("img-fluid", "small-img");
+        img1.setAttribute("src", this.stationaryDialImg);
+        img1.setAttribute("alt", "Stationary dial");
+        let div10 = document.createElement("div");
+        div10.classList.add("divider");
+        let div11 = document.createElement("div");
+        div11.classList.add("row");
         let div12 = document.createElement("div");
-        div12.classList.add("row", "mt-3", "mx-1");
+        div12.classList.add("col-md-6");
+        let dstaDial = document.createElement("div");
+        dstaDial.classList.add("col-md-6");
+        let p7 = document.createElement("p");
+        p7.innerHTML = "TIR(-99 to 99):";
+        let staIn = document.createElement("input");
+        staIn.setAttribute("maxlength", 6);
+        staIn.setAttribute("type", "text");
+        staIn.setAttribute("valtype", "staIn");
+        let pstaHalfTIR = document.createElement("p");
+        pstaHalfTIR.innerHTML = "1/2 TIR: ???";
         let div13 = document.createElement("div");
-        div13.classList.add("col-md-8", "belt-border");
-        let h3 = document.createElement("h3");
-        h3.innerHTML = "Option 1";
-        let div19 = document.createElement("div");
-        div19.classList.add("divider", "mx-3");
+        div13.classList.add("col-md-6", "belt-border");
         let div14 = document.createElement("div");
-        div14.classList.add("row", "mt-3");
+        div14.classList.add("row");
         let div15 = document.createElement("div");
-        div15.classList.add("col-md-6");
-        let h4 = document.createElement("h4");
-        h4.classList.add("align");
-        h4.innerHTML = "Driven to Level";
-        let txtDrivenToLevel = document.createElement("p");
-        txtDrivenToLevel.classList.add("align");
-        txtDrivenToLevel.innerHTML = "???";
+        div15.classList.add("col-md-12");
+        let img2 = document.createElement("img");
+        img2.classList.add("img-fluid", "small-img");
+        img2.setAttribute("src", this.movableDialImg);
+        img2.setAttribute("alt", "Movable dial");
+        let div16 = document.createElement("div");
+        div16.classList.add("divider");
+        let div17 = document.createElement("div");
+        div17.classList.add("row");
+        let div18 = document.createElement("div");
+        div18.classList.add("col-md-6");
+        let dmovDial = document.createElement("div");
+        dmovDial.classList.add("col-md-6");
+        let p9 = document.createElement("p");
+        p9.innerHTML = "TIR(-99 to 99):";
+        let movIn = document.createElement("input");
+        movIn.setAttribute("maxlength", 6);
+        movIn.setAttribute("type", "text");
+        movIn.setAttribute("valtype", "movIn");
+        let pmovHalfTIR = document.createElement("p");
+        pmovHalfTIR.innerHTML = "1/2 TIR: ???";
+        let pmovnHalfTIR = document.createElement("p");
+        pmovnHalfTIR.innerHTML = "-1/2 TIR: ???";
+
+        //Results div.
+        let div19 = document.createElement("div");
+        div19.classList.add("row", "mt-3", "px-3");
         let div20 = document.createElement("div");
-        div20.classList.add("col-md-6");
-        let h5 = document.createElement("h4");
-        h5.innerHTML = "Driver to Level";
-        let txtDriverToLevel = document.createElement("p");
-        txtDriverToLevel.classList.add("align");
-        txtDriverToLevel.innerHTML = "???";
+        div20.classList.add("col-md-6", "belt-border");
+        let p10 = document.createElement("h3");
+        p10.innerHTML = "Option 1";
         let div21 = document.createElement("div");
-        div21.classList.add("col-md-4", "belt-border");
-        let options = document.createElement("h3");
-        options.setAttribute("id", "options" + this.entryNum);
-        options.innerHTML = "Option 2 (Option 3)";
+        div21.classList.add("divider");
         let div22 = document.createElement("div");
-        div22.classList.add("divider", "mx-3");
-        let txtOptimalMoves = document.createElement("p");
-        txtOptimalMoves.classList.add("align");
-        txtOptimalMoves.innerHTML = "???";
+        div22.classList.add("row");
+        let div23 = document.createElement("div");
+        div23.classList.add("col-md-6");
+        let img3 = document.createElement("img");
+        img3.classList.add("img-fluid", "small-img");
+        img3.setAttribute("src", this.movableObjectImg);
+        img3.setAttribute("alt", "Movable device inboard");
+        let div24 = document.createElement("div");
+        div24.classList.add("divider");
+        let p11 = document.createElement("h4");
+        p11.innerHTML = "Inboard";
+        let o1Inboard = document.createElement("p");
+        o1Inboard.classList.add("align");
+        o1Inboard.innerHTML = "???";
+        let div25 = document.createElement("div");
+        div25.classList.add("col-md-6");
+        let img4 = document.createElement("img");
+        img4.classList.add("img-fluid", "small-img");
+        img4.setAttribute("src", this.movableObjectImg);
+        img4.setAttribute("alt", "Movable device outboard");
+        let div26 = document.createElement("div");
+        div26.classList.add("divider");
+        let p12 = document.createElement("h4");
+        p12.innerHTML = "Outboard";
+        let o1Outboard = document.createElement("p");
+        o1Outboard.classList.add("align");
+        o1Outboard.innerHTML = "???";
+        let div27 = document.createElement("div");
+        div27.classList.add("col-md-6", "belt-border");
+        let p14 = document.createElement("h3");
+        p14.innerHTML = "Option 2";
+        let div28 = document.createElement("div");
+        div28.classList.add("divider");
+        let div29 = document.createElement("div");
+        div29.classList.add("row")
+        let div30 = document.createElement("div");
+        div30.classList.add("col-md-6");
+        let img5 = document.createElement("img");
+        img5.classList.add("img-fluid", "small-img");
+        img5.setAttribute("src", this.stationaryObjectImg);
+        img5.setAttribute("alt", "Stationary device inboard");
+        let div31 = document.createElement("div");
+        div31.classList.add("divider");
+        let p13 = document.createElement("h4");
+        p13.innerHTML = "Inboard";
+        let o2Inboard1 = document.createElement("p");
+        o2Inboard1.classList.add("align");
+        o2Inboard1.innerHTML = "???";
+        let div32 = document.createElement("div");
+        div32.classList.add("col-md-6");
+        let img6 = document.createElement("img");
+        img6.classList.add("img-fluid", "small-img");
+        img6.setAttribute("src", this.movableObjectImg);
+        img6.setAttribute("alt", "Movable device inboard");
+        let div33 = document.createElement("div");
+        div33.classList.add("divider");
+        let p15 = document.createElement("h4");
+        p15.innerHTML = "Inboard";
+        let o2Inboard2 = document.createElement("p");
+        o2Inboard2.classList.add("align");
+        o2Inboard2.innerHTML = "???";
 
         //Show/hide graph button.
-        let div16 = document.createElement("div");
-        div16.classList.add("row");
-        let div17 = document.createElement("div");
-        div17.classList.add("col-md-12");
+        let div116 = document.createElement("div");
+        div116.classList.add("row");
+        let div117 = document.createElement("div");
+        div117.classList.add("col-md-12");
         let hideBtn = document.createElement("button");
         hideBtn.innerHTML = "Hide Plot";
         hideBtn.classList.add("btn", "btn-outline-primary", "float-btn", "m-1");
 
         //Graph.
-        let div18 = document.createElement("div");
-        div18.classList.add("row");
+        let div118 = document.createElement("div");
+        div118.classList.add("row");
         let divPlot = document.createElement("div");
         divPlot.classList.add("col-md-12");
 
         //Add everything together.
-        this.appendChildren(mainDiv, [delBtn, label6, txtTitle, label5, txtComments, div1, div12, div16, div18]);
-        this.appendChildren(div1, [div2, div3, div7, div8]);
-        this.appendChildren(div3, [h1, div4]);
-        this.appendChildren(div4, [div5, divDrivenLevel]);
-        this.appendChildren(div5, [p1, txtDrivenDistance, div6, radio1, label1, break1, radio2, label2, break2, p2, txtDrivenBubble, pDrivenLine]);        
-        this.appendChildren(div8, [h2, div9]);
-        this.appendChildren(div9, [div10, divDriverLevel]);
-        this.appendChildren(div10, [p3, txtDriverDistance, div11, radio3, label3, break3, radio4, label4, break4, p4, txtDriverBubble, pDriverLine]);
-        this.appendChildren(div12, [div13, div21]);
-        this.appendChildren(div13, [h3, div19, div14]);
-        this.appendChildren(div14, [div15, div20]);
-        this.appendChildren(div15, [h4, txtDrivenToLevel]);
-        this.appendChildren(div20, [h5, txtDriverToLevel]);
-        this.appendChildren(div21, [options, div22, txtOptimalMoves]);
-        div16.appendChild(div17);
-        div17.appendChild(hideBtn);
-        div18.appendChild(divPlot);
+        this.appendChildren(mainDiv, [delBtn, label6, txtTitle, label5, txtComments, div1, div6, div19, div116, div118]);
+        this.appendChildren(div3, [div4, div5]);
+        this.appendChildren(div4, [p1, dimA, p2, dimB, p3, dimC]);
+        this.appendChildren(div5, [p4, dimD, p5, dimE, p6, pDimF]);
+        this.appendChildren(div6, [div7, div13]);
+        this.appendChildren(div7, [div8, div10, div11]);
+        this.appendChildren(div11, [div12, dstaDial]);
+        this.appendChildren(div12, [p7, staIn, pstaHalfTIR]);
+        this.appendChildren(div13, [div14, div16, div17]);
+        this.appendChildren(div17, [div18, dmovDial]);
+        this.appendChildren(div18, [p9, movIn, pmovHalfTIR, pmovnHalfTIR]);
+        this.appendChildren(div19, [div20, div27]);
+        this.appendChildren(div20, [p10, div21, div22]);
+        this.appendChildren(div22, [div23, div25]);
+        this.appendChildren(div23, [img3, div24, p11, o1Inboard]);
+        this.appendChildren(div25, [img4, div26, p12, o1Outboard]);
+        this.appendChildren(div27, [p14, div28, div29]);
+        this.appendChildren(div29, [div30, div32]);
+        this.appendChildren(div30, [img5, div31, p13, o2Inboard1]);
+        this.appendChildren(div32, [img6, div33, p15, o2Inboard2]);
+        div1.appendChild(div2);
+        div2.appendChild(div3);
+        div8.appendChild(div9);
+        div9.appendChild(img1);
+        div14.appendChild(div15);
+        div15.appendChild(img2);
+        div116.appendChild(div117);
+        div117.appendChild(hideBtn);
+        div118.appendChild(divPlot);
         this.parentDiv.prepend(mainDiv);
         mainDiv.style.height = "0%";
         
@@ -281,9 +338,9 @@ class Bam
 
         /********************************* Class Instantiations **********************************/
 
-        let drivenLevel = new Level(divDrivenLevel, {bubbleColor: "#3030ff"});
-        let driverLevel = new Level(divDriverLevel);
-        let plot = new BeltPlot(divPlot, {backgroundImg: this.backgroundImg, backgroundAlpha: this.backgroundAlpha});
+        let sDial = new Dial(dstaDial, {numberColor: "#c0000070", needleColor: "#700000"});
+        let mDial = new Dial(dmovDial, {numberColor: "#0000c070", needleColor: "#000070"});
+        let plot  = new ShaftPlot(divPlot, {backgroundImg: this.backgroundImg, backgroundAlpha: this.backgroundAlpha});
 
         /********************************** JSON Instantiation ***********************************/
 
@@ -295,111 +352,102 @@ class Bam
             obj =
             {
                 //Object info.
-                num:                this.entryNum,
-                type:               Bam.ADJ,
-                title:              object.hasOwnProperty("title") ? object.title : "",
-                comments:           object.hasOwnProperty("comments") ? object.comments : "",
+                num:      this.entryNum,
+                type:     Sam.ADJ,
+                title:    object.hasOwnProperty("title")    ? object.title    : "",
+                comments: object.hasOwnProperty("comments") ? object.comments : "",
 
                 //Inputs.
-                driverFeetDistance: object.hasOwnProperty("driverFeetDistance") ? object.driverFeetDistance : undefined,
-                drivenFeetDistance: object.hasOwnProperty("drivenFeetDistance") ? object.drivenFeetDistance : undefined,
-                driverTicks:        object.hasOwnProperty("driverTicks") ? object.driverTicks : undefined,
-                drivenTicks:        object.hasOwnProperty("drivenTicks") ? object.drivenTicks : undefined,
-                driverBubbleHi:     object.hasOwnProperty("driverBubbleHi") ? object.driverBubbleHi : true,
-                drivenBubbleHi:     object.hasOwnProperty("drivenBubbleHi") ? object.drivenBubbleHi : true,
+                dimA:           object.hasOwnProperty("dimA")           ? object.dimA           : undefined,
+                dimB:           object.hasOwnProperty("dimB")           ? object.dimB           : undefined,
+                dimC:           object.hasOwnProperty("dimC")           ? object.dimC           : undefined,
+                dimD:           object.hasOwnProperty("dimD")           ? object.dimD           : undefined,
+                dimE:           object.hasOwnProperty("dimE")           ? object.dimE           : undefined,
+                stationaryDial: object.hasOwnProperty("stationaryDial") ? object.stationaryDial : undefined,
+                movableDial:    object.hasOwnProperty("movableDial")    ? object.movableDial    : undefined,
 
                 //Outputs.
-                driverToLevel:      object.hasOwnProperty("driverToLevel") ? object.driverToLevel : undefined,
-                drivenToLevel:      object.hasOwnProperty("drivenToLevel") ? object.drivenToLevel : undefined,
-                driverToDriven:     object.hasOwnProperty("driverToDriven") ? object.driverToDriven : undefined,
-                drivenToDriver:     object.hasOwnProperty("drivenToDriver") ? object.drivenToDriver : undefined,
-            
+                option1Inboard:  object.hasOwnProperty("option1Inboard")  ? object.option1Inboard  : undefined,
+                option1Outboard: object.hasOwnProperty("option1Outboard") ? object.option1Outboard : undefined,
+                option2Inboard1: object.hasOwnProperty("option2Inboard1") ? object.option2Inboard1 : undefined,
+                option2Inboard2: object.hasOwnProperty("option2Inboard2") ? object.option2Inboard2 : undefined,
+
                 //Canvas variables.
-                drivenLevel:        drivenLevel,
-                driverLevel:        driverLevel,
-                txtDrivenToLevel:   txtDrivenToLevel,
-                txtDriverToLevel:   txtDriverToLevel,
-                txtOptimalMoves:    txtOptimalMoves,
-                plot:               plot,
-                plotHidden:         object.hasOwnProperty("plotHidden") ? object.plotHidden : false
+                sDial:      sDial,
+                mDial:      mDial,
+                plot:       plot,
+                plotHidden: object.hasOwnProperty("plotHidden") ? object.plotHidden : false,
+
+                //Text references.
+                pDimF:        pDimF,
+                pstaHalfTIR:  pstaHalfTIR,
+                pmovHalfTIR:  pmovHalfTIR,
+                pmovnHalfTIR: pmovnHalfTIR,
+                o1Inboard:    o1Inboard,
+                o1Outboard:   o1Outboard,
+                o2Inboard1:   o2Inboard1,
+                o2Inboard2:   o2Inboard2,
+
+                //User input references.
+                tbDimA: dimA,
+                tbDimB: dimB,
+                tbDimC: dimC,
+                tbDimD: dimD,
+                tbDimE: dimE,
+                tbSta:  staIn,
+                tbMov:  movIn
             }
         }
         else
         {
+            //Create new object with empty values.
             obj =
             {
                 //Object info.
-                num:                this.entryNum,
-                type:               Bam.ADJ,
-                title:              "",
-                comments:           "",
+                num:      this.entryNum,
+                type:     Sam.ADJ,
+                title:    "",
+                comments: "",
 
                 //Inputs.
-                driverFeetDistance: undefined,
-                drivenFeetDistance: undefined,
-                driverTicks:        undefined,
-                drivenTicks:        undefined,
-                driverBubbleHi:     true,
-                drivenBubbleHi:     true,
+                dimA:           undefined,
+                dimB:           undefined,
+                dimC:           undefined,
+                dimD:           undefined,
+                dimE:           undefined,
+                stationaryDial: undefined,
+                movableDial:    undefined,
 
                 //Outputs.
-                driverToLevel:      undefined,
-                drivenToLevel:      undefined,
-                driverToDriven:     undefined,
-                drivenToDriver:     undefined,
-            
+                option1Inboard:  undefined,
+                option1Outboard: undefined,
+                option2Inboard1: undefined,
+                option2Inboard2: undefined,
+
                 //Canvas variables.
-                drivenLevel:        drivenLevel,
-                driverLevel:        driverLevel,
-                txtDrivenToLevel:   txtDrivenToLevel,
-                txtDriverToLevel:   txtDriverToLevel,
-                txtOptimalMoves:    txtOptimalMoves,
-                plot:               plot,
-                plotHidden:         false
-            }
-        }
+                sDial:      sDial,
+                mDial:      mDial,
+                plot:       plot,
+                plotHidden: false,
 
-        //Add values to elements if object exists. Used when loading from a file.
-        if(object)
-        {
-            //Title and comments.
-            txtTitle.value    = obj.title;
-            txtComments.value = obj.comments;
+                //Text references.
+                pDimF:        pDimF,
+                pstaHalfTIR:  pstaHalfTIR,
+                pmovHalfTIR:  pmovHalfTIR,
+                pmovnHalfTIR: pmovnHalfTIR,
+                o1Inboard:    o1Inboard,
+                o1Outboard:   o1Outboard,
+                o2Inboard1:   o2Inboard1,
+                o2Inboard2:   o2Inboard2,
 
-            //Driver and driven feet distance.
-            txtDriverDistance.value = isNaN(obj.driverFeetDistance) ? "" : obj.driverFeetDistance;
-            txtDrivenDistance.value = isNaN(obj.drivenFeetDistance) ? "" : obj.drivenFeetDistance;
-
-            //Bubble up/bubble down radio buttons.
-            obj.drivenBubbleHi ? radio1.checked = true : radio2.checked = true;
-            obj.driverBubbleHi ? radio3.checked = true : radio4.checked = true;
-
-            //Bubble tick marks.
-            txtDriverBubble.value = isNaN(obj.driverTicks) ? "" : obj.driverTicks;
-            txtDrivenBubble.value = isNaN(obj.drivenTicks) ? "" : obj.drivenTicks;
-
-            //Bubble canvases.
-            let signedDrivenBubble = obj.drivenBubbleHi ? obj.drivenTicks : -obj.drivenTicks;
-            obj.drivenLevel.bubbleDraw(signedDrivenBubble);
-            let signedDriverBubble = obj.driverBubbleHi ? obj.driverTicks : -obj.driverTicks;
-            obj.driverLevel.bubbleDraw(signedDriverBubble);
-
-            //Line up/line down text.
-            let lineText = "Line down ";
-            if(!obj.drivenBubbleHi) lineText = "Line up ";
-            pDrivenLine.innerHTML = lineText + ((obj.drivenTicks === undefined) ? "???" : obj.drivenTicks.toFixed(2));
-            lineText = "Line down ";
-            if(!obj.driverBubbleHi) lineText = "Line up ";
-            pDriverLine.innerHTML = lineText + ((obj.driverTicks === undefined) ? "???" : obj.driverTicks.toFixed(2));
-
-            //Plot and output.
-            this.updatePlot(obj);
-
-            //Hide/show button.
-            if(obj.plotHidden)
-            {
-                hideBtn.innerHTML = "Show Plot";
-                divPlot.style.display = "none";
+                //User input references.
+                tbDimA: dimA,
+                tbDimB: dimB,
+                tbDimC: dimC,
+                tbDimD: dimD,
+                tbDimE: dimE,
+                tbSta:  staIn,
+                tbMov:  movIn
             }
         }
 
@@ -469,134 +517,56 @@ class Bam
             }
         });
 
-        //Add listener for keystrokes.
-        txtDrivenDistance.addEventListener("keyup", (e) =>
+        dimA.addEventListener("keyup", (e)    => this.isNumberKey(e, dimA, obj, .1, 100));
+        dimA.addEventListener("focusout", ()  => this.validateNumber(dimA, obj, .1, 100));
+        dimB.addEventListener("keyup", (e)    => this.isNumberKey(e, dimB, obj, .1, 100));
+        dimB.addEventListener("focusout", ()  => this.validateNumber(dimB, obj, .1, 100));
+        dimC.addEventListener("keyup", (e)    => this.isNumberKey(e, dimC, obj, .1, 100));
+        dimC.addEventListener("focusout", ()  => this.validateNumber(dimC, obj, .1, 100));
+        dimD.addEventListener("keyup", (e)    => this.isNumberKey(e, dimD, obj, .1, 100));
+        dimD.addEventListener("focusout", ()  => this.validateNumber(dimD, obj, .1, 100));
+        dimE.addEventListener("keyup", (e)    => this.isNumberKey(e, dimE, obj, .1, 100));
+        dimE.addEventListener("focusout", ()  => this.validateNumber(dimE, obj, .1, 100));
+        staIn.addEventListener("keyup", (e)   => this.isSignedNumberKey(e, staIn, obj, -99, 99));
+        staIn.addEventListener("focusout", () => this.validateNumber(staIn, obj, -99, 99));
+        movIn.addEventListener("keyup", (e)   => this.isSignedNumberKey(e, movIn, obj, -99, 99));
+        movIn.addEventListener("focusout", () => this.validateNumber(movIn, obj, -99, 99));
+
+        /******************************** Update Existing Objects ********************************/
+
+        //Add values to elements if object exists. Used when loading from a file.
+        if(object)
         {
-            let isValid, didValidate, num;
-            [isValid, didValidate, num] = this.isNumKey(e, txtDrivenDistance, .1, 100);
-            if(didValidate) obj.drivenFeetDistance = isValid ? num : undefined;
-            this.updatePlot(obj);
-        });
+            //Title and comments.
+            txtTitle.value    = obj.title;
+            txtComments.value = obj.comments;
 
-        txtDriverDistance.addEventListener("keyup", (e) =>
-        {
-            let isValid, didValidate, num;
-            [isValid, didValidate, num] = this.isNumKey(e, txtDriverDistance, .1, 100);
-            if(didValidate) obj.driverFeetDistance = isValid ? num : undefined;
-            this.updatePlot(obj);
-        });
+            //Input values.
+            dimA.value  = obj.dimA;
+            dimB.value  = obj.dimB;
+            dimC.value  = obj.dimC;
+            dimD.value  = obj.dimD;
+            dimE.value  = obj.dimE;
+            staIn.value = obj.stationaryDial;
+            movIn.value = obj.movableDial;
 
-        txtDrivenBubble.addEventListener("keyup", (e) =>
-        {
-            let isValid, didValidate, num;
-            [isValid, didValidate, num] = this.isNumKey(e, txtDrivenBubble, 0, 8);
-            if(didValidate) obj.drivenTicks = isValid ? num : undefined;
+            //Plot and output.
+            this.validateNumber(dimA, obj, .1, 100);
+            this.validateNumber(dimB, obj, .1, 100);
+            this.validateNumber(dimC, obj, .1, 100);
+            this.validateNumber(dimD, obj, .1, 100);
+            this.validateNumber(dimE, obj, .1, 100);
+            this.validateNumber(staIn, obj, -99, 99);
+            this.validateNumber(movIn, obj, -99, 99);
 
-            let signedDrivenBubble = obj.drivenBubbleHi ? obj.drivenTicks : -obj.drivenTicks;
-            obj.drivenLevel.bubbleDraw(signedDrivenBubble);
-            this.updatePlot(obj);
-
-            let lineText = "Line down ";
-            if(!obj.drivenBubbleHi) lineText = "Line up ";
-            pDrivenLine.innerHTML = lineText + ((obj.drivenTicks === undefined) ? "???" : obj.drivenTicks.toFixed(2));
-        });
-
-        txtDriverBubble.addEventListener("keyup", (e) =>
-        {
-            let isValid, didValidate, num;
-            [isValid, didValidate, num] = this.isNumKey(e, txtDriverBubble, 0, 8);
-            if(didValidate) obj.driverTicks = isValid ? num : undefined;
-
-            let signedDriverBubble = obj.driverBubbleHi ? obj.driverTicks : -obj.driverTicks;
-            obj.driverLevel.bubbleDraw(signedDriverBubble);
-            this.updatePlot(obj);
-
-            let lineText = "Line down ";
-            if(!obj.driverBubbleHi) lineText = "Line up ";
-            pDriverLine.innerHTML = lineText + ((obj.driverTicks === undefined) ? "???" : obj.driverTicks.toFixed(2));
-        });
-
-        //Validate number when user leaves text box focus.
-        txtDrivenDistance.addEventListener("focusout", () =>
-        {
-            let isValid, num;
-            [isValid, num] = this.valNumber(txtDrivenDistance, .1, 100);
-            obj.drivenFeetDistance = isValid ? num : undefined;
-            this.updatePlot(obj);
-        });
-
-        txtDriverDistance.addEventListener("focusout", () =>
-        {
-            let isValid, num;
-            [isValid, num] = this.valNumber(txtDriverDistance, .1, 100);
-            obj.driverFeetDistance = isValid ? num : undefined;
-            this.updatePlot(obj);
-        });
-
-        txtDrivenBubble.addEventListener("focusout", () =>
-        {
-            let isValid, num;
-            [isValid, num] = this.valNumber(txtDrivenBubble, 0, 8);
-            obj.drivenTicks = isValid ? num : undefined;
-
-            let signedDrivenBubble = obj.drivenBubbleHi ? obj.drivenTicks : -obj.drivenTicks;
-            obj.drivenLevel.bubbleDraw(signedDrivenBubble);
-            this.updatePlot(obj);
-
-            let lineText = "Line down ";
-            if(!obj.drivenBubbleHi) lineText = "Line up ";
-            pDrivenLine.innerHTML = lineText + ((obj.drivenTicks === undefined) ? "???" : obj.drivenTicks.toFixed(2));
-        });
-
-        txtDriverBubble.addEventListener("focusout", () =>
-        {
-            let isValid, num;
-            [isValid, num] = this.valNumber(txtDriverBubble, 0, 8);
-            obj.driverTicks = isValid ? num : undefined;
-
-            let signedDriverBubble = obj.driverBubbleHi ? obj.driverTicks : -obj.driverTicks;
-            obj.driverLevel.bubbleDraw(signedDriverBubble);
-            this.updatePlot(obj);
-
-            let lineText = "Line down ";
-            if(!obj.driverBubbleHi) lineText = "Line up ";
-            pDriverLine.innerHTML = lineText + ((obj.driverTicks === undefined) ? "???" : obj.driverTicks.toFixed(2));
-        });
-
-        //Driven radio button listener.
-        radio1.addEventListener("click", () =>
-        {
-            obj.drivenBubbleHi = true;
-            obj.drivenLevel.bubbleDraw(obj.drivenTicks);
-            this.updatePlot(obj);
-            pDrivenLine.innerHTML = "Line down " + ((obj.drivenTicks === undefined) ? "???" : obj.drivenTicks.toFixed(2));
-        });
-
-        radio2.addEventListener("click", () =>
-        {
-            obj.drivenBubbleHi = false;
-            obj.drivenLevel.bubbleDraw(-obj.drivenTicks);
-            this.updatePlot(obj);
-            pDrivenLine.innerHTML = "Line up " + ((obj.drivenTicks === undefined) ? "???" : obj.drivenTicks.toFixed(2));
-        });
-
-        //Driver radio button listener.
-        radio3.addEventListener("click", () =>
-        {
-            obj.driverBubbleHi = true;
-            obj.driverLevel.bubbleDraw(obj.driverTicks);
-            this.updatePlot(obj);
-            pDriverLine.innerHTML = "Line down " + ((obj.driverTicks === undefined) ? "???" : obj.driverTicks.toFixed(2));
-        });
-
-        radio4.addEventListener("click", () =>
-        {
-            obj.driverBubbleHi = false;
-            obj.driverLevel.bubbleDraw(-obj.driverTicks);
-            this.updatePlot(obj);
-            pDriverLine.innerHTML = "Line up " + ((obj.driverTicks === undefined) ? "???" : obj.driverTicks.toFixed(2));
-        });
-
+            //Hide/show button.
+            if(obj.plotHidden)
+            {
+                hideBtn.innerHTML = "Show Plot";
+                divPlot.style.display = "none";
+            }
+        }
+        
         /*********************************** History Addition ************************************/
 
         //Add object data to history.
@@ -623,7 +593,7 @@ class Bam
 
         //Add title and comments.
         let txtTitle = document.createElement("input");
-        txtTitle.classList.add("form-control");
+        txtTitle.classList.add("form-control", "input-long");
         txtTitle.setAttribute("maxlength", 80);
         txtTitle.setAttribute("type", "text");
         txtTitle.setAttribute("id", "title" + this.entryNum);
@@ -661,7 +631,7 @@ class Bam
         label3.setAttribute("for", "p1h-vel" + this.entryNum);
         label3.innerHTML = "Vel";
         let txtp1hVel = document.createElement("input");
-        txtp1hVel.classList.add("form-control", "position-input");
+        txtp1hVel.classList.add("form-control", "position-input", "input-fix");
         txtp1hVel.setAttribute("maxlength", 6);
         txtp1hVel.setAttribute("id", "p1h-vel" + this.entryNum);
         let div9 = document.createElement("div");
@@ -670,7 +640,7 @@ class Bam
         label4.setAttribute("for", "p1h-ge" + this.entryNum);
         label4.innerHTML = "gE";
         let txtp1hGe = document.createElement("input");
-        txtp1hGe.classList.add("form-control", "position-input");
+        txtp1hGe.classList.add("form-control", "position-input", "input-fix");
         txtp1hGe.setAttribute("maxlength", 6);
         txtp1hGe.setAttribute("id", "p1h-ge" + this.entryNum);
 
@@ -686,7 +656,7 @@ class Bam
         label5.setAttribute("for", "p1v-vel" + this.entryNum);
         label5.innerHTML = "Vel";
         let txtp1vVel = document.createElement("input");
-        txtp1vVel.classList.add("form-control", "position-input");
+        txtp1vVel.classList.add("form-control", "position-input", "input-fix");
         txtp1vVel.setAttribute("maxlength", 6);
         txtp1vVel.setAttribute("id", "p1v-vel" + this.entryNum);
         let div12 = document.createElement("div");
@@ -695,7 +665,7 @@ class Bam
         label6.setAttribute("for", "p1v-ge" + this.entryNum);
         label6.innerHTML = "gE";
         let txtp1vGe = document.createElement("input");
-        txtp1vGe.classList.add("form-control", "position-input");
+        txtp1vGe.classList.add("form-control", "position-input", "input-fix");
         txtp1vGe.setAttribute("maxlength", 6);
         txtp1vGe.setAttribute("id", "p1v-ge" + this.entryNum);
 
@@ -711,7 +681,7 @@ class Bam
         label7.setAttribute("for", "p1a-vel" + this.entryNum);
         label7.innerHTML = "Vel";
         let txtp1aVel = document.createElement("input");
-        txtp1aVel.classList.add("form-control", "position-input");
+        txtp1aVel.classList.add("form-control", "position-input", "input-fix");
         txtp1aVel.setAttribute("maxlength", 6);
         txtp1aVel.setAttribute("id", "p1a-vel" + this.entryNum);
         let div15 = document.createElement("div");
@@ -720,7 +690,7 @@ class Bam
         label8.setAttribute("for", "p1a-ge" + this.entryNum);
         label8.innerHTML = "gE";
         let txtp1aGe = document.createElement("input");
-        txtp1aGe.classList.add("form-control", "position-input");
+        txtp1aGe.classList.add("form-control", "position-input", "input-fix");
         txtp1aGe.setAttribute("maxlength", 6);
         txtp1aGe.setAttribute("id", "p1a-ge" + this.entryNum);
 
@@ -731,7 +701,7 @@ class Bam
         label9.setAttribute("for", "p1-temp" + this.entryNum);
         label9.innerHTML = "Bearing Temperature";
         let txtp1Temp = document.createElement("input");
-        txtp1Temp.classList.add("form-control", "position-input");
+        txtp1Temp.classList.add("form-control", "position-input", "input-fix");
         txtp1Temp.setAttribute("maxlength", 6);
         txtp1Temp.setAttribute("id", "p1-temp" + this.entryNum);
 
@@ -755,7 +725,7 @@ class Bam
         label30.setAttribute("for", "p2h-vel" + this.entryNum);
         label30.innerHTML = "Vel";
         let txtp2hVel = document.createElement("input");
-        txtp2hVel.classList.add("form-control", "position-input");
+        txtp2hVel.classList.add("form-control", "position-input", "input-fix");
         txtp2hVel.setAttribute("maxlength", 6);
         txtp2hVel.setAttribute("id", "p2h-vel" + this.entryNum);
         let div90 = document.createElement("div");
@@ -764,7 +734,7 @@ class Bam
         label40.setAttribute("for", "p2h-ge" + this.entryNum);
         label40.innerHTML = "gE";
         let txtp2hGe = document.createElement("input");
-        txtp2hGe.classList.add("form-control", "position-input");
+        txtp2hGe.classList.add("form-control", "position-input", "input-fix");
         txtp2hGe.setAttribute("maxlength", 6);
         txtp2hGe.setAttribute("id", "p2h-ge" + this.entryNum);
 
@@ -780,7 +750,7 @@ class Bam
         label50.setAttribute("for", "p2v-vel" + this.entryNum);
         label50.innerHTML = "Vel";
         let txtp2vVel = document.createElement("input");
-        txtp2vVel.classList.add("form-control", "position-input");
+        txtp2vVel.classList.add("form-control", "position-input", "input-fix");
         txtp2vVel.setAttribute("maxlength", 6);
         txtp2vVel.setAttribute("id", "p2v-vel" + this.entryNum);
         let div120 = document.createElement("div");
@@ -789,7 +759,7 @@ class Bam
         label60.setAttribute("for", "p2v-ge" + this.entryNum);
         label60.innerHTML = "gE";
         let txtp2vGe = document.createElement("input");
-        txtp2vGe.classList.add("form-control", "position-input");
+        txtp2vGe.classList.add("form-control", "position-input", "input-fix");
         txtp2vGe.setAttribute("maxlength", 6);
         txtp2vGe.setAttribute("id", "p2v-ge" + this.entryNum);
 
@@ -805,7 +775,7 @@ class Bam
         label70.setAttribute("for", "p2a-vel" + this.entryNum);
         label70.innerHTML = "Vel";
         let txtp2aVel = document.createElement("input");
-        txtp2aVel.classList.add("form-control", "position-input");
+        txtp2aVel.classList.add("form-control", "position-input", "input-fix");
         txtp2aVel.setAttribute("maxlength", 6);
         txtp2aVel.setAttribute("id", "p2a-vel" + this.entryNum);
         let div150 = document.createElement("div");
@@ -814,7 +784,7 @@ class Bam
         label80.setAttribute("for", "p2a-ge" + this.entryNum);
         label80.innerHTML = "gE";
         let txtp2aGe = document.createElement("input");
-        txtp2aGe.classList.add("form-control", "position-input");
+        txtp2aGe.classList.add("form-control", "position-input", "input-fix");
         txtp2aGe.setAttribute("maxlength", 6);
         txtp2aGe.setAttribute("id", "p2a-ge" + this.entryNum);
 
@@ -825,7 +795,7 @@ class Bam
         label90.setAttribute("for", "p2-temp" + this.entryNum);
         label90.innerHTML = "Bearing Temperature";
         let txtp2Temp = document.createElement("input");
-        txtp2Temp.classList.add("form-control", "position-input");
+        txtp2Temp.classList.add("form-control", "position-input", "input-fix");
         txtp2Temp.setAttribute("maxlength", 6);
         txtp2Temp.setAttribute("id", "p2-temp" + this.entryNum);
 
@@ -849,7 +819,7 @@ class Bam
         label300.setAttribute("for", "p3h-vel" + this.entryNum);
         label300.innerHTML = "Vel";
         let txtp3hVel = document.createElement("input");
-        txtp3hVel.classList.add("form-control", "position-input");
+        txtp3hVel.classList.add("form-control", "position-input", "input-fix");
         txtp3hVel.setAttribute("maxlength", 6);
         txtp3hVel.setAttribute("id", "p3h-vel" + this.entryNum);
         let div900 = document.createElement("div");
@@ -858,7 +828,7 @@ class Bam
         label400.setAttribute("for", "p3h-ge" + this.entryNum);
         label400.innerHTML = "gE";
         let txtp3hGe = document.createElement("input");
-        txtp3hGe.classList.add("form-control", "position-input");
+        txtp3hGe.classList.add("form-control", "position-input", "input-fix");
         txtp3hGe.setAttribute("maxlength", 6);
         txtp3hGe.setAttribute("id", "p3h-ge" + this.entryNum);
 
@@ -874,7 +844,7 @@ class Bam
         label500.setAttribute("for", "p3v-vel" + this.entryNum);
         label500.innerHTML = "Vel";
         let txtp3vVel = document.createElement("input");
-        txtp3vVel.classList.add("form-control", "position-input");
+        txtp3vVel.classList.add("form-control", "position-input", "input-fix");
         txtp3vVel.setAttribute("maxlength", 6);
         txtp3vVel.setAttribute("id", "p3v-vel" + this.entryNum);
         let div1200 = document.createElement("div");
@@ -883,7 +853,7 @@ class Bam
         label600.setAttribute("for", "p3v-ge" + this.entryNum);
         label600.innerHTML = "gE";
         let txtp3vGe = document.createElement("input");
-        txtp3vGe.classList.add("form-control", "position-input");
+        txtp3vGe.classList.add("form-control", "position-input", "input-fix");
         txtp3vGe.setAttribute("maxlength", 6);
         txtp3vGe.setAttribute("id", "p3v-ge" + this.entryNum);
 
@@ -899,7 +869,7 @@ class Bam
         label700.setAttribute("for", "p3a-vel" + this.entryNum);
         label700.innerHTML = "Vel";
         let txtp3aVel = document.createElement("input");
-        txtp3aVel.classList.add("form-control", "position-input");
+        txtp3aVel.classList.add("form-control", "position-input", "input-fix");
         txtp3aVel.setAttribute("maxlength", 6);
         txtp3aVel.setAttribute("id", "p3a-vel" + this.entryNum);
         let div1500 = document.createElement("div");
@@ -908,7 +878,7 @@ class Bam
         label800.setAttribute("for", "p3a-ge" + this.entryNum);
         label800.innerHTML = "gE";
         let txtp3aGe = document.createElement("input");
-        txtp3aGe.classList.add("form-control", "position-input");
+        txtp3aGe.classList.add("form-control", "position-input", "input-fix");
         txtp3aGe.setAttribute("maxlength", 6);
         txtp3aGe.setAttribute("id", "p3a-ge" + this.entryNum);
 
@@ -919,7 +889,7 @@ class Bam
         label900.setAttribute("for", "p3-temp" + this.entryNum);
         label900.innerHTML = "Bearing Temperature";
         let txtp3Temp = document.createElement("input");
-        txtp3Temp.classList.add("form-control", "position-input");
+        txtp3Temp.classList.add("form-control", "position-input", "input-fix");
         txtp3Temp.setAttribute("maxlength", 6);
         txtp3Temp.setAttribute("id", "p3-temp" + this.entryNum);
 
@@ -943,7 +913,7 @@ class Bam
         label3000.setAttribute("for", "p4h-vel" + this.entryNum);
         label3000.innerHTML = "Vel";
         let txtp4hVel = document.createElement("input");
-        txtp4hVel.classList.add("form-control", "position-input");
+        txtp4hVel.classList.add("form-control", "position-input", "input-fix");
         txtp4hVel.setAttribute("maxlength", 6);
         txtp4hVel.setAttribute("id", "p4h-vel" + this.entryNum);
         let div9000 = document.createElement("div");
@@ -952,7 +922,7 @@ class Bam
         label4000.setAttribute("for", "p4h-ge" + this.entryNum);
         label4000.innerHTML = "gE";
         let txtp4hGe = document.createElement("input");
-        txtp4hGe.classList.add("form-control", "position-input");
+        txtp4hGe.classList.add("form-control", "position-input", "input-fix");
         txtp4hGe.setAttribute("maxlength", 6);
         txtp4hGe.setAttribute("id", "p4h-ge" + this.entryNum);
 
@@ -968,7 +938,7 @@ class Bam
         label5000.setAttribute("for", "p4v-vel" + this.entryNum);
         label5000.innerHTML = "Vel";
         let txtp4vVel = document.createElement("input");
-        txtp4vVel.classList.add("form-control", "position-input");
+        txtp4vVel.classList.add("form-control", "position-input", "input-fix");
         txtp4vVel.setAttribute("maxlength", 6);
         txtp4vVel.setAttribute("id", "p4v-vel" + this.entryNum);
         let div12000 = document.createElement("div");
@@ -977,7 +947,7 @@ class Bam
         label6000.setAttribute("for", "p4v-ge" + this.entryNum);
         label6000.innerHTML = "gE";
         let txtp4vGe = document.createElement("input");
-        txtp4vGe.classList.add("form-control", "position-input");
+        txtp4vGe.classList.add("form-control", "position-input", "input-fix");
         txtp4vGe.setAttribute("maxlength", 6);
         txtp4vGe.setAttribute("id", "p4v-ge" + this.entryNum);
 
@@ -993,7 +963,7 @@ class Bam
         label7000.setAttribute("for", "p4a-vel" + this.entryNum);
         label7000.innerHTML = "Vel";
         let txtp4aVel = document.createElement("input");
-        txtp4aVel.classList.add("form-control", "position-input");
+        txtp4aVel.classList.add("form-control", "position-input", "input-fix");
         txtp4aVel.setAttribute("maxlength", 6);
         txtp4aVel.setAttribute("id", "p4a-vel" + this.entryNum);
         let div15000 = document.createElement("div");
@@ -1002,7 +972,7 @@ class Bam
         label8000.setAttribute("for", "p4a-ge" + this.entryNum);
         label8000.innerHTML = "gE";
         let txtp4aGe = document.createElement("input");
-        txtp4aGe.classList.add("form-control", "position-input");
+        txtp4aGe.classList.add("form-control", "position-input", "input-fix");
         txtp4aGe.setAttribute("maxlength", 6);
         txtp4aGe.setAttribute("id", "p4a-ge" + this.entryNum);
 
@@ -1013,7 +983,7 @@ class Bam
         label9000.setAttribute("for", "p4-temp" + this.entryNum);
         label9000.innerHTML = "Bearing Temperature";
         let txtp4Temp = document.createElement("input");
-        txtp4Temp.classList.add("form-control", "position-input");
+        txtp4Temp.classList.add("form-control", "position-input", "input-fix");
         txtp4Temp.setAttribute("maxlength", 6);
         txtp4Temp.setAttribute("id", "p4-temp" + this.entryNum);
 
@@ -1028,9 +998,10 @@ class Bam
         label1m.setAttribute("for", "amp-draw" + this.entryNum);
         label1m.innerHTML = "Amp Draw(.01 to 1000)";
         let txtAmpDraw = document.createElement("input");
-        txtAmpDraw.classList.add("form-control", "position-input");
+        txtAmpDraw.classList.add("form-control", "position-input", "input-fix");
         txtAmpDraw.setAttribute("maxlength", 6);
         txtAmpDraw.setAttribute("id", "amp-draw" + this.entryNum);
+        txtAmpDraw.setAttribute("valtype", "ampDraw");
         let label2m = document.createElement("label");
         label2m.setAttribute("for", "motor-cost" + this.entryNum);
         label2m.innerHTML = "Motor Operation Cost";
@@ -1043,19 +1014,12 @@ class Bam
         let div2m2 = document.createElement("div");
         div2m2.classList.add("col-md-3");
         let label1m2 = document.createElement("label");
-        label1m2.setAttribute("for", "driver-rpm" + this.entryNum);
-        label1m2.innerHTML = "Driver RPM";
-        let txtDvrRpm = document.createElement("input");
-        txtDvrRpm.classList.add("form-control", "position-input");
-        txtDvrRpm.setAttribute("maxlength", 6);
-        txtDvrRpm.setAttribute("id", "driver-rpm" + this.entryNum);
-        let label2m2 = document.createElement("label");
-        label2m2.setAttribute("for", "driven-rpm" + this.entryNum);
-        label2m2.innerHTML = "Driven RPM";
-        let txtDvnRpm = document.createElement("input");
-        txtDvnRpm.classList.add("form-control", "position-input");
-        txtDvnRpm.setAttribute("maxlength", 6);
-        txtDvnRpm.setAttribute("id", "driven-rpm" + this.entryNum);
+        label1m2.setAttribute("for", "shaft-rpm" + this.entryNum);
+        label1m2.innerHTML = "Shaft RPM";
+        let txtShaftRpm = document.createElement("input");
+        txtShaftRpm.classList.add("form-control", "position-input", "input-fix");
+        txtShaftRpm.setAttribute("maxlength", 6);
+        txtShaftRpm.setAttribute("id", "shaft-rpm" + this.entryNum);
 
         //Column 3.
         let div2m3 = document.createElement("div");
@@ -1064,14 +1028,14 @@ class Bam
         label1m3.setAttribute("for", "highest-ue" + this.entryNum);
         label1m3.innerHTML = "Highest UE(dB)";
         let txtHighestUe = document.createElement("input");
-        txtHighestUe.classList.add("form-control", "position-input");
+        txtHighestUe.classList.add("form-control", "position-input", "input-fix");
         txtHighestUe.setAttribute("maxlength", 7);
         txtHighestUe.setAttribute("id", "highest-ue" + this.entryNum);
         let label2m3 = document.createElement("label");
         label2m3.setAttribute("for", "highest-snd" + this.entryNum);
         label2m3.innerHTML = "Highest Sound(DB)";
         let txtHighestSnd = document.createElement("input");
-        txtHighestSnd.classList.add("form-control", "position-input");
+        txtHighestSnd.classList.add("form-control", "position-input", "input-fix");
         txtHighestSnd.setAttribute("maxlength", 7);
         txtHighestSnd.setAttribute("id", "highest-snd" + this.entryNum);
 
@@ -1079,12 +1043,12 @@ class Bam
         let div2m4 = document.createElement("div");
         div2m4.classList.add("col-md-3");
         let label1m4 = document.createElement("label");
-        label1m4.setAttribute("for", "belt-temp" + this.entryNum);
-        label1m4.innerHTML = "Belt Temperature";
-        let txtBeltTemp = document.createElement("input");
-        txtBeltTemp.classList.add("form-control", "position-input");
-        txtBeltTemp.setAttribute("maxlength", 6);
-        txtBeltTemp.setAttribute("id", "belt-temp" + this.entryNum);
+        label1m4.setAttribute("for", "shaft-temp" + this.entryNum);
+        label1m4.innerHTML = "Shaft Temperature";
+        let txtShaftTemp = document.createElement("input");
+        txtShaftTemp.classList.add("form-control", "position-input", "input-fix");
+        txtShaftTemp.setAttribute("maxlength", 6);
+        txtShaftTemp.setAttribute("id", "shaft-temp" + this.entryNum);
 
         //Add everything together.
         this.appendChildren(mainDiv, [delBtn, label1, txtTitle, label2, txtComments, div1, div1m]);
@@ -1135,9 +1099,9 @@ class Bam
         this.appendChildren(div15000, [label8000, txtp4aGe]);
         this.appendChildren(div1m, [div2m, div2m2, div2m3, div2m4]);
         this.appendChildren(div2m, [label1m, txtAmpDraw, label2m, txtCost]);
-        this.appendChildren(div2m2, [label1m2, txtDvrRpm, label2m2, txtDvnRpm]);
+        this.appendChildren(div2m2, [label1m2, txtShaftRpm]);
         this.appendChildren(div2m3, [label1m3, txtHighestUe, label2m3, txtHighestSnd]);
-        this.appendChildren(div2m4, [label1m4, txtBeltTemp]);
+        this.appendChildren(div2m4, [label1m4, txtShaftTemp]);
         this.parentDiv.prepend(mainDiv);
         mainDiv.style.height = "0%";
         
@@ -1173,7 +1137,7 @@ class Bam
             {
                 //Object info.
                 num:      this.entryNum,
-                type:     Bam.MEAS,
+                type:     Sam.MEAS,
                 title:    object.title,
                 comments: object.comments,
 
@@ -1186,9 +1150,8 @@ class Bam
                 //Motor data.
                 ampDraw:    object.hasOwnProperty("ampDraw") ? object.ampDraw : undefined,
                 cost:       object.hasOwnProperty("cost")    ? object.cost    : undefined,
-                rpmDriver:  object.rpmDriver,
-                rpmDriven:  object.rpmDriven,
-                beltTemp:   object.beltTemp,
+                rpmShaft:   object.rpmShaft,
+                shaftTemp:  object.shaftTemp,
                 highestUe:  object.highestUe,
                 highestSnd: object.highestSnd,
 
@@ -1202,7 +1165,7 @@ class Bam
             {
                 //Object info.
                 num:      this.entryNum,
-                type:     Bam.MEAS,
+                type:     Sam.MEAS,
                 title:    "",
                 comments: "",
 
@@ -1216,9 +1179,8 @@ class Bam
                 ampDraw:    undefined,
                 cost:       undefined,
                 costString: "",
-                rpmDriver:  "",
-                rpmDriven:  "",
-                beltTemp:   "",
+                rpmShaft:   "",
+                shaftTemp:  "",
                 highestUe:  "",
                 highestSnd: "",
 
@@ -1266,55 +1228,50 @@ class Bam
         //Amp draw text box event listeners.
         txtAmpDraw.addEventListener("keyup", (e) =>
         {
-            let isValid, didValidate, num;
-            [isValid, didValidate, num] = this.isNumKey(e, txtAmpDraw, .01, 1000);
-            if(didValidate) obj.ampDraw = isValid ? num : undefined;
+            this.isNumberKey(e, txtAmpDraw, obj, .01, 1000);
             this.updateCosts();
         });
 
         txtAmpDraw.addEventListener("focusout", () =>
         {
-            let isValid, num;
-            [isValid, num] = this.valNumber(txtAmpDraw, .01, 1000);
-            obj.ampDraw = isValid ? num : undefined;
+            this.validateNumber(txtAmpDraw, obj, .01, 1000);
             this.updateCosts();
         });
 
-        txtTitle.addEventListener("keyup", () => obj.title = txtTitle.value);                //Title event listener.
-        txtComments.addEventListener("keyup", () => obj.comments = txtComments.value);       //Comments event listener.
-        txtp1hVel.addEventListener("keyup", () => obj.p1hVel = txtp1hVel.value);             //Position 1, horizontal vel event listener.
-        txtp1hGe.addEventListener("keyup", () => obj.p1hGe = txtp1hGe.value);                //Position 1, horizontal gE event listener.
-        txtp1vVel.addEventListener("keyup", () => obj.p1vVel = txtp1vVel.value);             //Position 1, vertical vel event listener.
-        txtp1vGe.addEventListener("keyup", () => obj.p1vGe = txtp1vGe.value);                //Position 1, vertical gE event listener.
-        txtp1aVel.addEventListener("keyup", () => obj.p1aVel = txtp1aVel.value);             //Position 1, axial vel event listener.
-        txtp1aGe.addEventListener("keyup", () => obj.p1aGe = txtp1aGe.value);                //Position 1, axial gE event listener.
-        txtp1Temp.addEventListener("keyup", () => obj.p1Temp = txtp1Temp.value);             //Position 1, bearing temperature event listener.
-        txtp2hVel.addEventListener("keyup", () => obj.p2hVel = txtp2hVel.value);             //Position 2, horizontal vel event listener.
-        txtp2hGe.addEventListener("keyup", () => obj.p2hGe = txtp2hGe.value);                //Position 2, horizontal gE event listener.
-        txtp2vVel.addEventListener("keyup", () => obj.p2vVel = txtp2vVel.value);             //Position 2, vertical vel event listener.
-        txtp2vGe.addEventListener("keyup", () => obj.p2vGe = txtp2vGe.value);                //Position 2, vertical gE event listener.
-        txtp2aVel.addEventListener("keyup", () => obj.p2aVel = txtp2aVel.value);             //Position 2, axial vel event listener.
-        txtp2aGe.addEventListener("keyup", () => obj.p2aGe = txtp2aGe.value);                //Position 2, axial gE event listener.
-        txtp2Temp.addEventListener("keyup", () => obj.p2Temp = txtp2Temp.value);             //Position 2, bearing temperature event listener.
-        txtp3hVel.addEventListener("keyup", () => obj.p3hVel = txtp3hVel.value);             //Position 3, horizontal vel event listener.
-        txtp3hGe.addEventListener("keyup", () => obj.p3hGe = txtp3hGe.value);                //Position 3, horizontal gE event listener.
-        txtp3vVel.addEventListener("keyup", () => obj.p3vVel = txtp3vVel.value);             //Position 3, vertical vel event listener.
-        txtp3vGe.addEventListener("keyup", () => obj.p3vGe = txtp3vGe.value);                //Position 3, vertical gE event listener.
-        txtp3aVel.addEventListener("keyup", () => obj.p3aVel = txtp3aVel.value);             //Position 3, axial vel event listener.
-        txtp3aGe.addEventListener("keyup", () => obj.p3aGe = txtp3aGe.value);                //Position 3, axial gE event listener.
-        txtp3Temp.addEventListener("keyup", () => obj.p3Temp = txtp3Temp.value);             //Position 3, bearing temperature event listener.
-        txtp4hVel.addEventListener("keyup", () => obj.p4hVel = txtp4hVel.value);             //Position 4, horizontal vel event listener.
-        txtp4hGe.addEventListener("keyup", () => obj.p4hGe = txtp4hGe.value);                //Position 4, horizontal gE event listener.
-        txtp4vVel.addEventListener("keyup", () => obj.p4vVel = txtp4vVel.value);             //Position 4, vertical vel event listener.
-        txtp4vGe.addEventListener("keyup", () => obj.p4vGe = txtp4vGe.value);                //Position 4, vertical gE event listener.
-        txtp4aVel.addEventListener("keyup", () => obj.p4aVel = txtp4aVel.value);             //Position 4, axial vel event listener.
-        txtp4aGe.addEventListener("keyup", () => obj.p4aGe = txtp4aGe.value);                //Position 4, axial gE event listener.
-        txtp4Temp.addEventListener("keyup", () => obj.p4Temp = txtp4Temp.value);             //Position 4, bearing temperature event listener.
-        txtDvrRpm.addEventListener("keyup", () => obj.rpmDriver = txtDvrRpm.value);          //Driver RPM event listener.
-        txtDvnRpm.addEventListener("keyup", () => obj.rpmDriven = txtDvnRpm.value);          //Driver RPM event listener.
-        txtHighestUe.addEventListener("keyup", () => obj.highestUe = txtHighestUe.value);    //Highest ultrasound event listener.
+        txtTitle.addEventListener("keyup",      () => obj.title      = txtTitle.value);      //Title event listener.
+        txtComments.addEventListener("keyup",   () => obj.comments   = txtComments.value);   //Comments event listener.
+        txtp1hVel.addEventListener("keyup",     () => obj.p1hVel     = txtp1hVel.value);     //Position 1, horizontal vel event listener.
+        txtp1hGe.addEventListener("keyup",      () => obj.p1hGe      = txtp1hGe.value);      //Position 1, horizontal gE event listener.
+        txtp1vVel.addEventListener("keyup",     () => obj.p1vVel     = txtp1vVel.value);     //Position 1, vertical vel event listener.
+        txtp1vGe.addEventListener("keyup",      () => obj.p1vGe      = txtp1vGe.value);      //Position 1, vertical gE event listener.
+        txtp1aVel.addEventListener("keyup",     () => obj.p1aVel     = txtp1aVel.value);     //Position 1, axial vel event listener.
+        txtp1aGe.addEventListener("keyup",      () => obj.p1aGe      = txtp1aGe.value);      //Position 1, axial gE event listener.
+        txtp1Temp.addEventListener("keyup",     () => obj.p1Temp     = txtp1Temp.value);     //Position 1, bearing temperature event listener.
+        txtp2hVel.addEventListener("keyup",     () => obj.p2hVel     = txtp2hVel.value);     //Position 2, horizontal vel event listener.
+        txtp2hGe.addEventListener("keyup",      () => obj.p2hGe      = txtp2hGe.value);      //Position 2, horizontal gE event listener.
+        txtp2vVel.addEventListener("keyup",     () => obj.p2vVel     = txtp2vVel.value);     //Position 2, vertical vel event listener.
+        txtp2vGe.addEventListener("keyup",      () => obj.p2vGe      = txtp2vGe.value);      //Position 2, vertical gE event listener.
+        txtp2aVel.addEventListener("keyup",     () => obj.p2aVel     = txtp2aVel.value);     //Position 2, axial vel event listener.
+        txtp2aGe.addEventListener("keyup",      () => obj.p2aGe      = txtp2aGe.value);      //Position 2, axial gE event listener.
+        txtp2Temp.addEventListener("keyup",     () => obj.p2Temp     = txtp2Temp.value);     //Position 2, bearing temperature event listener.
+        txtp3hVel.addEventListener("keyup",     () => obj.p3hVel     = txtp3hVel.value);     //Position 3, horizontal vel event listener.
+        txtp3hGe.addEventListener("keyup",      () => obj.p3hGe      = txtp3hGe.value);      //Position 3, horizontal gE event listener.
+        txtp3vVel.addEventListener("keyup",     () => obj.p3vVel     = txtp3vVel.value);     //Position 3, vertical vel event listener.
+        txtp3vGe.addEventListener("keyup",      () => obj.p3vGe      = txtp3vGe.value);      //Position 3, vertical gE event listener.
+        txtp3aVel.addEventListener("keyup",     () => obj.p3aVel     = txtp3aVel.value);     //Position 3, axial vel event listener.
+        txtp3aGe.addEventListener("keyup",      () => obj.p3aGe      = txtp3aGe.value);      //Position 3, axial gE event listener.
+        txtp3Temp.addEventListener("keyup",     () => obj.p3Temp     = txtp3Temp.value);     //Position 3, bearing temperature event listener.
+        txtp4hVel.addEventListener("keyup",     () => obj.p4hVel     = txtp4hVel.value);     //Position 4, horizontal vel event listener.
+        txtp4hGe.addEventListener("keyup",      () => obj.p4hGe      = txtp4hGe.value);      //Position 4, horizontal gE event listener.
+        txtp4vVel.addEventListener("keyup",     () => obj.p4vVel     = txtp4vVel.value);     //Position 4, vertical vel event listener.
+        txtp4vGe.addEventListener("keyup",      () => obj.p4vGe      = txtp4vGe.value);      //Position 4, vertical gE event listener.
+        txtp4aVel.addEventListener("keyup",     () => obj.p4aVel     = txtp4aVel.value);     //Position 4, axial vel event listener.
+        txtp4aGe.addEventListener("keyup",      () => obj.p4aGe      = txtp4aGe.value);      //Position 4, axial gE event listener.
+        txtp4Temp.addEventListener("keyup",     () => obj.p4Temp     = txtp4Temp.value);     //Position 4, bearing temperature event listener.
+        txtShaftRpm.addEventListener("keyup",   () => obj.rpmShaft   = txtShaftRpm.value);   //Shaft RPM event listener.
+        txtHighestUe.addEventListener("keyup",  () => obj.highestUe  = txtHighestUe.value);  //Highest ultrasound event listener.
         txtHighestSnd.addEventListener("keyup", () => obj.highestSnd = txtHighestSnd.value); //Highest audible noise event listener.
-        txtBeltTemp.addEventListener("keyup", () => obj.beltTemp = txtBeltTemp.value);       //Belt temperature event listener.
+        txtShaftTemp.addEventListener("keyup",  () => obj.shaftTemp  = txtShaftTemp.value);  //Shaft temperature event listener.
 
         /******************************** Update Existing Objects ********************************/
 
@@ -1351,11 +1308,10 @@ class Bam
             txtp4aVel.value     = obj.p4aVel;
             txtp4aGe.value      = obj.p4aGe;
             txtp4Temp.value     = obj.p4Temp;
-            txtDvrRpm.value     = obj.rpmDriver;
-            txtDvnRpm.value     = obj.rpmDriven;
+            txtShaftRpm.value   = obj.rpmShaft;
             txtHighestUe.value  = obj.highestUe;
             txtHighestSnd.value = obj.highestSnd;
-            txtBeltTemp.value   = obj.beltTemp;
+            txtShaftTemp.value  = obj.shaftTemp;
             txtAmpDraw.value    = obj.ampDraw;
 
             txtAmpDraw.dispatchEvent(new Event("focusout"));
@@ -1368,84 +1324,13 @@ class Bam
         this.entryNum++;
     }
 
-    updatePlot(obj)
-    {
-        //Find the signed values of the level variables.
-        let signedDriverBubble = obj.driverBubbleHi ? obj.driverTicks : -obj.driverTicks;
-        let signedDrivenBubble = obj.drivenBubbleHi ? obj.drivenTicks : -obj.drivenTicks;
-
-        //Pass everything on for calculation.
-        let moves = obj.plot.doCalcs(obj.driverFeetDistance, obj.drivenFeetDistance, signedDriverBubble, signedDrivenBubble);
-
-        //Get the numeric results.
-        [obj.driverToLevel, obj.drivenToLevel, obj.driverToDriven, obj.drivenToDriver] =
-        [moves.level.dvrToLvl, moves.level.dvnToLvl, moves.optimal.dvrToDvn, moves.optimal.dvnToDvr];
-
-        //If everything passes, display the results.
-        if(obj.driverToLevel !== undefined)
-        {
-            //Always give the two values to the level position.
-            obj.txtDriverToLevel.innerHTML = obj.driverToLevel + " mils";
-            obj.txtDrivenToLevel.innerHTML = obj.drivenToLevel + " mils";
-        
-            //Display the optimal moves.
-            let optimalCount = 0;
-            obj.txtOptimalMoves.innerHTML = "";
-
-            if(obj.driverToDriven !== undefined && obj.drivenToDriver !== undefined)
-            {
-                document.getElementById("options" + obj.num).innerHTML = "Option 2 (Option 3)";
-            }
-            else
-            {
-                document.getElementById("options" + obj.num).innerHTML = "Option 2 (Option 3)";
-            }
-
-            if(obj.driverToDriven !== undefined)
-            {
-                optimalCount++;
-                obj.txtOptimalMoves.innerHTML += "Driver to Driven: " + obj.driverToDriven + " mils";
-            }
-
-            if(obj.drivenToDriver !== undefined)
-            {
-                if(optimalCount > 0) obj.txtOptimalMoves.innerHTML += "<br>(";
-                obj.txtOptimalMoves.innerHTML += "Driven to Driver: " + obj.drivenToDriver + " mils";
-                if(optimalCount > 0) obj.txtOptimalMoves.innerHTML += ")";
-            }  
-        }
-        else
-        {
-            obj.txtDrivenToLevel.innerHTML = "???";
-            obj.txtDriverToLevel.innerHTML = "???";
-            obj.txtOptimalMoves.innerHTML  = "???";
-            obj.plot.doCalcs(undefined, undefined, undefined, undefined);
-        }
-    }
-
-    //Refresh the canvas images.
-    redraw()
-    {
-        for(let i = 0; i < this.history.length; i++)
-        {
-            if(this.history[i].type === Bam.ADJ)
-            {
-                this.history[i].drivenLevel.resize();
-                this.history[i].driverLevel.resize();
-                this.history[i].plot.resize();
-            }
-        }
-    }
-
-    //Check if a number has been entered in the box.
-    isNumKey(e, inputBox, min, max)
+    isNumberKey = (e, inputBox, obj, min, max) =>
     {
         //Look for special case when enter is hit.
         if(e.keyCode === 13)
         {
-            let isValid, num;
-            [isValid, num] = this.valNumber(inputBox, min, max);
-            return [isValid, true, num];
+            this.validateNumber(inputBox, obj, min, max);
+            return;
         }
         
         //Remove any invalid characters.
@@ -1466,23 +1351,237 @@ class Bam
         }
         
         inputBox.value = inputTemp;
-        return [false, false, undefined];
     }
 
-    //Check if the number entered is valid.
-    valNumber(inputBox, min, max)
+    isSignedNumberKey = (e, inputBox, obj, min, max) =>
     {
-        inputBox.style.backgroundColor = "#ffffff";
-        let num = parseFloat(inputBox.value, 10);    
-    
+        //Look for special case when enter is hit.
+        if(e.keyCode === 13)
+        {
+            this.validateNumber(inputBox, obj, min, max);
+            return;
+        }
+        
+        //Remove any invalid characters.
+        let inputTemp = "";
+        let isDecimal = false;
+        for(let i = 0; i < inputBox.value.length; i++)
+        {
+            if(i === 0 && inputBox.value[0] === "-")
+            {
+                inputTemp += "-";
+            }
+
+            if(inputBox.value[i] === "." && !isDecimal)
+            {
+                inputTemp += ".";
+                isDecimal = true;
+            }
+
+            if((inputBox.value[i] >= "0" && inputBox.value[i] <= "9"))
+            {
+                inputTemp += inputBox.value[i];
+            }
+        }
+        
+        inputBox.value = inputTemp;
+    }
+
+    //First, check if the value in a textbox is valid, then check
+    //if all values are valid and plot, if necessary.
+    validateNumber = (ref, obj, min, max) =>
+    {        
+        let num = parseFloat(ref.value, 10);
+
+        //Check if number entered into textbox is valid.
         if(!isNaN(num) && num >= min && num <= max)
         {
-            return [true, num];
+            ref.style.backgroundColor = "#ffffff";
+
+            switch(ref.getAttribute("valtype"))
+            {
+                case "dimA":
+                    obj.dimA = num;
+                break;
+                case "dimB":
+                    obj.dimB = num;
+                break;
+                case "dimC":
+                    obj.dimC = num;
+                break;
+                case "dimD":
+                    obj.dimD = num;
+                break;
+                case "dimE":
+                    obj.dimE = num;
+                break;
+                case "movIn":
+                    obj.movableDial = num;
+                break;
+                case "staIn":
+                    obj.stationaryDial = num;
+                break;
+                case "ampDraw":
+                    obj.ampDraw = num;
+                    return;
+                break;
+                default:
+                    console.log("Unrecognized ID");
+                break;
+            }
+        }
+        else //Number entered is not valid.
+        {
+            ref.value = "";
+            ref.style.backgroundColor = "#ffc0c0";
+
+            switch(ref.getAttribute("valtype"))
+            {
+                case "dimA":
+                    obj.dimA = undefined;
+                break;
+                case "dimB":
+                    obj.dimB = undefined;
+                break;
+                case "dimC":
+                    obj.dimC = undefined;
+                break;
+                case "dimD":
+                    obj.dimD = undefined;
+                break;
+                case "dimE":
+                    obj.dimE = undefined;
+                break;
+                case "movIn":
+                    obj.movableDial = undefined;
+                break;
+                case "staIn":
+                    obj.stationaryDial = undefined;
+                break;
+                case "ampDraw":
+                    obj.ampDraw = undefined;
+                    return;
+                break;
+                default:
+                    console.log("Unrecognized ID");
+                break;
+            }
         }
 
-        inputBox.value = "";
-        inputBox.style.backgroundColor = "#ffc0c0";
-        return [false, undefined];
+        //Verify all the distances given are valid relative to each other.
+        let validDist = true;
+        let totalDist;
+
+        if(obj.dimB != undefined && obj.dimB <= obj.dimA)
+        {
+            obj.tbDimB.style.backgroundColor = "#ffff70";
+            validDist = false;
+        }
+        else if(obj.dimB != undefined)
+        {
+            obj.tbDimB.style.backgroundColor = "#ffffff";
+        }
+        
+        if(obj.dimC != undefined && (obj.dimC <= obj.dimB || obj.dimC <= obj.dimA))
+        {
+            obj.tbDimC.style.backgroundColor = "#ffff70";
+            validDist = false;
+        }
+        else if(obj.dimC != undefined)
+        {
+            obj.tbDimC.style.backgroundColor = "#ffffff";
+        }
+
+        if(obj.dimD != undefined && obj.dimE <= obj.dimD)
+        {
+            obj.tbDimE.style.backgroundColor = "#ffff70";
+            validDist = false;
+        }
+        else if(obj.dimE != undefined)
+        {
+            obj.tbDimE.style.backgroundColor = "#ffffff";
+        }
+
+        //Calculate the total length if the distances are all valid.
+        if(validDist && obj.dimA && obj.dimB && obj.dimC && obj.dimD && obj.dimE)
+        {
+            totalDist = obj.dimC + obj.dimE;
+            obj.pDimF.innerHTML = totalDist.toFixed(2) + " inches";
+        }
+        else
+        {
+            totalDist = undefined;
+            obj.pDimF.innerHTML = "??? inches";
+        }
+
+        //Verify and calculate dial values,
+        if(obj.stationaryDial !== undefined)
+        {
+            obj.pstaHalfTIR.innerHTML = "1/2 TIR: " + (obj.stationaryDial / 2).toFixed(2);
+            obj.sDial.setDial(obj.stationaryDial);
+        }
+        else
+        {
+            obj.pstaHalfTIR.innerHTML = "1/2 TIR: ???";
+            obj.sDial.setDial(100);
+            validDist = false;
+        }
+
+        if(obj.movableDial !== undefined)
+        {
+            obj.pmovHalfTIR.innerHTML  = "1/2 TIR: "  + (obj.movableDial / 2).toFixed(2);
+            obj.pmovnHalfTIR.innerHTML = "-1/2 TIR: " + (-obj.movableDial / 2).toFixed(2);
+            obj.mDial.setDial(obj.movableDial);
+        }
+        else
+        {
+            obj.pmovHalfTIR.innerHTML  = "1/2 TIR: ???";
+            obj.pmovnHalfTIR.innerHTML = "-1/2 TIR: ???";
+            obj.mDial.setDial(100);
+            validDist = false;
+        }
+
+        //Pass everything on for calculation.
+        let moves;
+
+        if(validDist)
+        {
+            moves = obj.plot.doCalcs(obj.dimA, obj.dimB, obj.dimC, obj.dimD, obj.dimE, obj.stationaryDial / 2, -obj.movableDial / 2);
+        }
+        else
+        {
+            moves = obj.plot.doCalcs(undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+        }
+        
+        //If everything passes, display the results.
+        if(!isNaN(moves.movable.mi))
+        {
+            obj.o1Inboard.innerHTML  = ((moves.movable.mi >= 0) ? "+" : "") + moves.movable.mi.toFixed(2) + " mils";
+            obj.o1Outboard.innerHTML = ((moves.movable.mo >= 0) ? "+" : "") + moves.movable.mo.toFixed(2) + " mils";
+            obj.o2Inboard1.innerHTML = ((moves.inboard.si >= 0) ? "+" : "") + moves.inboard.si.toFixed(2) + " mils";
+            obj.o2Inboard2.innerHTML = ((moves.inboard.mi >= 0) ? "+" : "") + moves.inboard.mi.toFixed(2) + " mils";
+        }
+        else
+        {
+            obj.o1Inboard.innerHTML  = "???";
+            obj.o1Outboard.innerHTML = "???";
+            obj.o2Inboard1.innerHTML = "???";
+            obj.o2Inboard2.innerHTML = "???";
+        }
+    }
+
+    //Refresh the canvas images.
+    redraw()
+    {
+        for(let i = 0; i < this.history.length; i++)
+        {
+            if(this.history[i].type === Sam.ADJ)
+            {
+                this.history[i].mDial.resize();
+                this.history[i].sDial.resize();
+                this.history[i].plot.resize();
+            }
+        }
     }
 
     //Append multiple children to an HTML element.
@@ -1509,22 +1608,22 @@ class Bam
         {
             for(let i = 0; i < this.history.length; i++)
             {
-                if(this.history[i].type === Bam.MEAS && this.history[i].ampDraw !== undefined)
+                if(this.history[i].type === Sam.MEAS && this.history[i].ampDraw !== undefined)
                 {
                     let kiloWatts = Math.sqrt(3) * this.history[i].ampDraw * this.motorVoltage / 1000.0;
                     let hours, txtTimePeriod;
 
                     switch(this.timePeriod)
                     {
-                        case Bam.WEEKLY:
+                        case Sam.WEEKLY:
                             hours = 24 * 7;
                             txtTimePeriod = " per week"
                         break;
-                        case Bam.MONTHLY:
+                        case Sam.MONTHLY:
                             hours = 730.5;
                             txtTimePeriod = " per month"
                         break;
-                        case Bam.YEARLY:
+                        case Sam.YEARLY:
                             hours = 365.25 * 24;
                             txtTimePeriod = " per year"
                         break;
@@ -1539,7 +1638,7 @@ class Bam
                     this.history[i].txtCost.innerHTML = "$" + cost.toFixed(2) + txtTimePeriod;
                     this.history[i].costString = "$" + cost.toFixed(2) + txtTimePeriod;
                 }
-                else if(this.history[i].type === Bam.MEAS && this.history[i].ampDraw === undefined)
+                else if(this.history[i].type === Sam.MEAS && this.history[i].ampDraw === undefined)
                 {
                     this.history[i].txtCost.innerHTML = "???";
                     this.history[i].costString = "";
@@ -1552,7 +1651,7 @@ class Bam
         {
             for(let i = 0; i < this.history.length; i++)
             {
-                if(this.history[i].type === Bam.MEAS)
+                if(this.history[i].type === Sam.MEAS)
                 {
                     this.history[i].txtCost.innerHTML = "???";
                     this.history[i].costString = "";
@@ -1560,156 +1659,6 @@ class Bam
                 }
             }
         }
-    }
-
-    saveData()
-    {
-        //Store the cost data in an object.
-        let costObj =
-        {
-            type:            Bam.COST,
-            costKwh:         this.costKwh,
-            motorVoltage:    this.motorVoltage,
-            usageMultiplier: this.usageMultiplier,
-            timePeriod:      this.timePeriod,
-            reportTitle:     this.reportTitle,
-            reportComments:  this.reportComments
-        }
-
-        let histCopy = [costObj];
-        
-        //Iterate through the copy of the history array and keep only the data.
-        for(let i = 0; i < this.history.length; i++)
-        {
-            switch(this.history[i].type)
-            {
-                case Bam.ADJ:
-                    let adjObj =
-                    {
-                        num:                this.history[i].num,
-                        type:               Bam.ADJ,
-                        title:              this.history[i].title,
-                        comments:           this.history[i].comments,
-                        driverFeetDistance: this.history[i].driverFeetDistance,
-                        drivenFeetDistance: this.history[i].drivenFeetDistance,
-                        driverTicks:        this.history[i].driverTicks,
-                        drivenTicks:        this.history[i].drivenTicks,
-                        driverBubbleHi:     this.history[i].driverBubbleHi,
-                        drivenBubbleHi:     this.history[i].drivenBubbleHi,
-                        driverToLevel:      this.history[i].driverToLevel,
-                        drivenToLevel:      this.history[i].drivenToLevel,
-                        driverToDriven:     this.history[i].driverToDriven,
-                        drivenToDriver:     this.history[i].drivenToDriver,
-                        plotHidden:         this.history[i].plotHidden
-                    }
-                    histCopy = [...histCopy, adjObj];
-                break;
-                case Bam.MEAS:
-                    let measObj =
-                    {
-                        num:        this.history[i].num,
-                        type:       Bam.MEAS,
-                        title:      this.history[i].title,
-                        comments:   this.history[i].comments,
-                        p1hVel:     this.history[i].p1hVel, p1hGe: this.history[i].p1hGe, p1vVel: this.history[i].p1vVel, p1vGe: this.history[i].p1vGe,
-                        p1aVel:     this.history[i].p1aVel, p1aGe: this.history[i].p1aGe, p1Temp: this.history[i].p1Temp,
-                        p2hVel:     this.history[i].p2hVel, p2hGe: this.history[i].p2hGe, p2vVel: this.history[i].p2vVel, p2vGe: this.history[i].p2vGe,
-                        p2aVel:     this.history[i].p2aVel, p2aGe: this.history[i].p2aGe, p2Temp: this.history[i].p2Temp,
-                        p3hVel:     this.history[i].p3hVel, p3hGe: this.history[i].p3hGe, p3vVel: this.history[i].p3vVel, p3vGe: this.history[i].p3vGe,
-                        p3aVel:     this.history[i].p3aVel, p3aGe: this.history[i].p3aGe, p3Temp: this.history[i].p3Temp,
-                        p4hVel:     this.history[i].p4hVel, p4hGe: this.history[i].p4hGe, p4vVel: this.history[i].p4vVel, p4vGe: this.history[i].p4vGe,
-                        p4aVel:     this.history[i].p4aVel, p4aGe: this.history[i].p4aGe, p4Temp: this.history[i].p4Temp,
-                        ampDraw:    this.history[i].ampDraw,
-                        cost:       this.history[i].cost,
-                        rpmDriver:  this.history[i].rpmDriver,
-                        rpmDriven:  this.history[i].rpmDriven,
-                        beltTemp:   this.history[i].beltTemp,
-                        highestUe:  this.history[i].highestUe,
-                        highestSnd: this.history[i].highestSnd,
-                    }
-                    histCopy = [...histCopy, measObj];
-                break;
-                case Bam.COST:
-                    //Nothing to do here.
-                break;
-                default:
-                    console.log("Unknown object type");
-                break;
-            }            
-        }
-
-        const a = document.createElement('a');
-        const file = new Blob([JSON.stringify(histCopy)], {type : 'text/html'});
-  
-        a.href= URL.createObjectURL(file);
-        a.download = "beltData.dat";
-        a.click();
-
-	    URL.revokeObjectURL(a.href);
-    }
-
-    //Read data from file.
-    loadData(e, kwh, volt, mult)
-    {
-        let file = e.files[0];
-        let reader = new FileReader();
-
-        reader.readAsText(file);
-        reader.onerror = () => console.log(reader.error);
-
-        //Get contents of file.
-        reader.onload = () =>
-        {
-            //Convert contents to an array of objects.
-            let dataArray = JSON.parse(reader.result);
-            
-            //Make sure this not a shaft alignment data file.
-            if(dataArray[0].type !== Bam.COST)
-            {
-                console.log("Invalid data file");
-                return;
-            }
-
-            //Clear any colors indicating errors.
-            kwh.style.backgroundColor = "";
-            volt.style.backgroundColor = "";
-            mult.style.backgroundColor = "";
-
-            //Clear out old data.
-            this.history = [];
-            this.parentDiv.innerHTML = "";
-
-            //Load report title and comments.
-            this.reportTitle = dataArray[0].reportTitle;
-            this.reportComments = dataArray[0].reportComments;
-
-            //Load cost data.
-            let costKwh = dataArray[0].hasOwnProperty("costKwh") ? dataArray[0].costKwh : undefined;
-            let voltage = dataArray[0].hasOwnProperty("motorVoltage") ? dataArray[0].motorVoltage : undefined;
-            let multiplier = dataArray[0].hasOwnProperty("usageMultiplier") ? dataArray[0].usageMultiplier : undefined;
-            let period = dataArray[0].hasOwnProperty("timePeriod") ? dataArray[0].timePeriod : Bam.MONTHLY;
-            this.changeCostData(costKwh, voltage, multiplier, period, this.reportTitle, this.reportComments);
-        
-            //Iterate through data objects and load.
-            for(let i = 1; i < dataArray.length; i++)
-            {
-                switch(dataArray[i].type)
-                {
-                    case Bam.ADJ:
-                        this.addAdjustment(dataArray[i]);
-                    break;
-                    case Bam.MEAS:
-                        this.addMeasurement(dataArray[i]);
-                    break;
-                    default:
-                        console.log("Unknown object type");
-                    break;
-                }
-            }
-
-            //Update cost text.
-            this.updateCosts();
-        };
     }
 
     //Update cost analysis functions.
@@ -1747,12 +1696,158 @@ class Bam
         this.reportComments = text;
     }
 
+    saveData()
+    {
+        //Store the cost data in an object.
+        let costObj =
+        {
+            type:            Sam.COST,
+            costKwh:         this.costKwh,
+            motorVoltage:    this.motorVoltage,
+            usageMultiplier: this.usageMultiplier,
+            timePeriod:      this.timePeriod,
+            reportTitle:     this.reportTitle,
+            reportComments:  this.reportComments
+        }
+
+        let histCopy = [costObj];
+
+        //Iterate through the copy of the history array and keep only the data.
+        for(let i = 0; i < this.history.length; i++)
+        {
+            switch(this.history[i].type)
+            {
+                case Sam.ADJ:
+                    let adjObj =
+                    {
+                        num:            this.history[i].num,
+                        type:           Sam.ADJ,
+                        title:          this.history[i].title,
+                        comments:       this.history[i].comments,
+                        dimA:           this.history[i].dimA,
+                        dimB:           this.history[i].dimB,
+                        dimC:           this.history[i].dimC,
+                        dimD:           this.history[i].dimD,
+                        dimE:           this.history[i].dimE,
+                        stationaryDial: this.history[i].stationaryDial,
+                        movableDial:    this.history[i].movableDial,
+                        plotHidden:     this.history[i].plotHidden
+                    }
+                    histCopy = [...histCopy, adjObj];
+                break;
+                case Sam.MEAS:
+                    let measObj =
+                    {
+                        num:        this.history[i].num,
+                        type:       Sam.MEAS,
+                        title:      this.history[i].title,
+                        comments:   this.history[i].comments,
+                        p1hVel:     this.history[i].p1hVel, p1hGe: this.history[i].p1hGe, p1vVel: this.history[i].p1vVel, p1vGe: this.history[i].p1vGe,
+                        p1aVel:     this.history[i].p1aVel, p1aGe: this.history[i].p1aGe, p1Temp: this.history[i].p1Temp,
+                        p2hVel:     this.history[i].p2hVel, p2hGe: this.history[i].p2hGe, p2vVel: this.history[i].p2vVel, p2vGe: this.history[i].p2vGe,
+                        p2aVel:     this.history[i].p2aVel, p2aGe: this.history[i].p2aGe, p2Temp: this.history[i].p2Temp,
+                        p3hVel:     this.history[i].p3hVel, p3hGe: this.history[i].p3hGe, p3vVel: this.history[i].p3vVel, p3vGe: this.history[i].p3vGe,
+                        p3aVel:     this.history[i].p3aVel, p3aGe: this.history[i].p3aGe, p3Temp: this.history[i].p3Temp,
+                        p4hVel:     this.history[i].p4hVel, p4hGe: this.history[i].p4hGe, p4vVel: this.history[i].p4vVel, p4vGe: this.history[i].p4vGe,
+                        p4aVel:     this.history[i].p4aVel, p4aGe: this.history[i].p4aGe, p4Temp: this.history[i].p4Temp,
+                        ampDraw:    this.history[i].ampDraw,
+                        cost:       this.history[i].cost,
+                        rpmShaft:   this.history[i].rpmShaft,
+                        shaftTemp:  this.history[i].shaftTemp,
+                        highestUe:  this.history[i].highestUe,
+                        highestSnd: this.history[i].highestSnd,
+                    }
+                    histCopy = [...histCopy, measObj];
+                break;
+                case Sam.COST:
+                    //Nothing to do here.
+                break;
+                default:
+                    console.log("Unknown object type");
+                break;
+            }            
+        }
+
+        const a = document.createElement('a');
+        const file = new Blob([JSON.stringify(histCopy)], {type : 'text/html'});
+  
+        a.href= URL.createObjectURL(file);
+        a.download = "shaftData.dat";
+        a.click();
+
+	    URL.revokeObjectURL(a.href);
+    }
+
+    //Read data from file.
+    loadData(e, kwh, volt, mult)
+    {
+        let file = e.files[0];
+        let reader = new FileReader();
+
+        reader.readAsText(file);
+        reader.onerror = () => console.log(reader.error);
+
+        //Get contents of file.
+        reader.onload = () =>
+        {
+            //Convert contents to an array of objects.
+            let dataArray = JSON.parse(reader.result);
+            
+            //Make sure this not a shaft alignment data file.
+            if(dataArray[0].type !== Sam.COST)
+            {
+                console.log("Invalid data file");
+                return;
+            }
+
+            //Clear any colors indicating errors.
+            kwh.style.backgroundColor = "";
+            volt.style.backgroundColor = "";
+            mult.style.backgroundColor = "";
+
+            //Clear out old data.
+            this.history = [];
+            this.parentDiv.innerHTML = "";
+
+            //Load report title and comments.
+            this.reportTitle = dataArray[0].reportTitle;
+            this.reportComments = dataArray[0].reportComments;
+
+            //Load cost data.
+            let costKwh = dataArray[0].hasOwnProperty("costKwh") ? dataArray[0].costKwh : undefined;
+            let voltage = dataArray[0].hasOwnProperty("motorVoltage") ? dataArray[0].motorVoltage : undefined;
+            let multiplier = dataArray[0].hasOwnProperty("usageMultiplier") ? dataArray[0].usageMultiplier : undefined;
+            let period = dataArray[0].hasOwnProperty("timePeriod") ? dataArray[0].timePeriod : Sam.MONTHLY;
+            this.changeCostData(costKwh, voltage, multiplier, period, this.reportTitle, this.reportComments);
+        
+            //Iterate through data objects and load.
+            for(let i = 1; i < dataArray.length; i++)
+            {
+                switch(dataArray[i].type)
+                {
+                    case Sam.ADJ:
+                        this.addAdjustment(dataArray[i]);
+                    break;
+                    case Sam.MEAS:
+                        this.addMeasurement(dataArray[i]);
+                    break;
+                    default:
+                        console.log("Unknown object type");
+                    break;
+                }
+            }
+
+            //Update cost text.
+            this.updateCosts();
+        };
+    }
+
     print()
     {
         //Store the cost data in an object.
         let costObj =
         {
-            type:            Bam.COST,
+            type:            Sam.COST,
             costKwh:         this.costKwh,
             motorVoltage:    this.motorVoltage,
             usageMultiplier: this.usageMultiplier,
@@ -1768,32 +1863,36 @@ class Bam
         {
             switch(this.history[i].type)
             {
-                case Bam.ADJ:
+                case Sam.ADJ:
                     let adjObj =
                     {
-                        num:                this.history[i].num,
-                        type:               Bam.ADJ,
-                        title:              this.history[i].title,
-                        comments:           this.history[i].comments,
-                        driverFeetDistance: this.history[i].driverFeetDistance,
-                        drivenFeetDistance: this.history[i].drivenFeetDistance,
-                        driverTicks:        this.history[i].driverTicks,
-                        drivenTicks:        this.history[i].drivenTicks,
-                        driverBubbleHi:     this.history[i].driverBubbleHi,
-                        drivenBubbleHi:     this.history[i].drivenBubbleHi,
-                        driverToLevel:      this.history[i].driverToLevel,
-                        drivenToLevel:      this.history[i].drivenToLevel,
-                        driverToDriven:     this.history[i].driverToDriven,
-                        drivenToDriver:     this.history[i].drivenToDriver,
-                        plotHidden:         this.history[i].plotHidden
+                        num:              this.history[i].num,
+                        type:             Sam.ADJ,
+                        title:            this.history[i].title,
+                        comments:         this.history[i].comments,
+                        dimA:             this.history[i].dimA,
+                        dimB:             this.history[i].dimB,
+                        dimC:             this.history[i].dimC,
+                        dimD:             this.history[i].dimD,
+                        dimE:             this.history[i].dimE,
+                        stationaryDial:   this.history[i].stationaryDial,
+                        movableDial:      this.history[i].movableDial,
+                        dimFString:       this.history[i].pDimF.innerHTML,
+                        staTIRString:     this.history[i].pstaHalfTIR.innerHTML,
+                        movTIRString:     this.history[i].pmovHalfTIR.innerHTML,
+                        movnTIRString:    this.history[i].pmovnHalfTIR.innerHTML,
+                        o1InboardString:  this.history[i].o1Inboard.innerHTML,
+                        o1OutboardString: this.history[i].o1Outboard.innerHTML,
+                        o2Inboard1String: this.history[i].o2Inboard1.innerHTML,
+                        o2Inboard2String: this.history[i].o2Inboard2.innerHTML
                     }
                     histCopy = [...histCopy, adjObj];
                 break;
-                case Bam.MEAS:
+                case Sam.MEAS:
                     let measObj =
                     {
                         num:        this.history[i].num,
-                        type:       Bam.MEAS,
+                        type:       Sam.MEAS,
                         title:      this.history[i].title,
                         comments:   this.history[i].comments,
                         p1hVel:     this.history[i].p1hVel, p1hGe: this.history[i].p1hGe, p1vVel: this.history[i].p1vVel, p1vGe: this.history[i].p1vGe,
@@ -1805,17 +1904,15 @@ class Bam
                         p4hVel:     this.history[i].p4hVel, p4hGe: this.history[i].p4hGe, p4vVel: this.history[i].p4vVel, p4vGe: this.history[i].p4vGe,
                         p4aVel:     this.history[i].p4aVel, p4aGe: this.history[i].p4aGe, p4Temp: this.history[i].p4Temp,
                         ampDraw:    this.history[i].ampDraw,
-                        cost:       this.history[i].cost,
                         costString: this.history[i].costString,
-                        rpmDriver:  this.history[i].rpmDriver,
-                        rpmDriven:  this.history[i].rpmDriven,
-                        beltTemp:   this.history[i].beltTemp,
+                        rpmShaft:   this.history[i].rpmShaft,
+                        shaftTemp:  this.history[i].shaftTemp,
                         highestUe:  this.history[i].highestUe,
                         highestSnd: this.history[i].highestSnd,
                     }
                     histCopy = [...histCopy, measObj];
                 break;
-                case Bam.COST:
+                case Sam.COST:
                     //Nothing to do here.
                 break;
                 default:
@@ -1825,7 +1922,7 @@ class Bam
         }
 
         //Send belt alignment data to the new window.
-        sessionStorage.setItem("beltAlignmentArray", JSON.stringify(histCopy));
-        window.open("./beltAlignmentPrint.html");
+        sessionStorage.setItem("shaftAlignmentArray", JSON.stringify(histCopy));
+        window.open("./shaftAlignmentPrint.html");
     }
 }

@@ -11,12 +11,16 @@ let drivenToDriver     = undefined;
 let driverBubbleHi     = true;
 let drivenBubbleHi     = true;
 
+//Graph watermarks.
+let bkImg = document.getElementById("watermark");
+let bkOp  = .05;
+
 let mode = 0; //0=basic mode, any other value is advanced mode.
 
 //Create driver and driven level classes.
 let drivenLevel = new Level(document.getElementById("driven-level"), {bubbleColor: "#3030ff"});
 let driverLevel = new Level(document.getElementById("driver-level"));
-let plot = new BeltPlot(document.getElementById("plot"), {backgroundImg: document.getElementById("blank")});
+let plot = new BeltPlot(document.getElementById("plot"), {backgroundImg: bkImg, backgroundAlpha: bkOp});
 
 //Callback function for updating cost data.
 let changeCostData = (costKwh, voltage, mult, period, title, comments) =>
@@ -60,7 +64,7 @@ let changeCostData = (costKwh, voltage, mult, period, title, comments) =>
 }
 
 //Create belt alignment manager.
-let bam = new Bam(document.getElementById("multi"), changeCostData);
+let bam = new Bam(document.getElementById("multi"), changeCostData, {backgroundImg: bkImg, backgroundAlpha: bkOp});
 
 //Make sure everthing resets on a page refresh.
 document.getElementById("driven-bubble-hi").checked = true;
@@ -270,13 +274,16 @@ let clearData = () =>
     //Check for advanced mode. If in advanced mode, let the belt alignment manager handle the data clear.
     if(mode)
     {
-        document.getElementById("monthly-radio").checked = true;
-        document.getElementById("kwh").value = "";
-        document.getElementById("volt").value = "";
-        document.getElementById("mult").value = "";
-        document.getElementById("report-title").value = "";
-        document.getElementById("report-comments").value = "";
-        document.getElementById("multi").innerHTML = "";
+        document.getElementById("monthly-radio").checked      = true;
+        document.getElementById("kwh").value                  = "";
+        document.getElementById("volt").value                 = "";
+        document.getElementById("mult").value                 = "";
+        document.getElementById("report-title").value         = "";
+        document.getElementById("report-comments").value      = "";
+        document.getElementById("multi").innerHTML            = "";
+        document.getElementById("kwh").style.backgroundColor  = "";
+        document.getElementById("volt").style.backgroundColor = "";
+        document.getElementById("mult").style.backgroundColor = "";
         bam.clearData();
         return;
     }
@@ -373,7 +380,7 @@ let checkCalc = () =>
     }
 }
 
-let loadData       = (e) => 
+let loadData = (e) => 
 {
     let kwh = document.getElementById("kwh");
     let volt = document.getElementById("volt");

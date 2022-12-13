@@ -488,18 +488,28 @@ window.onclick = (event) =>
 //Event listeners that close modals if x is clicked.
 const settingsModal = document.getElementById("settings-modal");
 const editorModal = document.getElementById("editor-modal");
+const infoModal = document.getElementById("info-modal");
 let closeBtn = document.getElementsByClassName("close");
 
 closeBtn[0].addEventListener("click", () =>
 {
     settingsModal.style.display = "none";
     editorModal.style.display = "none";
+    infoModal.style.display = "none";
 });
 
 closeBtn[1].addEventListener("click", () =>
 {
     settingsModal.style.display = "none";
     editorModal.style.display = "none";
+    infoModal.style.display = "none";
+});
+
+closeBtn[2].addEventListener("click", () =>
+{
+    settingsModal.style.display = "none";
+    editorModal.style.display = "none";
+    infoModal.style.display = "none";
 });
 
 //Event listener that brings up the settings modal.
@@ -519,6 +529,17 @@ editor.addEventListener("click", () =>
     let modal = document.getElementById("editor-modal");
     modal.style.display = "block";
     doEdit();
+});
+
+//Event listener that brings up the info modal.
+const info = document.getElementById("info");
+info.addEventListener("click", () =>
+{
+    let modal = document.getElementById("info-modal");
+    modal.style.display = "block";
+    let infoDiv = document.getElementById("info-div");
+    let noInfoString = "<p>No special puzzle information</p>"
+    infoDiv.innerHTML = (ge.gameObject.hasOwnProperty("info") && ge.gameObject.info !== null) ? ge.gameObject.info : infoDiv.innerHTML = noInfoString;
 });
 
 //Event listener for game object copying.

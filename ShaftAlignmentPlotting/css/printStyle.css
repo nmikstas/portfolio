@@ -87,6 +87,14 @@ p
     border-radius: 5px;
 }
 
+.small-img
+{
+    max-width: 100px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .tenth
 {
     display: inline-block;
@@ -109,6 +117,12 @@ p
 {
     display: inline-block;
     width: 33.33333%;
+}
+
+.two-thirds
+{
+    display: inline-block;
+    width: 66.66666%;
 }
 
 .fourty-percent
