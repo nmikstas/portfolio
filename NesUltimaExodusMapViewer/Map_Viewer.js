@@ -1542,7 +1542,7 @@ const map1Images =
 const map2Images =
 [
     "grass", "shrub", "tree", "water", "hill", "door", "path", "fire", 
-    "wall3", "wall2", "chest", "floor", "wall1", null, "force", null
+    "wall3", "wall2", "chest", "floor", "wall1", null, "force", "blank"
 ];
 
 const map3Images =
