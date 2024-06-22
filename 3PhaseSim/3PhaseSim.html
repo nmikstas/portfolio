@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>3-Phase Power Simulator</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!--Reset Styling-->
+    <link rel="stylesheet" type="text/css" href="../assets/css/reset.css">
+    
+    <!--Bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    
+    <!--Generic Styling-->
+    <link rel="stylesheet" type="text/css" href="../assets/css/style.css">
+
+    <!--Custom Styling-->
+    <link rel="stylesheet" type="text/css" href="./css/style.css">
+</head>
+    
+<body class="d-flex flex-column" id="main-body">
+    
+    <!--Header-->
+    <header class="header-class" id="header">
+        <nav class="navbar navbar-dark navbar-expand-lg">
+            <a class="navbar-brand nav-title px-2" href="../index.html">Nick Mikstas Portfolio</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="container text-center">
+                <h1>3-Phase Simulator</h1>
+            </div>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../resume.html">Resume</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../web.html">Web</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../embedded.html">Embedded</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../fpga.html">FPGA</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../dsp.html">DSP</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../games.html">Games</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+        
+    <!--Main content body-->
+    <div class="mx-5" id="page-body">
+        <div class="row">
+
+            <!--Left hand column-->
+            <div class="col-md-6">
+
+                <div class="sec">Voltage</div>
+
+                <div class="full-span">
+                    <span class="desc" style="text-align: right; display: inline-block; width:10%;">VAN: </span>
+                    <span><input autocomplete="off" type="text" style="width: 10%;" value="277" id="van-text"></span>
+                    <span class="desc pl-2">Phase </span>
+                    <span><input autocomplete="off" type="range" min="-180" max="180" value="0" style="width: 50%;" id="van-slider"></span>
+                    <span><input autocomplete="off" type="text" style="width: 10%;" value="0" id="van-phase"></span>
+                </div>
+
+                <div class="full-span">
+                    <span class="desc" style="text-align: right; display: inline-block; width:10%;">VBN: </span>
+                    <span><input autocomplete="off" type="text" style="width: 10%;" value="277" id="vbn-text"></span>
+                    <span class="desc pl-2">Phase </span>
+                    <span><input autocomplete="off" type="range" min="-180" max="180" value="-120" style="width: 50%;" id="vbn-slider"></span>
+                    <span><input autocomplete="off" type="text" style="width: 10%;" value="-120" id="vbn-phase"></span>
+                </div>
+
+                <div class="full-span">
+                    <span class="desc" style="text-align: right; display: inline-block; width:10%;">VCN: </span>
+                    <span><input autocomplete="off" type="text" style="width: 10%;" value="277" id="vcn-text"></span>
+                    <span class="desc pl-2">Phase </span>
+                    <span><input autocomplete="off" type="range" min="-180" max="180" value="120" style="width: 50%;" id="vcn-slider"></span>
+                    <span><input autocomplete="off" type="text" style="width: 10%;" value="120" id="vcn-phase"></span>
+                </div>
+
+                <div class="sec">Current</div>
+
+                <div class="full-span">
+                    <span class="desc" style="text-align: right; display: inline-block; width:10%;">IA: </span>
+                    <span><input autocomplete="off" type="text" style="width: 10%;" value="200" id="ia-text"></span>
+                    <span class="desc pl-2">Phase </span>
+                    <span><input autocomplete="off" type="range" min="-180" max="180" value="0" style="width: 50%;" id="ia-slider"></span>
+                    <span><input autocomplete="off" type="text" style="width: 10%;" value="0" id="ia-phase"></span>
+                </div>
+
+                <div class="full-span">
+                    <span class="desc" style="text-align: right; display: inline-block; width:10%;">IB: </span>
+                    <span><input autocomplete="off" type="text" style="width: 10%;" value="200" id="ib-text"></span>
+                    <span class="desc pl-2">Phase </span>
+                    <span><input autocomplete="off" type="range" min="-180" max="180" value="-120" style="width: 50%;" id="ib-slider"></span>
+                    <span><input autocomplete="off" type="text" style="width: 10%;" value="-120" id="ib-phase"></span>
+                </div>
+
+                <div class="full-span">
+                    <span class="desc" style="text-align: right; display: inline-block; width:10%;">IC: </span>
+                    <span><input autocomplete="off" type="text" style="width: 10%;" value="200" id="ic-text"></span>
+                    <span class="desc pl-2">Phase </span>
+                    <span><input autocomplete="off" type="range" min="-180" max="180" value="120" style="width: 50%;" id="ic-slider"></span>
+                    <span><input autocomplete="off" type="text" style="width: 10%;" value="120" id="ic-phase"></span>
+                </div>
+
+                <div class="full-span pt-2 pb-1">
+                    <span class="desc" style="text-align: right; display: inline-block; width:10%;">Cycles: </span>
+                    <span><input autocomplete="off" type="text" style="width: 10%;" value="1.5" id="cyc-text"></span>
+                    <span class="va desc" style="width: 12%; display: inline-block; text-align: center;">
+                        <input type="checkbox" id="ch-va" autocomplete="off" checked><b> VA</b>
+                    </span>
+                    <span class="vb desc" style="width: 12%; display: inline-block; text-align: center;">
+                        <input type="checkbox" id="ch-vb" autocomplete="off" checked><b> VB</b>
+                    </span>
+                    <span class="vc desc" style="width: 12%; display: inline-block; text-align: center;">
+                        <input type="checkbox" id="ch-vc" autocomplete="off" checked><b> VC</b>
+                    </span>
+                    <span class="ia desc" style="width: 12%; display: inline-block; text-align: center;">
+                        <input type="checkbox" id="ch-ia" autocomplete="off" checked><b> IA</b>
+                    </span>
+                    <span class="ib desc" style="width: 12%; display: inline-block; text-align: center;">
+                        <input type="checkbox" id="ch-ib" autocomplete="off" checked><b> IB</b>
+                    </span>
+                    <span class="ic desc" style="width: 12%; display: inline-block; text-align: center;">
+                        <input type="checkbox" id="ch-ic" autocomplete="off" checked><b> IC</b>
+                    </span>      
+                 </div>
+
+                <div class="full-span" id="wave-window"></div>
+            </div>
+        
+            <!--Right hand column-->
+            <div class="col-md-6" id="right-column">
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="sec">A-phase Power</div>
+                        <div id="a-power" class="desc pl-4"></div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="sec">B-phase Power</div>
+                        <div id="b-power" class="desc pl-4"></div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="sec">C-phase Power</div>
+                        <div id="c-power" class="desc pl-4"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="sec">Total Power</div>
+                        <div id="total-power" class="desc pl-4 pb-2"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 pb-1">
+                        <span class="vab desc" style="width: 20%; display: inline-block; text-align: center;">
+                            <input type="checkbox" id="ch-vab" autocomplete="off" checked><b> VAB</b>
+                        </span>
+                        <span class="vbc desc" style="width: 20%; display: inline-block; text-align: center;">
+                            <input type="checkbox" id="ch-vbc" autocomplete="off" checked><b> VBC</b>
+                        </span>
+                        <span class="vca desc" style="width: 20%; display: inline-block; text-align: center;">
+                            <input type="checkbox" id="ch-vca" autocomplete="off" checked><b> VCA</b>
+                        </span>
+                    </div>
+                </div>
+
+                <!--Phasor-->
+                <div class="full-span" id="phasor-window"></div>  
+            </div>      
+        </div>
+    </div>
+        
+    <!--Footer-->
+    <footer id="sticky-footer" class="pt-4 pb-1">
+        <div class="container text-center">
+            <small>&copy;Nick Mikstas - nmikstas@alumni.scu.edu</small>
+        </div>
+    </footer>
+
+    <!--jQuery-->
+    <script src="./js/jquery.min.js"></script>
+        
+    <!--Bootstrap-->
+    <script src="./js/bootstrap.min.js"></script>
+
+    <!--Javascript-->
+    <script src="./js/waveform.js"></script>
+    <script src="./js/phasor.js"></script>
+    <script src="./js/3PhaseSim.js"></script>
+</body>      
+</html>

@@ -1,0 +1,74 @@
+/***************************************** Misc. Styling *****************************************/
+h1
+{
+    font-family: sans-serif;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffffff;
+    text-align: center;
+    width: 100%;
+}
+
+.va
+{
+    background-color: #ff0000;
+}
+
+.vb
+{
+    background-color: #00ff00;
+}
+
+.vc
+{
+    background-color: #0000ff;
+}
+
+.ia
+{
+    background-color: #770000;
+}
+
+.ib
+{
+    background-color: #007700;
+}
+
+.ic
+{
+    background-color: #000077;
+}
+
+.vab
+{
+    background-color: #aa00aa;
+}
+
+.vbc
+{
+    background-color: #aaaa00;
+}
+
+.vca
+{
+    background-color: #00aaaa;
+}
+
+.full-span
+{
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.sec
+{
+    color: #ffffff;
+    font-size: 1.5rem;
+}
+
+.desc
+{
+    color: #ffffff;
+    font-size: 1.0rem;
+}
