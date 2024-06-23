@@ -145,7 +145,7 @@ class Phasor
     {
         //Clear the canvas.
         this.ctxp.beginPath();
-        this.ctxp.fillStyle = "#ffffff";
+        this.ctxp.fillStyle = "#ffffff00";
         this.ctxp.fillRect(0, 0, this.bodyWidth, this.bodyWidth)
         this.ctxp.stroke();
         
@@ -153,6 +153,8 @@ class Phasor
         if(this.bodyWidth < 5) return;
 
         //Draw the outer ring of the phasor.
+        this.drawArc(0, 2 * Math.PI, this.radius * 1.025, "#ffffffff", this.bodyWidth * .005, true);
+        this.drawArc(0, 2 * Math.PI, this.radius * 0.4, "#00000010", this.bodyWidth * .005);
         this.drawArc(0, 2 * Math.PI, this.radius, "#00000010", this.bodyWidth * .005);
 
         //Draw lines representing standard angles.
@@ -272,7 +274,7 @@ class Phasor
     {
         //Draw the main portion of the vector.
         this.drawLineAngle(angle, angle, color, this.bodyWidth * .010, 0, mag);
-        this.drawTextAngle(angle - this.DtoR(textDegrees), text, color, 0.10, ratio);     
+        this.drawTextAngle(angle - this.DtoR(textDegrees), text, color, 0.10, ratio * .95);     
 
         //Draw the head of the vector.
         if(type === Phasor.I_VECTOR)
