@@ -5,7 +5,7 @@ class Phasor
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     static get VOLTS_PEAK() {return .95}
-    static get AMPS_PEAK() {return .40}
+    static get AMPS_PEAK() {return .60}
     static get V_VECTOR() {return 0}
     static get I_VECTOR() {return 1}
 
@@ -20,6 +20,7 @@ class Phasor
         IAtxt, IBtxt, ICtxt,
         VAphs, VBphs, VCphs,
         IAphs, IBphs, ICphs,
+        INeut,
         {
             vaColor  = "#ff0000",
             vbColor  = "#00ff00",
@@ -30,6 +31,7 @@ class Phasor
             vabColor = "#aa00aa",
             vbcColor = "#aaaa00",
             vcaColor = "#00aaaa",
+            inColor  = "#8b8b8b",
             showVA   = true,
             showVB   = true,
             showVC   = true,
@@ -38,7 +40,8 @@ class Phasor
             showIC   = true,
             showVAB  = true,
             showVBC  = true,
-            showVCA  = true
+            showVCA  = true,
+            showIN   = true
         } = {}
     )
     {
@@ -57,6 +60,7 @@ class Phasor
         this.IAphs = IAphs;
         this.IBphs = IBphs;
         this.ICphs = ICphs;
+        this.INeut = INeut;
 
         //Waveform colors.
         this.vaColor  = vaColor;
@@ -68,6 +72,7 @@ class Phasor
         this.vabColor = vabColor;
         this.vbcColor = vbcColor;
         this.vcaColor = vcaColor;
+        this.inColor  = inColor;
 
         //Which waveforms to show.
         this.showVA  = showVA;
@@ -79,6 +84,7 @@ class Phasor
         this.showVAB = showVAB;
         this.showVBC = showVBC;
         this.showVCA = showVCA;
+        this.showIN  = showIN;
 
         //Context of the canvas.
         this.ctxp;
@@ -154,7 +160,7 @@ class Phasor
 
         //Draw the outer ring of the phasor.
         this.drawArc(0, 2 * Math.PI, this.radius * 1.025, "#ffffffff", this.bodyWidth * .005, true);
-        this.drawArc(0, 2 * Math.PI, this.radius * 0.4, "#00000010", this.bodyWidth * .005);
+        this.drawArc(0, 2 * Math.PI, this.radius * Phasor.AMPS_PEAK, "#00000010", this.bodyWidth * .005);
         this.drawArc(0, 2 * Math.PI, this.radius, "#00000010", this.bodyWidth * .005);
 
         //Draw lines representing standard angles.
@@ -178,6 +184,19 @@ class Phasor
         let iap = parseFloat(this.IAphs.value);
         let ibp = parseFloat(this.IBphs.value);
         let icp = parseFloat(this.ICphs.value);
+
+        //Calculate the neutral/ground current.
+        let iax = ia * Math.cos(this.DtoR(iap));
+        let iay = ia * Math.sin(this.DtoR(iap));
+        let ibx = ib * Math.cos(this.DtoR(ibp));
+        let iby = ib * Math.sin(this.DtoR(ibp));
+        let icx = ic * Math.cos(this.DtoR(icp));
+        let icy = ic * Math.sin(this.DtoR(icp));
+
+        let ineutx = iax + ibx + icx;
+        let ineuty = iay + iby + icy;
+        let ineut  = Math.sqrt(ineutx**2 + ineuty**2).toFixed(2);
+        let inp    = Math.atan2(ineuty, -ineutx);
 
         //Calculate the phase to phase voltage vectors.
         let vax = (va * Math.cos(this.DtoR(vap)));
@@ -216,26 +235,28 @@ class Phasor
         //Find the maximum enabled voltage and current.
         let maxV = 0;
         let maxI = 0;
-        if(va  > maxV && this.showVA)  maxV = va;
-        if(vb  > maxV && this.showVB)  maxV = vb;
-        if(vc  > maxV && this.showVC)  maxV = vc;
-        if(vab > maxV && this.showVAB) maxV = vab;
-        if(vbc > maxV && this.showVBC) maxV = vbc;
-        if(vca > maxV && this.showVCA) maxV = vca;
-        if(ia  > maxI && this.showIA)  maxI = ia;
-        if(ib  > maxI && this.showIB)  maxI = ib;
-        if(ic  > maxI && this.showIC)  maxI = ic;
+        if(va    > maxV && this.showVA)  maxV = va;
+        if(vb    > maxV && this.showVB)  maxV = vb;
+        if(vc    > maxV && this.showVC)  maxV = vc;
+        if(vab   > maxV && this.showVAB) maxV = vab;
+        if(vbc   > maxV && this.showVBC) maxV = vbc;
+        if(vca   > maxV && this.showVCA) maxV = vca;
+        if(ia    > maxI && this.showIA)  maxI = ia;
+        if(ib    > maxI && this.showIB)  maxI = ib;
+        if(ic    > maxI && this.showIC)  maxI = ic;
+        if(ineut > maxI && this.showIN)  maxI = ineut;
 
         //Calculate the amplitudes of the waveforms.
-        let vaAmplitude  = this.yMiddle * va  * Phasor.VOLTS_PEAK / maxV;
-        let vbAmplitude  = this.yMiddle * vb  * Phasor.VOLTS_PEAK / maxV;
-        let vcAmplitude  = this.yMiddle * vc  * Phasor.VOLTS_PEAK / maxV;
-        let vabAmplitude = this.yMiddle * vab * Phasor.VOLTS_PEAK / maxV;
-        let vbcAmplitude = this.yMiddle * vbc * Phasor.VOLTS_PEAK / maxV;
-        let vcaAmplitude = this.yMiddle * vca * Phasor.VOLTS_PEAK / maxV;
-        let iaAmplitude  = this.yMiddle * ia  * Phasor.AMPS_PEAK  / maxI;
-        let ibAmplitude  = this.yMiddle * ib  * Phasor.AMPS_PEAK  / maxI;
-        let icAmplitude  = this.yMiddle * ic  * Phasor.AMPS_PEAK  / maxI;
+        let vaAmplitude  = this.yMiddle * va    * Phasor.VOLTS_PEAK / maxV;
+        let vbAmplitude  = this.yMiddle * vb    * Phasor.VOLTS_PEAK / maxV;
+        let vcAmplitude  = this.yMiddle * vc    * Phasor.VOLTS_PEAK / maxV;
+        let vabAmplitude = this.yMiddle * vab   * Phasor.VOLTS_PEAK / maxV;
+        let vbcAmplitude = this.yMiddle * vbc   * Phasor.VOLTS_PEAK / maxV;
+        let vcaAmplitude = this.yMiddle * vca   * Phasor.VOLTS_PEAK / maxV;
+        let iaAmplitude  = this.yMiddle * ia    * Phasor.AMPS_PEAK  / maxI;
+        let ibAmplitude  = this.yMiddle * ib    * Phasor.AMPS_PEAK  / maxI;
+        let icAmplitude  = this.yMiddle * ic    * Phasor.AMPS_PEAK  / maxI;
+        let inAmplitude  = this.yMiddle * ineut * Phasor.AMPS_PEAK  / maxI;
 
         //Draw the vectors.
         if(this.showVAB)this.drawVector(pab, this.vabColor, vabAmplitude, Phasor.V_VECTOR, "VAB", 10, vabAmplitude / this.yMiddle);
@@ -247,6 +268,7 @@ class Phasor
         if(this.showIA)this.drawVector(iap, this.iaColor, iaAmplitude, Phasor.I_VECTOR, "IA", -10, iaAmplitude / this.yMiddle);
         if(this.showIB)this.drawVector(ibp, this.ibColor, ibAmplitude, Phasor.I_VECTOR, "IB", -10, ibAmplitude / this.yMiddle);
         if(this.showIC)this.drawVector(icp, this.icColor, icAmplitude, Phasor.I_VECTOR, "IC", -10, icAmplitude / this.yMiddle);
+        if(this.showIN)this.drawVector(inp, this.inColor, inAmplitude, Phasor.I_VECTOR, "IN", -10, inAmplitude / this.yMiddle);
     }
 
     //Convert degrees into radians.
@@ -256,7 +278,7 @@ class Phasor
     }
 
     //Update which waveforms should be drawn.
-    updateShow(va = true, vb = true, vc = true, ia = true, ib = true, ic = true, vab = true, vbc = true, vca = true)
+    updateShow(va = true, vb = true, vc = true, ia = true, ib = true, ic = true, vab = true, vbc = true, vca = true, ineut = true)
     {
         this.showVA  = va;
         this.showVB  = vb;
@@ -267,6 +289,7 @@ class Phasor
         this.showVAB = vab;
         this.showVBC = vbc;
         this.showVCA = vca;
+        this.showIN  = ineut;
         this.resize();
     }
 

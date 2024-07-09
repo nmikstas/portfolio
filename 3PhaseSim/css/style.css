@@ -54,6 +54,11 @@ h1
     background-color: #00aaaa;
 }
 
+.in
+{
+    background-color: rgb(139, 139, 139);
+}
+
 .full-span
 {
     width: 100%;

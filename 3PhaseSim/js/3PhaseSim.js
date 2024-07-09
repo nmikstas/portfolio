@@ -25,6 +25,7 @@ let VCChk    = document.getElementById("ch-vc");
 let IAChk    = document.getElementById("ch-ia");
 let IBChk    = document.getElementById("ch-ib");
 let ICChk    = document.getElementById("ch-ic");
+let INChk    = document.getElementById("ch-in");
 let CycText  = document.getElementById("cyc-text");
 let aPower   = document.getElementById("a-power");
 let bPower   = document.getElementById("b-power");
@@ -35,6 +36,7 @@ let VBCChk   = document.getElementById("ch-vbc");
 let VCAChk   = document.getElementById("ch-vca");
 let rightCol = document.getElementById("right-column");
 let mainBody = document.getElementById("main-body");
+let derived  = document.getElementById("derived-values");
 
 let waveWindow = document.getElementById("wave-window");
 let wf = new Waveform
@@ -363,71 +365,29 @@ CycText.onfocusout = () =>
 }
 
 //Add event listeners to check boxes.
-VAChk.onclick = () => 
+VAChk.onclick  = () => GFXUpdate();
+VBChk.onclick  = () => GFXUpdate();
+VCChk.onclick  = () => GFXUpdate();
+IAChk.onclick  = () => GFXUpdate();
+IBChk.onclick  = () => GFXUpdate();
+ICChk.onclick  = () => GFXUpdate();
+VABChk.onclick = () => GFXUpdate();
+VBCChk.onclick = () => GFXUpdate();
+VCAChk.onclick = () => GFXUpdate();
+INChk.onclick  = () => GFXUpdate();
+
+const GFXUpdate = () =>
 {
     wf.updateShow(VAChk.checked, VBChk.checked, VCChk.checked, IAChk.checked, IBChk.checked, ICChk.checked);
     phasor.updateShow(VAChk.checked, VBChk.checked, VCChk.checked, IAChk.checked, IBChk.checked, ICChk.checked,
-        VABChk.checked, VBCChk.checked, VCAChk.checked)
-}
-
-VBChk.onclick = () =>
-{
-    wf.updateShow(VAChk.checked, VBChk.checked, VCChk.checked, IAChk.checked, IBChk.checked, ICChk.checked);
-    phasor.updateShow(VAChk.checked, VBChk.checked, VCChk.checked, IAChk.checked, IBChk.checked, ICChk.checked,
-        VABChk.checked, VBCChk.checked, VCAChk.checked)
-}
-
-VCChk.onclick = () =>
-{
-    wf.updateShow(VAChk.checked, VBChk.checked, VCChk.checked, IAChk.checked, IBChk.checked, ICChk.checked);
-    phasor.updateShow(VAChk.checked, VBChk.checked, VCChk.checked, IAChk.checked, IBChk.checked, ICChk.checked,
-        VABChk.checked, VBCChk.checked, VCAChk.checked)
-}
-
-IAChk.onclick = () =>
-{
-    wf.updateShow(VAChk.checked, VBChk.checked, VCChk.checked, IAChk.checked, IBChk.checked, ICChk.checked);
-    phasor.updateShow(VAChk.checked, VBChk.checked, VCChk.checked, IAChk.checked, IBChk.checked, ICChk.checked,
-        VABChk.checked, VBCChk.checked, VCAChk.checked)
-}
-
-IBChk.onclick = () =>
-{
-    wf.updateShow(VAChk.checked, VBChk.checked, VCChk.checked, IAChk.checked, IBChk.checked, ICChk.checked);
-    phasor.updateShow(VAChk.checked, VBChk.checked, VCChk.checked, IAChk.checked, IBChk.checked, ICChk.checked,
-        VABChk.checked, VBCChk.checked, VCAChk.checked)
-}
-
-ICChk.onclick = () =>
-{
-    wf.updateShow(VAChk.checked, VBChk.checked, VCChk.checked, IAChk.checked, IBChk.checked, ICChk.checked);
-    phasor.updateShow(VAChk.checked, VBChk.checked, VCChk.checked, IAChk.checked, IBChk.checked, ICChk.checked,
-        VABChk.checked, VBCChk.checked, VCAChk.checked)
-}
-
-VABChk.onclick = () =>
-{
-    phasor.updateShow(VAChk.checked, VBChk.checked, VCChk.checked, IAChk.checked, IBChk.checked, ICChk.checked,
-        VABChk.checked, VBCChk.checked, VCAChk.checked)
-}
-
-VBCChk.onclick = () =>
-{
-    phasor.updateShow(VAChk.checked, VBChk.checked, VCChk.checked, IAChk.checked, IBChk.checked, ICChk.checked,
-        VABChk.checked, VBCChk.checked, VCAChk.checked)
-}
-
-VCAChk.onclick = () =>
-{
-    phasor.updateShow(VAChk.checked, VBChk.checked, VCChk.checked, IAChk.checked, IBChk.checked, ICChk.checked,
-        VABChk.checked, VBCChk.checked, VCAChk.checked)
+        VABChk.checked, VBCChk.checked, VCAChk.checked, INChk.checked);
 }
 
 //Update voltage/current text boxes.
 const updateIV = (e, last) =>
 {
     let num = parseFloat(e.value);
-    if(!isNaN(num) && num > 0)last = num;
+    if(!isNaN(num) && num >= 0)last = num;
     e.value = last;
     updatePower();
     return last;
@@ -506,9 +466,9 @@ const updatePower = () =>
     let kwC = (parseFloat(VCText.value) * parseFloat(ICText.value) * pfC / 1000).toFixed(2);
 
     //Calculate KVAR.
-    let kvarA = (-kvaA * Math.sin(Math.PI * iap / 180)).toFixed(2);
-    let kvarB = (-kvaB * Math.sin(Math.PI * ibp / 180)).toFixed(2);
-    let kvarC = (-kvaC * Math.sin(Math.PI * icp / 180)).toFixed(2);
+    let kvarA = (kvaA * Math.sin(Math.PI * iap / 180)).toFixed(2);
+    let kvarB = (kvaB * Math.sin(Math.PI * ibp / 180)).toFixed(2);
+    let kvarC = (kvaC * Math.sin(Math.PI * icp / 180)).toFixed(2);
 
     //Calculate the phase to phase voltage vectors.
     let vax = (parseFloat(VAText.value) * Math.cos(parseFloat(Math.PI * VAPhase.value / 180)));
@@ -530,17 +490,32 @@ const updatePower = () =>
     let vca = Math.sqrt(vcax**2 + vcay**2).toFixed(1);
 
     //Update power calculations on the display.
-    aPower.innerHTML = "PF: " + pfA + leadLagA + "<br>KW: " + kwA + "<br>KVAR: " + kvarA + "<br>KVA: " + kvaA + "<br>VAB: " + vab;
-    bPower.innerHTML = "PF: " + pfB + leadLagB + "<br>KW: " + kwB + "<br>KVAR: " + kvarB + "<br>KVA: " + kvaB + "<br>VBC: " + vbc;
-    cPower.innerHTML = "PF: " + pfC + leadLagC + "<br>KW: " + kwC + "<br>KVAR: " + kvarC + "<br>KVA: " + kvaC + "<br>VCA: " + vca;
+    aPower.innerHTML = "PF: " + pfA + leadLagA + "<br>KW: " + kwA + "<br>KVAR: " + kvarA + "<br>KVA: " + kvaA;
+    bPower.innerHTML = "PF: " + pfB + leadLagB + "<br>KW: " + kwB + "<br>KVAR: " + kvarB + "<br>KVA: " + kvaB;
+    cPower.innerHTML = "PF: " + pfC + leadLagC + "<br>KW: " + kwC + "<br>KVAR: " + kvarC + "<br>KVA: " + kvaC;
 
     //Calculate total power.
     let kwTotal = (parseFloat(kwA) + parseFloat(kwB) + parseFloat(kwC)).toFixed(2);
     let kvarTotal = (parseFloat(kvarA) + parseFloat(kvarB) + parseFloat(kvarC)).toFixed(2);
     let kvaTotal = (parseFloat(kvaA) + parseFloat(kvaB) + parseFloat(kvaC)).toFixed(2);
 
+    //Calculate neutral current.
+    let iax = parseFloat(IAText.value) * Math.cos(parseFloat(IAPhase.value) * Math.PI / 180);
+    let iay = parseFloat(IAText.value) * Math.sin(parseFloat(IAPhase.value) * Math.PI / 180);
+    let ibx = parseFloat(IBText.value) * Math.cos(parseFloat(IBPhase.value) * Math.PI / 180);
+    let iby = parseFloat(IBText.value) * Math.sin(parseFloat(IBPhase.value) * Math.PI / 180);
+    let icx = parseFloat(ICText.value) * Math.cos(parseFloat(ICPhase.value) * Math.PI / 180);
+    let icy = parseFloat(ICText.value) * Math.sin(parseFloat(ICPhase.value) * Math.PI / 180);
+
+    let ineutx = iax + ibx + icx;
+    let ineuty = iay + iby + icy;
+    let ineut = Math.sqrt(ineutx**2 + ineuty**2).toFixed(2);
+
     //Update total power calculations on the display.
     tPower.innerHTML = "KW: " + kwTotal + "\xa0\xa0\xa0 KVAR: " + kvarTotal + "\xa0\xa0\xa0 KVA: " + kvaTotal;
+
+    //Update derived values on the display.
+    derived.innerHTML= "VAB: " + vab + "\xa0\xa0\xa0 VBC: " + vbc + "\xa0\xa0\xa0 VCA: " + vca + "\xa0\xa0\xa0 IN: " + ineut;
 }
 
 //Set initial heights of things.
