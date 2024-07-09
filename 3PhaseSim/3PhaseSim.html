@@ -76,10 +76,10 @@
                     <label for="delta" class="desc">Delta</label><br>
                 </div>
 
-                <div class="sec">Line-to-Neutral Voltage</div>
+                <div class="sec" id="volt-desc">Line-to-Neutral Voltage</div>
 
                 <div class="full-span">
-                    <span class="desc" style="text-align: right; display: inline-block; width:10%;">VAN: </span>
+                    <span class="desc" id="va-desc" style="text-align: right; display: inline-block; width:10%;">VAN: </span>
                     <span><input autocomplete="off" type="text" style="width: 10%;" value="277" id="van-text"></span>
                     <span class="desc pl-2">Phase </span>
                     <span><input autocomplete="off" type="range" min="-180" max="180" value="0" style="width: 50%;" id="van-slider"></span>
@@ -87,7 +87,7 @@
                 </div>
 
                 <div class="full-span">
-                    <span class="desc" style="text-align: right; display: inline-block; width:10%;">VBN: </span>
+                    <span class="desc" id="vb-desc" style="text-align: right; display: inline-block; width:10%;">VBN: </span>
                     <span><input autocomplete="off" type="text" style="width: 10%;" value="277" id="vbn-text"></span>
                     <span class="desc pl-2">Phase </span>
                     <span><input autocomplete="off" type="range" min="-180" max="180" value="-120" style="width: 50%;" id="vbn-slider"></span>
@@ -95,7 +95,7 @@
                 </div>
 
                 <div class="full-span">
-                    <span class="desc" style="text-align: right; display: inline-block; width:10%;">VCN: </span>
+                    <span class="desc" id="vc-desc" style="text-align: right; display: inline-block; width:10%;">VCN: </span>
                     <span><input autocomplete="off" type="text" style="width: 10%;" value="277" id="vcn-text"></span>
                     <span class="desc pl-2">Phase </span>
                     <span><input autocomplete="off" type="range" min="-180" max="180" value="120" style="width: 50%;" id="vcn-slider"></span>
@@ -132,13 +132,13 @@
                     <span class="desc" style="text-align: right; display: inline-block; width:10%;">Cycles: </span>
                     <span><input autocomplete="off" type="text" style="width: 10%;" value="1.5" id="cyc-text"></span>
                     <span class="va desc" style="width: 12%; display: inline-block; text-align: center;">
-                        <input type="checkbox" id="ch-va" autocomplete="off" checked><b> VA</b>
+                        <input type="checkbox" id="ch-va" autocomplete="off" checked><b id="va-ch"> VAN</b>
                     </span>
                     <span class="vb desc" style="width: 12%; display: inline-block; text-align: center;">
-                        <input type="checkbox" id="ch-vb" autocomplete="off" checked><b> VB</b>
+                        <input type="checkbox" id="ch-vb" autocomplete="off" checked><b id="vb-ch"> VBN</b>
                     </span>
                     <span class="vc desc" style="width: 12%; display: inline-block; text-align: center;">
-                        <input type="checkbox" id="ch-vc" autocomplete="off" checked><b> VC</b>
+                        <input type="checkbox" id="ch-vc" autocomplete="off" checked><b id="vc-ch"> VCN</b>
                     </span>
                     <span class="ia desc" style="width: 12%; display: inline-block; text-align: center;">
                         <input type="checkbox" id="ch-ia" autocomplete="off" checked><b> IA</b>
@@ -191,16 +191,16 @@
                 <div class="row" style="text-align: center;">
                     <div class="col-md-12 pb-1">
                         <span class="vab desc" style="width: 20%; display: inline-block; text-align: center;">
-                            <input type="checkbox" id="ch-vab" autocomplete="off" checked><b> VAB</b>
+                            <input type="checkbox" id="ch-vab" autocomplete="off" checked><b id="va-ch2"> VAB</b>
                         </span>
                         <span class="vbc desc" style="width: 20%; display: inline-block; text-align: center;">
-                            <input type="checkbox" id="ch-vbc" autocomplete="off" checked><b> VBC</b>
+                            <input type="checkbox" id="ch-vbc" autocomplete="off" checked><b id="vb-ch2"> VBC</b>
                         </span>
                         <span class="vca desc" style="width: 20%; display: inline-block; text-align: center;">
-                            <input type="checkbox" id="ch-vca" autocomplete="off" checked><b> VCA</b>
+                            <input type="checkbox" id="ch-vca" autocomplete="off" checked><b id="vc-ch2"> VCA</b>
                         </span>
                         <span class="in desc" style="width: 20%; display: inline-block; text-align: center;">
-                            <input type="checkbox" id="ch-in" autocomplete="off" checked><b> IN</b>
+                            <input type="checkbox" id="ch-in" autocomplete="off" checked><b id="in-ch"> IN</b>
                         </span>
                     </div>
                 </div>
