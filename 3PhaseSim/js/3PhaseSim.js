@@ -572,7 +572,7 @@ const updatePower = () =>
         let vby = (parseFloat(VBText.value) * Math.sin(parseFloat(Math.PI * VBPhase.value / 180)));
         let vcx = (parseFloat(VCText.value) * Math.cos(parseFloat(Math.PI * VCPhase.value / 180)));
         let vcy = (parseFloat(VCText.value) * Math.sin(parseFloat(Math.PI * VCPhase.value / 180)));
-    
+
         let vabx = vax - vbx;
         let vaby = vay - vby;
         let vbcx = vbx - vcx;

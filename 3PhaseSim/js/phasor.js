@@ -5,7 +5,7 @@ class Phasor
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     static get VOLTS_PEAK() {return .95}
-    static get AMPS_PEAK() {return .60}
+    static get AMPS_PEAK() {return .75}
     static get V_VECTOR() {return 0}
     static get I_VECTOR() {return 1}
 
@@ -279,14 +279,101 @@ class Phasor
         //Delta calculations.
         else
         {
+            //We need to calculate the phase voltages from the line voltages. The technique of symmetrical
+            //components will be used. The theory and implementation will be shown here. Mostly from Wikipedia.
+            //
+            //The method of symmetrical components simplifies analysis of unbalanced three-phase power systems.
+            //The basic idea is that an asymmetrical set of N phasors can be expressed as a linear combination
+            //of N symmetrical sets of phasors by means of a complex linear transformation.
+            //The analysis is broken down into the positive sequence, negative sequence, and zero sequence.
+            //
+            //A vector for three phase voltages can be expressed as follows:
+            //           | Va |
+            //    Vacb = | Vb |
+            //           | Vc |
+            //
+            //Decomposing the vector into three symmetrical components gives:
+            //    | Va |   | Va0 |   | Va1 |   | Va2 |
+            //    | Vb | = | Vb0 | + | Vb1 | + | Vb2 |
+            //    | Vc |   | Vc0 |   | Vc1 |   | Vc2 |
+            //where the subscripts 0, 1, and 2 refer respectively to the zero, positive, and negative sequence
+            //components. The sequence components differ only by their phase angles, which are symmetrical and
+            //so are 2/3π radians or 120°.
+            //
+            //A phasor rotation operator will be defined and represented as α, which rotates a phasor vector
+            //counterclockwise by 120 degrees when multiplied by it:
+            //    α = e^(2/3π)i
+            //
+            //Phasor properties of α:
+            //    α = 1∠120°, α^2 = 1∠240° or 1∠-120°, α^3 = 1∠0°
+            //
+            //The voltage vectors have the following sequence components for a clockwise system:
+            //    Van = V0 + V1 + V2
+            //    Vbn = V0 + α^2V1 + αV2
+            //    Vcn = V0 + αV1 + α^2V2
+            //    Vab = Va - Vb = V0 + V1 + V2 -(V0 + α^2V1 + αV2)
+            //    Vbc = Vb - Vc = V0 + α^2V1 + αV2 -(V0 + αV1 + α^2V2)
+            //    Vca = Vc - Va = V0 + αV1 + α^2V2 -(V0 + V1 + V2)
+            //
+            //The line voltage equations reduce as follows. Note V0 cancels out of the equations:
+            //    Vab = V1(1 - α^2) + V2(1 - α)
+            //    Vbc = V1(α^2 - α) + V2(α - α^2)
+            //    Vca = V1(α - 1) + V2(α^2 - 1)
+            //
+            //We need to reduce the equations down to 2 equations so we can have a square matrix to
+            //solve for V1 and V2 as follows:
+            //    Vab - Vbc = V1(1 - α^2) + V2(1 - α) -[V1(α^2 - α) + V2(α - α^2)]
+            //    Vbc - Vca = V1(α^2 - α) + V2(α - α^2) -[V1(α - 1) + V2(α^2 - 1)]
+            //
+            //Reducing the equations gives the following:
+            //    Vab - Vbc = V1(1 - 2α^2 + α) + V2(1 - 2α + α^2)
+            //    Vbc - Vca = V1(α^2 - 2α + 1) + V2(α - 2α^2 + 1)
+            //
+            //The previous equations can be converted to the following matrix form:
+            //    | 1-2α^2+α  1-2α+α^2 | | V1 | = | Vab-Vbc |
+            //    | α^2-2α+1  α-2α^2+1 | | V2 |   | Vbc-Vca |
+            //
+            //The left matrix can be rewritten in polar form:
+            //    A = | 1∠0°-2∠-120°+1∠120°  1∠0°-2∠120°+1∠-120° |
+            //        | 1∠-120°-2∠120°+1∠0°  1∠120°-2∠-120°+1∠0° |
+            //
+            //Reducing the matrix gives us the following polar and complex forms:
+            //    A = | 3∠60°   3∠-60° | = | 3(.5+j.8660)  3(.5-j.8660) |
+            //        | 3∠-60°  3∠60°  |   | 3(.5-j.8660)  3(.5+j.8660) |
+            //
+            //The inverse of the matrix gives us the following polar and complex forms:
+            //    A^-1 = | .19246∠-30°  .19246∠30°  | = | .16667-j.09623  .16667+j.09623 |
+            //           | .19246∠30°   .19246∠-30° |   | .16667+j.09623  .16667-j.09623 |
+            //
+            //We can now finally solve for V1 and V2 with the following equation:
+            //    | .16667-j.09623  .16667+j.09623 | | Vab - Vbc | = | V1 |
+            //    | .16667+j.09623  .16667-j.09623 | | Vbc - Vac | = | V2 |
+            //
 
-        }
+            
+
+        }   
     }
 
     //Convert degrees into radians.
     DtoR(degrees)
     {
         return degrees * Math.PI / 180;
+    }
+
+    //Add 2 complex numbers.
+    complexAdd(cnum1, cnum2)
+    {
+        let result = {r: 0, i: 0};
+        result.r = cnum1.r + cnum2.r;
+        result.i = cnum1.i + cnum2.i;
+        return result;
+    }
+
+    //Multiply 2 complex numbers.
+    complexMult({re, im})
+    {
+
     }
 
     //Update which waveforms should be drawn.
