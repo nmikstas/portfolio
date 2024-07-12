@@ -143,9 +143,9 @@ delta.onclick = () =>
     achk.innerHTML     = " VAB";
     bchk.innerHTML     = " VBC";
     cchk.innerHTML     = " VCA";
-    achk2.innerHTML    = " VAN";
-    bchk2.innerHTML    = " VBN";
-    cchk2.innerHTML    = " VCN";
+    achk2.innerHTML    = " VAG";
+    bchk2.innerHTML    = " VBG";
+    cchk2.innerHTML    = " VCG";
     nchk.innerHTML     = " IG";
     VAChk.checked      = true;
     VBChk.checked      = true;
@@ -631,7 +631,7 @@ const updatePower = () =>
         tPower.innerHTML = "KW: " + "\xa0\xa0\xa0 KVAR: " + "\xa0\xa0\xa0 KVA: ";
     
         //Update derived values on the display.
-        derived.innerHTML= "VAN: " + "\xa0\xa0\xa0 VBN: " + "\xa0\xa0\xa0 VCN: " + "\xa0\xa0\xa0 IG: ";
+        derived.innerHTML= "VAG: " + "\xa0\xa0\xa0 VBG: " + "\xa0\xa0\xa0 VCG: " + "\xa0\xa0\xa0 IG: ";
     
     
     

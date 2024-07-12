@@ -186,23 +186,28 @@ class Phasor
         let iap = parseFloat(this.IAphs.value);
         let ibp = parseFloat(this.IBphs.value);
         let icp = parseFloat(this.ICphs.value);
+
+        //Calculate the neutral/ground current.
+        let iax = ia * Math.cos(this.DtoR(iap));
+        let iay = ia * Math.sin(this.DtoR(iap));
+        let ibx = ib * Math.cos(this.DtoR(ibp));
+        let iby = ib * Math.sin(this.DtoR(ibp));
+        let icx = ic * Math.cos(this.DtoR(icp));
+        let icy = ic * Math.sin(this.DtoR(icp));
+
+        let ineutx = iax + ibx + icx;
+        let ineuty = iay + iby + icy;
+        let ineut  = Math.sqrt(ineutx**2 + ineuty**2).toFixed(2);
+        let inp    = Math.atan2(-ineuty, -ineutx);
+
+        //Convert angles from degrees to radians.
+        iap = this.DtoR(iap);
+        ibp = this.DtoR(ibp);
+        icp = this.DtoR(icp);
         
         //Wye calculations.
         if(this.type === "wye")
         {
-            //Calculate the neutral/ground current.
-            let iax = ia * Math.cos(this.DtoR(iap));
-            let iay = ia * Math.sin(this.DtoR(iap));
-            let ibx = ib * Math.cos(this.DtoR(ibp));
-            let iby = ib * Math.sin(this.DtoR(ibp));
-            let icx = ic * Math.cos(this.DtoR(icp));
-            let icy = ic * Math.sin(this.DtoR(icp));
-
-            let ineutx = iax + ibx + icx;
-            let ineuty = iay + iby + icy;
-            let ineut  = Math.sqrt(ineutx**2 + ineuty**2).toFixed(2);
-            let inp    = Math.atan2(ineuty, -ineutx);
-
             //Calculate the phase to phase voltage vectors.
             let vax = (va * Math.cos(this.DtoR(vap)));
             let vay = (va * Math.sin(this.DtoR(vap)));
@@ -225,17 +230,14 @@ class Phasor
             let vca = Math.sqrt(vcax**2 + vcay**2);
 
             //Calculate the vector angles.
-            let pab = -Math.atan2(vaby, vabx);
-            let pbc = -Math.atan2(vbcy, vbcx);
-            let pca = -Math.atan2(vcay, vcax);
+            let pab = Math.atan2(vaby, vabx);
+            let pbc = Math.atan2(vbcy, vbcx);
+            let pca = Math.atan2(vcay, vcax);
 
             //Convert line voltage and current angles to radians.
-            vap = -this.DtoR(vap);
-            vbp = -this.DtoR(vbp);
-            vcp = -this.DtoR(vcp);
-            iap = -this.DtoR(iap);
-            ibp = -this.DtoR(ibp);
-            icp = -this.DtoR(icp);
+            vap = this.DtoR(vap);
+            vbp = this.DtoR(vbp);
+            vcp = this.DtoR(vcp);
 
             //Find the maximum enabled voltage and current.
             let maxV = 0;
@@ -264,16 +266,16 @@ class Phasor
             let inAmplitude  = this.yMiddle * ineut * Phasor.AMPS_PEAK  / maxI;
 
             //Draw the vectors.
-            if(this.showVAB)this.drawVector(pab, this.vabColor, vabAmplitude, Phasor.V_VECTOR, "VAB", 10, vabAmplitude / this.yMiddle);
-            if(this.showVBC)this.drawVector(pbc, this.vbcColor, vbcAmplitude, Phasor.V_VECTOR, "VBC", 10, vbcAmplitude / this.yMiddle);
-            if(this.showVCA)this.drawVector(pca, this.vcaColor, vcaAmplitude, Phasor.V_VECTOR, "VCA", 10, vcaAmplitude / this.yMiddle);
-            if(this.showVA)this.drawVector(vap, this.vaColor, vaAmplitude, Phasor.V_VECTOR, "VA", 10, vaAmplitude / this.yMiddle);
-            if(this.showVB)this.drawVector(vbp, this.vbColor, vbAmplitude, Phasor.V_VECTOR, "VB", 10, vbAmplitude / this.yMiddle);
-            if(this.showVC)this.drawVector(vcp, this.vcColor, vcAmplitude, Phasor.V_VECTOR, "VC", 10, vcAmplitude / this.yMiddle);
-            if(this.showIA)this.drawVector(iap, this.iaColor, iaAmplitude, Phasor.I_VECTOR, "IA", -10, iaAmplitude / this.yMiddle);
-            if(this.showIB)this.drawVector(ibp, this.ibColor, ibAmplitude, Phasor.I_VECTOR, "IB", -10, ibAmplitude / this.yMiddle);
-            if(this.showIC)this.drawVector(icp, this.icColor, icAmplitude, Phasor.I_VECTOR, "IC", -10, icAmplitude / this.yMiddle);
-            if(this.showIN)this.drawVector(inp, this.inColor, inAmplitude, Phasor.I_VECTOR, "IN", -10, inAmplitude / this.yMiddle);
+            if(this.showVAB)this.drawVector(pab, this.vabColor, vabAmplitude, Phasor.V_VECTOR, "VAB", vabAmplitude / this.yMiddle);
+            if(this.showVBC)this.drawVector(pbc, this.vbcColor, vbcAmplitude, Phasor.V_VECTOR, "VBC", vbcAmplitude / this.yMiddle);
+            if(this.showVCA)this.drawVector(pca, this.vcaColor, vcaAmplitude, Phasor.V_VECTOR, "VCA", vcaAmplitude / this.yMiddle);
+            if(this.showVA)this.drawVector(vap, this.vaColor, vaAmplitude, Phasor.V_VECTOR, "VA", vaAmplitude / this.yMiddle);
+            if(this.showVB)this.drawVector(vbp, this.vbColor, vbAmplitude, Phasor.V_VECTOR, "VB", vbAmplitude / this.yMiddle);
+            if(this.showVC)this.drawVector(vcp, this.vcColor, vcAmplitude, Phasor.V_VECTOR, "VC", vcAmplitude / this.yMiddle);
+            if(this.showIA)this.drawVector(iap, this.iaColor, iaAmplitude, Phasor.I_VECTOR, "IA", iaAmplitude / this.yMiddle);
+            if(this.showIB)this.drawVector(ibp, this.ibColor, ibAmplitude, Phasor.I_VECTOR, "IB", ibAmplitude / this.yMiddle);
+            if(this.showIC)this.drawVector(icp, this.icColor, icAmplitude, Phasor.I_VECTOR, "IC", icAmplitude / this.yMiddle);
+            if(this.showIN)this.drawVector(inp, this.inColor, inAmplitude, Phasor.I_VECTOR, "IN", inAmplitude / this.yMiddle);
         }
 
         //Delta calculations.
@@ -347,11 +349,85 @@ class Phasor
             //
             //We can now finally solve for V1 and V2 with the following equation:
             //    | .16667-j.09623  .16667+j.09623 | | Vab - Vbc | = | V1 |
-            //    | .16667+j.09623  .16667-j.09623 | | Vbc - Vac | = | V2 |
+            //    | .16667+j.09623  .16667-j.09623 | | Vbc - Vca |   | V2 |
             //
 
+            //Create the inverse matrix above.
+            let Ainv = [[{r: 0.166666666667, i: -0.09622786759}, {r: 0.166666666667, i:  0.09622786759}], 
+                        [{r: 0.166666666667, i:  0.09622786759}, {r: 0.166666666667, i: -0.09622786759}]];
             
+            //Create the complex form of the 3 line to line voltages.
+            let Vab = this.PtoC({m: va, a: this.DtoR(vap)});
+            let Vbc = this.PtoC({m: vb, a: this.DtoR(vbp)});
+            let Vca = this.PtoC({m: vc, a: this.DtoR(vcp)});
 
+            //Caclulate the difference between the line-to-line voltages.
+            let Vab_Vbc = this.complexSub(Vab, Vbc);
+            let Vbc_Vca = this.complexSub(Vbc, Vca);
+
+            //Calculate V1 and V2.
+            let V1 = this.complexAdd(this.complexMult(Ainv[0][0], Vab_Vbc), this.complexMult(Ainv[0][1], Vbc_Vca));
+            let V2 = this.complexAdd(this.complexMult(Ainv[1][0], Vab_Vbc), this.complexMult(Ainv[1][1], Vbc_Vca));
+
+            //We can now calculate the phase voltages with the formulas stated above (V0 removed below):
+            //Va = V1 + V2, Vb = α^2V1 + αV2, Vc = αV1 + α^2V2.
+
+            //Create vector rotation operators.
+            let alpha  = this.PtoC({m: 1, a: this.DtoR(120)});
+            let alpha2 = this.PtoC({m: 1, a: this.DtoR(-120)});
+
+            //Calculate phase voltages!
+            let phaseA = this.complexAdd(V1, V2);
+            let phaseB = this.complexAdd(this.complexMult(alpha2, V1), this.complexMult(alpha, V2));
+            let phaseC = this.complexAdd(this.complexMult(alpha, V1), this.complexMult(alpha2, V2));
+
+            //Put the line voltages in a polar form for graphing.
+            let polarVab = {m: va, a: this.DtoR(vap)};
+            let polarVbc = {m: vb, a: this.DtoR(vbp)};
+            let polarVca = {m: vc, a: this.DtoR(vcp)};
+
+            //Put the phase voltages in a polar form for graphing.
+            let polarVa = this.CtoP(phaseA);
+            let polarVb = this.CtoP(phaseB);
+            let polarVc = this.CtoP(phaseC);
+            
+            //Find the maximum enabled voltage and current.
+            let maxV = 0;
+            let maxI = 0;
+            if(polarVab.m > maxV && this.showVA)  maxV = polarVab.m;
+            if(polarVbc.m > maxV && this.showVB)  maxV = polarVbc.m;
+            if(polarVca.m > maxV && this.showVC)  maxV = polarVca.m;
+            if(polarVa.m  > maxV && this.showVAB) maxV = polarVa.m;
+            if(polarVb.m  > maxV && this.showVBC) maxV = polarVb.m;
+            if(polarVc.m  > maxV && this.showVCA) maxV = polarVc.m;
+            if(ia    > maxI && this.showIA)  maxI = ia;
+            if(ib    > maxI && this.showIB)  maxI = ib;
+            if(ic    > maxI && this.showIC)  maxI = ic;
+            if(ineut > maxI && this.showIN)  maxI = ineut;
+            
+            //Calculate the amplitudes of the waveforms.
+            let vabAmplitude = this.yMiddle * polarVab.m * Phasor.VOLTS_PEAK / maxV;
+            let vbcAmplitude = this.yMiddle * polarVbc.m * Phasor.VOLTS_PEAK / maxV;
+            let vcaAmplitude = this.yMiddle * polarVca.m * Phasor.VOLTS_PEAK / maxV;
+            let vaAmplitude  = this.yMiddle * polarVa.m  * Phasor.VOLTS_PEAK / maxV;
+            let vbAmplitude  = this.yMiddle * polarVb.m  * Phasor.VOLTS_PEAK / maxV;
+            let vcAmplitude  = this.yMiddle * polarVc.m  * Phasor.VOLTS_PEAK / maxV;
+            let iaAmplitude  = this.yMiddle * ia    * Phasor.AMPS_PEAK  / maxI;
+            let ibAmplitude  = this.yMiddle * ib    * Phasor.AMPS_PEAK  / maxI;
+            let icAmplitude  = this.yMiddle * ic    * Phasor.AMPS_PEAK  / maxI;
+            let inAmplitude  = this.yMiddle * ineut * Phasor.AMPS_PEAK  / maxI;
+            
+            //Draw the vectors.
+            if(this.showVA)this.drawVector(polarVab.a, this.vaColor, vabAmplitude, Phasor.V_VECTOR, "VAB", vabAmplitude / this.yMiddle);
+            if(this.showVB)this.drawVector(polarVbc.a, this.vbColor, vbcAmplitude, Phasor.V_VECTOR, "VBC", vbcAmplitude / this.yMiddle);
+            if(this.showVC)this.drawVector(polarVca.a, this.vcColor, vcaAmplitude, Phasor.V_VECTOR, "VCA", vcaAmplitude / this.yMiddle);
+            if(this.showVAB)this.drawVector(polarVa.a, this.vabColor, vaAmplitude, Phasor.V_VECTOR, "VA", vaAmplitude / this.yMiddle);
+            if(this.showVBC)this.drawVector(polarVb.a, this.vbcColor, vbAmplitude, Phasor.V_VECTOR, "VB", vbAmplitude / this.yMiddle);
+            if(this.showVCA)this.drawVector(polarVc.a, this.vcaColor, vcAmplitude, Phasor.V_VECTOR, "VC", vcAmplitude / this.yMiddle);
+            if(this.showIA)this.drawVector(iap, this.iaColor, iaAmplitude, Phasor.I_VECTOR, "IA", iaAmplitude / this.yMiddle);
+            if(this.showIB)this.drawVector(ibp, this.ibColor, ibAmplitude, Phasor.I_VECTOR, "IB", ibAmplitude / this.yMiddle);
+            if(this.showIC)this.drawVector(icp, this.icColor, icAmplitude, Phasor.I_VECTOR, "IC", icAmplitude / this.yMiddle);
+            if(this.showIN)this.drawVector(inp, this.inColor, inAmplitude, Phasor.I_VECTOR, "IG", inAmplitude / this.yMiddle);
         }   
     }
 
@@ -359,6 +435,49 @@ class Phasor
     DtoR(degrees)
     {
         return degrees * Math.PI / 180;
+    }
+
+    //Convert radians to degrees.
+    RtoD(radians)
+    {
+        return radians * 180 / Math.PI;
+    }
+
+    //Print a polar numberin degrees.
+    printPolarD(num)
+    {
+        console.log(num.m + "∠" + this.RtoD(num.a) + "°");
+    }
+
+    //Print a polar number in radians.
+    printPolarR(num)
+    {
+        console.log(num.m + "∠" + num.a);
+    }
+
+    //Print a complex number.
+    printComplex(num)
+    {
+        let sign = (num.i < 0) ? "-j" : "+j";
+        console.log(num.r + sign + Math.abs(num.i));
+    }
+
+    //Convert number in complex form to polar form in radians.
+    CtoP(num)
+    {
+        let result = {m: 0, a: 0};
+        result.m = Math.sqrt(num.r**2 + num.i**2);
+        result.a = Math.atan2(num.i, num.r);
+        return result;
+    }
+
+    //Convert number in polar form to complex form.
+    PtoC(num)
+    {
+        let result = {r: 0, i: 0};
+        result.r = num.m * Math.cos(num.a);
+        result.i = num.m * Math.sin(num.a);
+        return result;
     }
 
     //Add 2 complex numbers.
@@ -370,10 +489,22 @@ class Phasor
         return result;
     }
 
-    //Multiply 2 complex numbers.
-    complexMult({re, im})
+    //subtract 2 complex numbers.
+    complexSub(cnum1, cnum2)
     {
+        let result = {r: 0, i: 0};
+        result.r = cnum1.r - cnum2.r;
+        result.i = cnum1.i - cnum2.i;
+        return result;
+    }
 
+    //Multiply 2 complex numbers.
+    complexMult(cnum1, cnum2)
+    {
+        let result = {r: 0, i: 0};
+        result.r = cnum1.r * cnum2.r - cnum1.i * cnum2.i;
+        result.i = cnum1.r * cnum2.i + cnum1.i * cnum2.r;
+        return result;
     }
 
     //Update which waveforms should be drawn.
@@ -394,11 +525,11 @@ class Phasor
         this.resize();
     }
 
-    drawVector(angle, color, mag, type, text, textDegrees, ratio)
+    drawVector(angle, color, mag, type, text, ratio)
     {
         //Draw the main portion of the vector.
         this.drawLineAngle(angle, angle, color, this.bodyWidth * .010, 0, mag);
-        this.drawTextAngle(angle - this.DtoR(textDegrees), text, color, 0.10, ratio * .95);     
+        this.drawTextAngle(angle, text, color, 0.10, ratio * .85);     
 
         //Draw the head of the vector.
         if(type === Phasor.I_VECTOR)
@@ -406,11 +537,11 @@ class Phasor
             
             this.ctxp.beginPath();
             this.ctxp.fillStyle = color;
-            this.ctxp.moveTo(this.xMiddle + mag * Math.cos(angle), this.yMiddle + mag * Math.sin(angle));
+            this.ctxp.moveTo(this.xMiddle + mag * Math.cos(angle), this.yMiddle - mag * Math.sin(angle));
             this.ctxp.lineTo(this.xMiddle + (mag - this.bodyWidth * .020) * Math.cos(angle + this.DtoR(-7)), 
-                             this.yMiddle + (mag - this.bodyWidth * .020) * Math.sin(angle + this.DtoR(-7)));
+                             this.yMiddle - (mag - this.bodyWidth * .020) * Math.sin(angle + this.DtoR(-7)));
             this.ctxp.lineTo(this.xMiddle + (mag - this.bodyWidth * .020) * Math.cos(angle + this.DtoR(7)), 
-                             this.yMiddle + (mag - this.bodyWidth * .020) * Math.sin(angle + this.DtoR(7)));                 
+                             this.yMiddle - (mag - this.bodyWidth * .020) * Math.sin(angle + this.DtoR(7)));                 
             this.ctxp.fill();
         }
         else
@@ -426,8 +557,8 @@ class Phasor
         this.ctxp.beginPath();
         this.ctxp.lineWidth = width;
         this.ctxp.strokeStyle = color;
-        this.ctxp.moveTo(this.xMiddle + rStart * Math.cos(angle1), this.yMiddle + rStart * Math.sin(angle1));
-        this.ctxp.lineTo(this.xMiddle + rEnd   * Math.cos(angle2), this.yMiddle + rEnd   * Math.sin(angle2));
+        this.ctxp.moveTo(this.xMiddle + rStart * Math.cos(angle1), this.yMiddle - rStart * Math.sin(angle1));
+        this.ctxp.lineTo(this.xMiddle + rEnd   * Math.cos(angle2), this.yMiddle - rEnd   * Math.sin(angle2));
         this.ctxp.stroke();
     }
 
@@ -448,9 +579,8 @@ class Phasor
         var textSize = this.radius * ratio;
         this.ctxp.font = textSize + "px Arial";
         this.ctxp.fillStyle = color;
-        this.ctxp.fillText(text, this.yMiddle - (textSize * .8) + 
-                                this.radius * textRadius * Math.cos(angle) + this.bodyWidth * .02, 
-                                this.yMiddle + (textSize * .2) +
-                                this.radius * textRadius * Math.sin(angle) + this.bodyWidth * .015);   
+        this.ctxp.fillText(text, 
+            this.xMiddle + this.radius * textRadius * Math.cos(angle), 
+            this.yMiddle - (textSize * .2) - this.radius * textRadius * Math.sin(angle));   
     }
 }
