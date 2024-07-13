@@ -216,6 +216,7 @@ wye.onclick = () =>
 VASlider.oninput = () => 
 {
     VAPhase.value = VASlider.value;
+    deltaVUpdate("A");
     GFXUpdate();
     updatePower();
 }
@@ -223,6 +224,7 @@ VASlider.oninput = () =>
 VBSlider.oninput = () =>
 {
     VBPhase.value = VBSlider.value;
+    deltaVUpdate("B");
     GFXUpdate();
     updatePower();
 }
@@ -230,6 +232,7 @@ VBSlider.oninput = () =>
 VCSlider.oninput = () =>
 {
     VCPhase.value = VCSlider.value;
+    deltaVUpdate("C");
     GFXUpdate();
     updatePower();
 }
@@ -261,6 +264,8 @@ VAText.onkeydown  = (event) =>
     if(event.key === "Enter")
     {
         lastVAN = updateIV(VAText, lastVAN);
+        deltaVUpdate("A");
+        updatePower();
         GFXUpdate();
     }
 }
@@ -268,6 +273,8 @@ VAText.onkeydown  = (event) =>
 VAText.onfocusout = () => 
 {
         lastVAN = updateIV(VAText, lastVAN);
+        deltaVUpdate("A");
+        updatePower();
         GFXUpdate();
 }
 
@@ -276,6 +283,8 @@ VBText.onkeydown  = (event) =>
     if(event.key === "Enter")
     {
         lastVBN = updateIV(VBText, lastVBN);
+        deltaVUpdate("B");
+        updatePower();
         GFXUpdate();
     }
 }
@@ -283,6 +292,8 @@ VBText.onkeydown  = (event) =>
 VBText.onfocusout = () =>
 {
     lastVBN = updateIV(VBText, lastVBN);
+    deltaVUpdate("B");
+    updatePower();
     GFXUpdate();
 }
 
@@ -291,6 +302,8 @@ VCText.onkeydown  = (event) =>
     if(event.key === "Enter")
     {
         lastVCN = updateIV(VCText, lastVCN);
+        deltaVUpdate("C");
+        updatePower();
         GFXUpdate();
     }
 }
@@ -298,6 +311,8 @@ VCText.onkeydown  = (event) =>
 VCText.onfocusout = () =>
 {
     lastVCN = updateIV(VCText, lastVCN);
+    deltaVUpdate("C");
+    updatePower();
     GFXUpdate();
 }
 
@@ -353,6 +368,8 @@ VAPhase.onkeydown  = (event) =>
     if(event.key === "Enter")
     {
         lastVAPhase = updatePhase(VAPhase, lastVAPhase, VASlider);
+        deltaVUpdate("A");
+        updatePower();
         GFXUpdate();
     }
 }
@@ -360,6 +377,8 @@ VAPhase.onkeydown  = (event) =>
 VAPhase.onfocusout = () =>
 {
     lastVAPhase = updatePhase(VAPhase, lastVAPhase, VASlider);
+    deltaVUpdate("A");
+    updatePower();
     GFXUpdate();
 }
 
@@ -368,6 +387,8 @@ VBPhase.onkeydown  = (event) =>
     if(event.key === "Enter")
     {
         lastVBPhase = updatePhase(VBPhase, lastVBPhase, VBSlider);
+        deltaVUpdate("B");
+        updatePower();
         GFXUpdate();
     }
 }
@@ -375,6 +396,8 @@ VBPhase.onkeydown  = (event) =>
 VBPhase.onfocusout = () =>
 {
     lastVBPhase = updatePhase(VBPhase, lastVBPhase, VBSlider);
+    deltaVUpdate("B");
+    updatePower();
     GFXUpdate();
 }
 
@@ -383,6 +406,8 @@ VCPhase.onkeydown  = (event) =>
     if(event.key === "Enter")
     {
         lastVCPhase = updatePhase(VCPhase, lastVCPhase, VCSlider);
+        deltaVUpdate("C");
+        updatePower();
         GFXUpdate();
     }
 }
@@ -390,6 +415,8 @@ VCPhase.onkeydown  = (event) =>
 VCPhase.onfocusout = () =>
 {
     lastVCPhase = updatePhase(VCPhase, lastVCPhase, VCSlider);
+    deltaVUpdate("C");
+    updatePower();
     GFXUpdate();
 }
 
@@ -399,6 +426,7 @@ IAPhase.onkeydown  = (event) =>
     if(event.key === "Enter")
     {
         lastIAPhase = updatePhase(IAPhase, lastIAPhase, IASlider);
+        updatePower();
         GFXUpdate();
     }
 }
@@ -406,6 +434,7 @@ IAPhase.onkeydown  = (event) =>
 IAPhase.onfocusout = () =>
 {
     lastIAPhase = updatePhase(IAPhase, lastIAPhase, IASlider);
+    updatePower();
     GFXUpdate();
 }
 
@@ -414,6 +443,7 @@ IBPhase.onkeydown  = (event) =>
     if(event.key === "Enter")
     {
         lastIBPhase = updatePhase(IBPhase, lastIBPhase, IBSlider);
+        updatePower();
         GFXUpdate();
     }
 }
@@ -421,6 +451,7 @@ IBPhase.onkeydown  = (event) =>
 IBPhase.onfocusout = () =>
 {
     lastIBPhase = updatePhase(IBPhase, lastIBPhase, IBSlider);
+    updatePower();
     GFXUpdate();
 }
 
@@ -429,6 +460,7 @@ ICPhase.onkeydown  = (event) =>
     if(event.key === "Enter")
     {
         lastICPhase = updatePhase(ICPhase, lastICPhase, ICSlider);
+        updatePower();
         GFXUpdate();
     }
 }
@@ -436,6 +468,7 @@ ICPhase.onkeydown  = (event) =>
 ICPhase.onfocusout = () =>
 {
     lastICPhase = updatePhase(ICPhase, lastICPhase, ICSlider);
+    updatePower();
     GFXUpdate();
 }
 
@@ -475,13 +508,115 @@ const GFXUpdate = () =>
         VABChk.checked, VBCChk.checked, VCAChk.checked, INChk.checked, DYStyle);
 }
 
+//After a change is made to line voltage, the other line voltages need to be adjusted to keep
+//the sytem valid. KVL states the line to line voltages must add to zero. Vab + Vbc + Vca = 0.
+const deltaVUpdate = (lockedPhase) =>
+{
+    //Only correct a delta system.
+    if(DYStyle != "delta")return;
+
+    //Calculate the sum of the line voltages.
+    let VABmag = parseFloat(VAText.value);
+    let VBCmag = parseFloat(VBText.value);
+    let VCAmag = parseFloat(VCText.value);
+    let VABphs = phasor.DtoR(parseFloat(VAPhase.value));
+    let VBCphs = phasor.DtoR(parseFloat(VBPhase.value));
+    let VCAphs = phasor.DtoR(parseFloat(VCPhase.value));
+
+    //Convert values into mathematically useful forms.
+    let VABcmp = {r: VABmag * Math.cos(VABphs), i: VABmag * Math.sin(VABphs)};
+    let VBCcmp = {r: VBCmag * Math.cos(VBCphs), i: VBCmag * Math.sin(VBCphs)};
+    let VCAcmp = {r: VCAmag * Math.cos(VCAphs), i: VCAmag * Math.sin(VCAphs)}
+    
+    //Add the line voltage vectors together.
+    let sum = phasor.complexAdd(phasor.complexAdd(VABcmp, VBCcmp), VCAcmp);
+
+
+
+
+
+    //console.log("r: " + sum.r.toFixed(4) + ", i: " + sum.i.toFixed(4));
+    
+
+
+
+
+    //Calculate the amount to compensation values to add to the unchanged vectors.
+    let comp = {r: -sum.r / 2, i: -sum.i / 2};
+
+    //Adjust the vectors not set by the user.
+    if(lockedPhase === "A")
+    {
+        VBCcmp = phasor.complexAdd(VBCcmp, comp);
+        VCAcmp = phasor.complexAdd(VCAcmp, comp);
+        VBText.value = Math.sqrt(VBCcmp.r**2 + VBCcmp.i**2).toFixed(1);
+        VCText.value = Math.sqrt(VCAcmp.r**2 + VCAcmp.i**2).toFixed(1);
+        
+    }
+
+    if(lockedPhase === "B")
+    {
+        VABcmp = phasor.complexAdd(VABcmp, comp);
+        VCAcmp = phasor.complexAdd(VCAcmp, comp);
+        VAText.value = Math.sqrt(VABcmp.r**2 + VABcmp.i**2).toFixed(1);
+        VCText.value = Math.sqrt(VCAcmp.r**2 + VCAcmp.i**2).toFixed(1);
+    }
+
+    if(lockedPhase === "C")
+    {
+        VABcmp = phasor.complexAdd(VABcmp, comp);
+        VBCcmp = phasor.complexAdd(VBCcmp, comp);
+        VAText.value = Math.sqrt(VABcmp.r**2 + VABcmp.i**2).toFixed(1);
+        VBText.value = Math.sqrt(VBCcmp.r**2 + VBCcmp.i**2).toFixed(1);
+    }
+
+    //Get the angles in degrees of all the line voltage vectors.
+    VABphs = phasor.RtoD(Math.atan2(VABcmp.i, VABcmp.r));
+    VBCphs = phasor.RtoD(Math.atan2(VBCcmp.i, VBCcmp.r));
+    VCAphs = phasor.RtoD(Math.atan2(VCAcmp.i, VCAcmp.r));
+
+    //Force a range between -180 and 180 degrees.
+    if(VABphs >  180) VABphs -= 360;
+    if(VABphs < -180) VABphs += 360;
+    if(VBCphs >  180) VBCphs -= 360;
+    if(VBCphs < -180) VBCphs += 360;
+    if(VCAphs >  180) VCAphs -= 360;
+    if(VCAphs < -180) VCAphs += 360;
+    
+    if(lockedPhase === "A")
+    {
+        VBPhase.value  = VBCphs.toFixed(1);
+        VBSlider.value = VBCphs;
+        VCPhase.value  = VCAphs.toFixed(1);
+        VCSlider.value = VCAphs;
+    }
+
+    if(lockedPhase === "B")
+    {
+        VAPhase.value  = VABphs.toFixed(1);
+        VASlider.value = VABphs;
+        VCPhase.value  = VCAphs.toFixed(1);
+        VCSlider.value = VCAphs;
+    }
+
+    if(lockedPhase === "C")
+    {
+        VAPhase.value  = VABphs.toFixed(1);
+        VASlider.value = VABphs;
+        VBPhase.value  = VBCphs.toFixed(1);
+        VBSlider.value = VBCphs;
+    }
+        
+
+
+}
+
 //Update voltage/current text boxes.
 const updateIV = (e, last) =>
 {
     let num = parseFloat(e.value);
     if(!isNaN(num) && num >= 0)last = num;
     e.value = last;
-    updatePower();
     return last;
 }
 
@@ -496,7 +631,6 @@ const updatePhase = (e, last, slider) =>
     }
 
     e.value = last;
-    updatePower();
     return last;
 }
 
