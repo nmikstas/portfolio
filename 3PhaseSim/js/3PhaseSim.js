@@ -53,6 +53,15 @@ let bchk2    = document.getElementById("vb-ch2");
 let cchk2    = document.getElementById("vc-ch2");
 let nchk     = document.getElementById("in-ch");
 
+//Hold checkboxes and text.
+let holdText  = document.getElementById("hold-text");
+let aHoldSpan = document.getElementById("ahold-span")
+let bHoldSpan = document.getElementById("bhold-span");
+let cHoldSpan = document.getElementById("chold-span");
+let aHold     = document.getElementById("ahold");
+let bHold     = document.getElementById("bhold");
+let cHold     = document.getElementById("chold");
+
 //Variable for detecting if new calculation style is selected.
 let DYStyle = "wye";
 
@@ -157,6 +166,10 @@ delta.onclick = () =>
     VBCChk.checked     = true;
     VCAChk.checked     = true;
     INChk.checked      = true;
+    aHoldSpan.hidden   = false;
+    bHoldSpan.hidden   = false;
+    cHoldSpan.hidden   = false;
+    holdText.hidden    = false;
     GFXUpdate();
     updatePower();
 }
@@ -208,6 +221,13 @@ wye.onclick = () =>
     VBCChk.checked     = true;
     VCAChk.checked     = true;
     INChk.checked      = true;
+    aHoldSpan.hidden   = true;
+    bHoldSpan.hidden   = true;
+    cHoldSpan.hidden   = true;
+    holdText.hidden    = true;
+    aHold.checked      = false;
+    bHold.checked      = false;
+    cHold.checked      = false;
     GFXUpdate();
     updatePower();
 }
@@ -515,6 +535,41 @@ const deltaVUpdate = (lockedPhase) =>
     //Only correct a delta system.
     if(DYStyle != "delta")return;
 
+    //Validate checkboxes. only one checkbox can be selected and it cannot be the one
+    //for the phase the user is changing.
+    if(lockedPhase === "A")
+    {
+        aHold.checked = false;
+
+        if(bHold.checked && cHold.checked)
+        {
+            bHold.checked = false;
+            cHold.checked = false;
+        }
+    }
+
+    if(lockedPhase === "B")
+    {
+        bHold.checked = false;
+
+        if(aHold.checked && cHold.checked)
+        {
+            aHold.checked = false;
+            cHold.checked = false;
+        }
+    }
+
+    if(lockedPhase === "C")
+    {
+        cHold.checked = false;
+
+        if(aHold.checked && bHold.checked)
+        {
+            aHold.checked = false;
+            bHold.checked = false;
+        }
+    }
+
     //Calculate the sum of the line voltages.
     let VABmag = parseFloat(VAText.value);
     let VBCmag = parseFloat(VBText.value);
@@ -531,41 +586,82 @@ const deltaVUpdate = (lockedPhase) =>
     //Add the line voltage vectors together.
     let sum = phasor.complexAdd(phasor.complexAdd(VABcmp, VBCcmp), VCAcmp);
 
-
-
-
-
-    //console.log("r: " + sum.r.toFixed(4) + ", i: " + sum.i.toFixed(4));
-    
-
-
-
-
     //Calculate the amount to compensation values to add to the unchanged vectors.
-    let comp = {r: -sum.r / 2, i: -sum.i / 2};
+    let comp = {r: -sum.r, i: -sum.i};             //Used if a vector isheld.
+    let halfComp = {r: -sum.r / 2, i: -sum.i / 2}; //Used if no vectors held.
 
     //Adjust the vectors not set by the user.
     if(lockedPhase === "A")
     {
-        VBCcmp = phasor.complexAdd(VBCcmp, comp);
-        VCAcmp = phasor.complexAdd(VCAcmp, comp);
+        //User doesn't want VBC changed. Only change VCA.
+        if(bHold.checked)
+        {
+            VCAcmp = phasor.complexAdd(VCAcmp, comp);
+        }
+
+        //User doesn't want VCA changed. Only change VBC.
+        if(cHold.checked)
+        {
+            VBCcmp = phasor.complexAdd(VBCcmp, comp);
+        }
+
+        //No constraints by user. Compensate evenly between VBC and VCA.
+        if(!bHold.checked && !cHold.checked)
+        {
+            VBCcmp = phasor.complexAdd(VBCcmp, halfComp);
+            VCAcmp = phasor.complexAdd(VCAcmp, halfComp);
+        }
+        
         VBText.value = Math.sqrt(VBCcmp.r**2 + VBCcmp.i**2).toFixed(1);
         VCText.value = Math.sqrt(VCAcmp.r**2 + VCAcmp.i**2).toFixed(1);
-        
     }
 
     if(lockedPhase === "B")
     {
-        VABcmp = phasor.complexAdd(VABcmp, comp);
-        VCAcmp = phasor.complexAdd(VCAcmp, comp);
+        //User doesn't want VAB changed. Only change VCA.
+        if(aHold.checked)
+        {
+            VCAcmp = phasor.complexAdd(VCAcmp, comp);
+        }
+
+        //User doesn't want VCA changed. Only change VAC.
+        if(cHold.checked)
+        {
+            VABcmp = phasor.complexAdd(VABcmp, comp);
+        }
+
+        //No constraints by user. Compensate evenly between VBC and VCA.
+        if(!aHold.checked && !cHold.checked)
+        {
+            VABcmp = phasor.complexAdd(VABcmp, halfComp);
+            VCAcmp = phasor.complexAdd(VCAcmp, halfComp);
+        }
+
         VAText.value = Math.sqrt(VABcmp.r**2 + VABcmp.i**2).toFixed(1);
         VCText.value = Math.sqrt(VCAcmp.r**2 + VCAcmp.i**2).toFixed(1);
     }
 
     if(lockedPhase === "C")
     {
-        VABcmp = phasor.complexAdd(VABcmp, comp);
-        VBCcmp = phasor.complexAdd(VBCcmp, comp);
+        //User doesn't want VAB changed. Only change VBC.
+        if(aHold.checked)
+        {
+            VBCcmp = phasor.complexAdd(VBCcmp, comp);
+        }
+
+        //User doesn't want VBC changed. Only change VAB.
+        if(bHold.checked)
+        {
+                VABcmp = phasor.complexAdd(VABcmp, comp);
+        }
+
+        //No constraints by user. Compensate evenly between VAB and VBC.
+        if(!aHold.checked && !bHold.checked)
+        {
+            VABcmp = phasor.complexAdd(VABcmp, halfComp);
+            VBCcmp = phasor.complexAdd(VBCcmp, halfComp);
+        }
+ 
         VAText.value = Math.sqrt(VABcmp.r**2 + VABcmp.i**2).toFixed(1);
         VBText.value = Math.sqrt(VBCcmp.r**2 + VBCcmp.i**2).toFixed(1);
     }

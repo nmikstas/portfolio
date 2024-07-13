@@ -76,7 +76,10 @@
                     <label for="delta">Delta</label>
                 </div>
 
-                <div class="sec" id="volt-desc">Line-to-Neutral Voltage</div>
+                <div class="full-span">
+                    <div class="sec" style="display: inline-block;" id="volt-desc">Line-to-Neutral Voltage</div>
+                    <div hidden id="hold-text" class="sec" style="float: right;">Hold</div>
+                </div>
 
                 <div class="full-span">
                     <span class="desc" id="va-desc" style="text-align: right; display: inline-block; width:10%;">VAN: </span>
@@ -84,6 +87,9 @@
                     <span class="desc pl-2">Phase </span>
                     <span><input autocomplete="off" type="range" min="-180" max="180" value="0" style="width: 50%;" id="van-slider"></span>
                     <span><input autocomplete="off" type="text" style="width: 10%;" value="0" id="van-phase"></span>
+                    <span hidden id="ahold-span" style="width: 5%; display: inline-block; text-align: center;">
+                        <input type="checkbox" id="ahold" autocomplete="off" style="float: right;"/>
+                    </span>
                 </div>
 
                 <div class="full-span">
@@ -92,6 +98,9 @@
                     <span class="desc pl-2">Phase </span>
                     <span><input autocomplete="off" type="range" min="-180" max="180" value="-120" style="width: 50%;" id="vbn-slider"></span>
                     <span><input autocomplete="off" type="text" style="width: 10%;" value="-120" id="vbn-phase"></span>
+                    <span hidden id="bhold-span" style="width: 5%; display: inline-block; text-align: center;">
+                        <input type="checkbox" id="bhold" autocomplete="off" style="float: right;"/>
+                    </span>
                 </div>
 
                 <div class="full-span">
@@ -100,6 +109,9 @@
                     <span class="desc pl-2">Phase </span>
                     <span><input autocomplete="off" type="range" min="-180" max="180" value="120" style="width: 50%;" id="vcn-slider"></span>
                     <span><input autocomplete="off" type="text" style="width: 10%;" value="120" id="vcn-phase"></span>
+                    <span hidden id="chold-span" style="width: 5%; display: inline-block; text-align: center;">
+                        <input type="checkbox" id="chold" autocomplete="off" style="float: right;"/>
+                    </span>
                 </div>
 
                 <div class="sec">Line Current</div>
