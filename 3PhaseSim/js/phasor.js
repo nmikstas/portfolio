@@ -204,6 +204,28 @@ class Phasor
         iap = this.DtoR(iap);
         ibp = this.DtoR(ibp);
         icp = this.DtoR(icp);
+
+        //Find the maximum enabled current.
+        let maxI = 0;
+        if(ia    > maxI && this.showIA)  maxI = ia;
+        if(ib    > maxI && this.showIB)  maxI = ib;
+        if(ic    > maxI && this.showIC)  maxI = ic;
+        if(ineut > maxI && this.showIN)  maxI = ineut;
+
+        //Calculate the amplitudes of the currents.
+        let iaAmplitude  = this.yMiddle * ia    * Phasor.AMPS_PEAK  / maxI;
+        let ibAmplitude  = this.yMiddle * ib    * Phasor.AMPS_PEAK  / maxI;
+        let icAmplitude  = this.yMiddle * ic    * Phasor.AMPS_PEAK  / maxI;
+        let inAmplitude  = this.yMiddle * ineut * Phasor.AMPS_PEAK  / maxI;
+
+        //Label the neutral/ground current properly.
+        let n = this.type === "wye" ? "IN" : "IG";
+
+        //Plot the current vectors.
+        if(this.showIA)this.drawVector(iap, this.iaColor, iaAmplitude, Phasor.I_VECTOR, "IA", iaAmplitude / this.yMiddle);
+        if(this.showIB)this.drawVector(ibp, this.ibColor, ibAmplitude, Phasor.I_VECTOR, "IB", ibAmplitude / this.yMiddle);
+        if(this.showIC)this.drawVector(icp, this.icColor, icAmplitude, Phasor.I_VECTOR, "IC", icAmplitude / this.yMiddle);
+        if(this.showIN && inAmplitude > 0)this.drawVector(inp, this.inColor, inAmplitude, Phasor.I_VECTOR, n, inAmplitude / this.yMiddle);
         
         //Wye calculations.
         if(this.type === "wye")
@@ -234,48 +256,35 @@ class Phasor
             let pbc = Math.atan2(vbcy, vbcx);
             let pca = Math.atan2(vcay, vcax);
 
-            //Convert line voltage and current angles to radians.
+            //Convert line voltage angles to radians.
             vap = this.DtoR(vap);
             vbp = this.DtoR(vbp);
             vcp = this.DtoR(vcp);
 
-            //Find the maximum enabled voltage and current.
+            //Find the maximum enabled voltage.
             let maxV = 0;
-            let maxI = 0;
             if(va    > maxV && this.showVA)  maxV = va;
             if(vb    > maxV && this.showVB)  maxV = vb;
             if(vc    > maxV && this.showVC)  maxV = vc;
             if(vab   > maxV && this.showVAB) maxV = vab;
             if(vbc   > maxV && this.showVBC) maxV = vbc;
             if(vca   > maxV && this.showVCA) maxV = vca;
-            if(ia    > maxI && this.showIA)  maxI = ia;
-            if(ib    > maxI && this.showIB)  maxI = ib;
-            if(ic    > maxI && this.showIC)  maxI = ic;
-            if(ineut > maxI && this.showIN)  maxI = ineut;
 
-            //Calculate the amplitudes of the waveforms.
-            let vaAmplitude  = this.yMiddle * va    * Phasor.VOLTS_PEAK / maxV;
-            let vbAmplitude  = this.yMiddle * vb    * Phasor.VOLTS_PEAK / maxV;
-            let vcAmplitude  = this.yMiddle * vc    * Phasor.VOLTS_PEAK / maxV;
-            let vabAmplitude = this.yMiddle * vab   * Phasor.VOLTS_PEAK / maxV;
-            let vbcAmplitude = this.yMiddle * vbc   * Phasor.VOLTS_PEAK / maxV;
-            let vcaAmplitude = this.yMiddle * vca   * Phasor.VOLTS_PEAK / maxV;
-            let iaAmplitude  = this.yMiddle * ia    * Phasor.AMPS_PEAK  / maxI;
-            let ibAmplitude  = this.yMiddle * ib    * Phasor.AMPS_PEAK  / maxI;
-            let icAmplitude  = this.yMiddle * ic    * Phasor.AMPS_PEAK  / maxI;
-            let inAmplitude  = this.yMiddle * ineut * Phasor.AMPS_PEAK  / maxI;
-
-            //Draw the vectors.
-            if(this.showVAB)this.drawVector(pab, this.vabColor, vabAmplitude, Phasor.V_VECTOR, "VAB", vabAmplitude / this.yMiddle);
-            if(this.showVBC)this.drawVector(pbc, this.vbcColor, vbcAmplitude, Phasor.V_VECTOR, "VBC", vbcAmplitude / this.yMiddle);
-            if(this.showVCA)this.drawVector(pca, this.vcaColor, vcaAmplitude, Phasor.V_VECTOR, "VCA", vcaAmplitude / this.yMiddle);
-            if(this.showVA)this.drawVector(vap, this.vaColor, vaAmplitude, Phasor.V_VECTOR, "VA", vaAmplitude / this.yMiddle);
-            if(this.showVB)this.drawVector(vbp, this.vbColor, vbAmplitude, Phasor.V_VECTOR, "VB", vbAmplitude / this.yMiddle);
-            if(this.showVC)this.drawVector(vcp, this.vcColor, vcAmplitude, Phasor.V_VECTOR, "VC", vcAmplitude / this.yMiddle);
-            if(this.showIA)this.drawVector(iap, this.iaColor, iaAmplitude, Phasor.I_VECTOR, "IA", iaAmplitude / this.yMiddle);
-            if(this.showIB)this.drawVector(ibp, this.ibColor, ibAmplitude, Phasor.I_VECTOR, "IB", ibAmplitude / this.yMiddle);
-            if(this.showIC)this.drawVector(icp, this.icColor, icAmplitude, Phasor.I_VECTOR, "IC", icAmplitude / this.yMiddle);
-            if(this.showIN)this.drawVector(inp, this.inColor, inAmplitude, Phasor.I_VECTOR, "IN", inAmplitude / this.yMiddle);
+            //Calculate the amplitudes of the voltages.
+            let vaAmplitude  = this.yMiddle * va  * Phasor.VOLTS_PEAK / maxV;
+            let vbAmplitude  = this.yMiddle * vb  * Phasor.VOLTS_PEAK / maxV;
+            let vcAmplitude  = this.yMiddle * vc  * Phasor.VOLTS_PEAK / maxV;
+            let vabAmplitude = this.yMiddle * vab * Phasor.VOLTS_PEAK / maxV;
+            let vbcAmplitude = this.yMiddle * vbc * Phasor.VOLTS_PEAK / maxV;
+            let vcaAmplitude = this.yMiddle * vca * Phasor.VOLTS_PEAK / maxV;
+            
+            //Draw the voltage vectors.
+            if(this.showVAB)this.drawVector(pab, this.vabColor, vabAmplitude, Phasor.V_VECTOR, "VAB");
+            if(this.showVBC)this.drawVector(pbc, this.vbcColor, vbcAmplitude, Phasor.V_VECTOR, "VBC");
+            if(this.showVCA)this.drawVector(pca, this.vcaColor, vcaAmplitude, Phasor.V_VECTOR, "VCA");
+            if(this.showVA)this.drawVector(vap, this.vaColor, vaAmplitude, Phasor.V_VECTOR, "VA");
+            if(this.showVB)this.drawVector(vbp, this.vbColor, vbAmplitude, Phasor.V_VECTOR, "VB");
+            if(this.showVC)this.drawVector(vcp, this.vcColor, vcAmplitude, Phasor.V_VECTOR, "VC");
         }
 
         //Delta calculations.
@@ -391,43 +400,30 @@ class Phasor
             let polarVb = this.CtoP(phaseB);
             let polarVc = this.CtoP(phaseC);
             
-            //Find the maximum enabled voltage and current.
+            //Find the maximum enabled voltage.
             let maxV = 0;
-            let maxI = 0;
             if(polarVab.m > maxV && this.showVA)  maxV = polarVab.m;
             if(polarVbc.m > maxV && this.showVB)  maxV = polarVbc.m;
             if(polarVca.m > maxV && this.showVC)  maxV = polarVca.m;
             if(polarVa.m  > maxV && this.showVAB) maxV = polarVa.m;
             if(polarVb.m  > maxV && this.showVBC) maxV = polarVb.m;
             if(polarVc.m  > maxV && this.showVCA) maxV = polarVc.m;
-            if(ia    > maxI && this.showIA)  maxI = ia;
-            if(ib    > maxI && this.showIB)  maxI = ib;
-            if(ic    > maxI && this.showIC)  maxI = ic;
-            if(ineut > maxI && this.showIN)  maxI = ineut;
             
-            //Calculate the amplitudes of the waveforms.
+            //Calculate the amplitudes of the voltages.
             let vabAmplitude = this.yMiddle * polarVab.m * Phasor.VOLTS_PEAK / maxV;
             let vbcAmplitude = this.yMiddle * polarVbc.m * Phasor.VOLTS_PEAK / maxV;
             let vcaAmplitude = this.yMiddle * polarVca.m * Phasor.VOLTS_PEAK / maxV;
             let vaAmplitude  = this.yMiddle * polarVa.m  * Phasor.VOLTS_PEAK / maxV;
             let vbAmplitude  = this.yMiddle * polarVb.m  * Phasor.VOLTS_PEAK / maxV;
             let vcAmplitude  = this.yMiddle * polarVc.m  * Phasor.VOLTS_PEAK / maxV;
-            let iaAmplitude  = this.yMiddle * ia    * Phasor.AMPS_PEAK  / maxI;
-            let ibAmplitude  = this.yMiddle * ib    * Phasor.AMPS_PEAK  / maxI;
-            let icAmplitude  = this.yMiddle * ic    * Phasor.AMPS_PEAK  / maxI;
-            let inAmplitude  = this.yMiddle * ineut * Phasor.AMPS_PEAK  / maxI;
             
-            //Draw the vectors.
-            if(this.showVA)this.drawVector(polarVab.a, this.vaColor, vabAmplitude, Phasor.V_VECTOR, "VAB", vabAmplitude / this.yMiddle);
-            if(this.showVB)this.drawVector(polarVbc.a, this.vbColor, vbcAmplitude, Phasor.V_VECTOR, "VBC", vbcAmplitude / this.yMiddle);
-            if(this.showVC)this.drawVector(polarVca.a, this.vcColor, vcaAmplitude, Phasor.V_VECTOR, "VCA", vcaAmplitude / this.yMiddle);
-            if(this.showVAB)this.drawVector(polarVa.a, this.vabColor, vaAmplitude, Phasor.V_VECTOR, "VA", vaAmplitude / this.yMiddle);
-            if(this.showVBC)this.drawVector(polarVb.a, this.vbcColor, vbAmplitude, Phasor.V_VECTOR, "VB", vbAmplitude / this.yMiddle);
-            if(this.showVCA)this.drawVector(polarVc.a, this.vcaColor, vcAmplitude, Phasor.V_VECTOR, "VC", vcAmplitude / this.yMiddle);
-            if(this.showIA)this.drawVector(iap, this.iaColor, iaAmplitude, Phasor.I_VECTOR, "IA", iaAmplitude / this.yMiddle);
-            if(this.showIB)this.drawVector(ibp, this.ibColor, ibAmplitude, Phasor.I_VECTOR, "IB", ibAmplitude / this.yMiddle);
-            if(this.showIC)this.drawVector(icp, this.icColor, icAmplitude, Phasor.I_VECTOR, "IC", icAmplitude / this.yMiddle);
-            if(this.showIN)this.drawVector(inp, this.inColor, inAmplitude, Phasor.I_VECTOR, "IG", inAmplitude / this.yMiddle);
+            //Draw the voltage vectors.
+            if(this.showVA)this.drawVector(polarVab.a, this.vaColor, vabAmplitude, Phasor.V_VECTOR, "VAB");
+            if(this.showVB)this.drawVector(polarVbc.a, this.vbColor, vbcAmplitude, Phasor.V_VECTOR, "VBC");
+            if(this.showVC)this.drawVector(polarVca.a, this.vcColor, vcaAmplitude, Phasor.V_VECTOR, "VCA");
+            if(this.showVAB)this.drawVector(polarVa.a, this.vabColor, vaAmplitude, Phasor.V_VECTOR, "VA");
+            if(this.showVBC)this.drawVector(polarVb.a, this.vbcColor, vbAmplitude, Phasor.V_VECTOR, "VB");
+            if(this.showVCA)this.drawVector(polarVc.a, this.vcaColor, vcAmplitude, Phasor.V_VECTOR, "VC");
         }   
     }
 
@@ -525,11 +521,11 @@ class Phasor
         this.resize();
     }
 
-    drawVector(angle, color, mag, type, text, ratio)
+    drawVector(angle, color, mag, type, text)
     {
         //Draw the main portion of the vector.
-        this.drawLineAngle(angle, angle, color, this.bodyWidth * .010, 0, mag);
-        this.drawTextAngle(angle, text, color, 0.10, ratio * .85);     
+        this.drawLineAngle(angle, angle, color+"80", this.bodyWidth * .010, 0, mag);
+        this.drawTextAngle(angle, mag, text, color, 0.12, text.charAt(0) === "V" ? .80 : 0.90);     
 
         //Draw the head of the vector.
         if(type === Phasor.I_VECTOR)
@@ -574,13 +570,47 @@ class Phasor
     }
 
     //Draw text in polar coordinates.
-    drawTextAngle(angle, text, color, ratio, textRadius)
+    drawTextAngle(angle, mag, text, color, ratio, textRadius)
     {
+        //Setup the text size and color.
         var textSize = this.radius * ratio;
-        this.ctxp.font = textSize + "px Arial";
+        this.ctxp.font = "bold " + textSize + "px Arial";
         this.ctxp.fillStyle = color;
-        this.ctxp.fillText(text, 
-            this.xMiddle + this.radius * textRadius * Math.cos(angle), 
-            this.yMiddle - (textSize * .2) - this.radius * textRadius * Math.sin(angle));   
+
+        //Save original orientation.
+        this.ctxp.save();
+ 
+        //Move to the center fo the canvas.
+        this.ctxp.translate(this.xMiddle, this.yMiddle);
+        
+        //Calculate the X and Y components of the vector.
+        let x = mag * Math.cos(angle);
+        let y = mag * Math.sin(angle);
+
+        //Calculatethe X and Y components of the magnitude of the text.
+        let textX = this.ctxp.measureText(text).width * Math.cos(angle);
+        let textY = this.ctxp.measureText(text).width * Math.sin(angle);
+
+        //Only take account text length in 1st and 3rd quadrants.
+        if(angle > Math.PI/2 || angle < -Math.PI/2)
+        {
+            textX = 0;
+            textY = 0;
+        }
+
+        //Offset text by text length, if necessary.
+        this.ctxp.translate(x * textRadius - textX, -y * textRadius + textY);
+
+        //Rotate canvas to align with the vector angle.
+        this.ctxp.rotate(-angle);
+
+        if(angle > Math.PI/2)this.ctxp.rotate(Math.PI);
+        if(angle < -Math.PI/2)this.ctxp.rotate(-Math.PI);
+
+        //Add the text to the canvas.
+        this.ctxp.fillText(text, 0, 0);
+
+        //Restore the original orientation before exiting.
+        this.ctxp.restore(); 
     }
 }

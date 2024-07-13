@@ -203,7 +203,7 @@ class Waveform
             //Calculate start Y position of line
             let thisy = -amplitude * Math.sin(2 * Math.PI * x * this.cycles / numSamples + this.DtoR(phase)) + this.yMiddle;
             this.ctxwf.beginPath();
-            this.ctxwf.strokeStyle = color;
+            this.ctxwf.strokeStyle = color+"80";
             this.ctxwf.moveTo(thisx, thisy);
     
             //Update to next X position.
