@@ -62,6 +62,14 @@ let aHold     = document.getElementById("ahold");
 let bHold     = document.getElementById("bhold");
 let cHold     = document.getElementById("chold");
 
+//Symmetrical components.
+let compRow  = document.getElementById("comp-row");
+let V0mag    = document.getElementById("v0mag-text");
+let V0phs    = document.getElementById("v0phs-text");
+let V1V2Txt  = document.getElementById("V1V2-text");
+let advanced = document.getElementById("advanced");
+let advSpan  = document.getElementById("adv-span");
+
 //Variable for detecting if new calculation style is selected.
 let DYStyle = "wye";
 
@@ -76,7 +84,7 @@ let phasorWindow = document.getElementById("phasor-window");
 let phasor = new Phasor
 (
     phasorWindow, VAText, VBText, VCText, IAText, IBText, ICText,
-    VAPhase, VBPhase, VCPhase, IAPhase, IBPhase, ICPhase
+    VAPhase, VBPhase, VCPhase, IAPhase, IBPhase, ICPhase, V0mag, V0phs
 );
 
 //Set last valid number for text box error checking.
@@ -93,6 +101,8 @@ let lastIAPhase = 0;
 let lastIBPhase = -120;
 let lastICPhase = 120;
 let lastCycles  = 1.5;
+let lastV0mag   = 0;
+let lastV0phs   = 0;
 
 //Recalculate the size of things after resize.
 window.addEventListener("resize", () => 
@@ -116,6 +126,8 @@ window.addEventListener("resize", () =>
         phasorWindow.style.height = Math.min(rightHeight, rightWidth) + "px";
         phasorWindow.style.width = Math.min(rightHeight, rightWidth)  + "px"; 
     }
+    wf.resize();
+    phasor.resize();
 });
 
 //Add listeners to radio buttons.
@@ -145,9 +157,9 @@ delta.onclick = () =>
     IBPhase.value      = -150;
     ICSlider.value     = 90;
     ICPhase.value      = 90;
-    IAText.value       = 115.5;
-    IBText.value       = 115.5;
-    ICText.value       = 115.5;
+    IAText.value       = 200;
+    IBText.value       = 200;
+    ICText.value       = 200;
     CycText.value      = 1.5;
     achk.innerHTML     = " VAB";
     bchk.innerHTML     = " VBC";
@@ -170,8 +182,13 @@ delta.onclick = () =>
     bHoldSpan.hidden   = false;
     cHoldSpan.hidden   = false;
     holdText.hidden    = false;
+    advSpan.hidden     = false;
+    advanced.checked   = false;
+    resizeCanvasParents();
     GFXUpdate();
     updatePower();
+    wf.resize();
+    phasor.resize();
 }
 
 wye.onclick = () =>
@@ -228,8 +245,36 @@ wye.onclick = () =>
     aHold.checked      = false;
     bHold.checked      = false;
     cHold.checked      = false;
+    compRow.hidden     = true;
+    advSpan.hidden     = true;
+    V0mag.value        = 0;
+    V0phs.value        = 0;
+    resizeCanvasParents();
     GFXUpdate();
     updatePower();
+    wf.resize();
+    phasor.resize();
+}
+
+//Advanced checkbox event listener.
+advanced.onclick = () =>
+{
+    if(advanced.checked)
+    {
+        compRow.hidden = false;
+        resizeCanvasParents();
+        GFXUpdate();
+        wf.resize();
+        phasor.resize();
+    }
+    else
+    {
+        compRow.hidden = true;
+        resizeCanvasParents();
+        GFXUpdate();
+        wf.resize();
+        phasor.resize();
+    }
 }
 
 //Add event listeners to sliders.
@@ -285,8 +330,8 @@ VAText.onkeydown  = (event) =>
     {
         lastVAN = updateIV(VAText, lastVAN);
         deltaVUpdate("A");
-        updatePower();
         GFXUpdate();
+        updatePower();
     }
 }
 
@@ -294,8 +339,8 @@ VAText.onfocusout = () =>
 {
         lastVAN = updateIV(VAText, lastVAN);
         deltaVUpdate("A");
-        updatePower();
         GFXUpdate();
+        updatePower();
 }
 
 VBText.onkeydown  = (event) =>
@@ -304,8 +349,8 @@ VBText.onkeydown  = (event) =>
     {
         lastVBN = updateIV(VBText, lastVBN);
         deltaVUpdate("B");
-        updatePower();
         GFXUpdate();
+        updatePower();
     }
 }
 
@@ -313,8 +358,8 @@ VBText.onfocusout = () =>
 {
     lastVBN = updateIV(VBText, lastVBN);
     deltaVUpdate("B");
-    updatePower();
     GFXUpdate();
+    updatePower();
 }
 
 VCText.onkeydown  = (event) =>
@@ -323,8 +368,8 @@ VCText.onkeydown  = (event) =>
     {
         lastVCN = updateIV(VCText, lastVCN);
         deltaVUpdate("C");
-        updatePower();
         GFXUpdate();
+        updatePower();
     }
 }
 
@@ -332,8 +377,8 @@ VCText.onfocusout = () =>
 {
     lastVCN = updateIV(VCText, lastVCN);
     deltaVUpdate("C");
-    updatePower();
     GFXUpdate();
+    updatePower();
 }
 
 //Add event listeners to current text boxes.
@@ -389,8 +434,8 @@ VAPhase.onkeydown  = (event) =>
     {
         lastVAPhase = updatePhase(VAPhase, lastVAPhase, VASlider);
         deltaVUpdate("A");
-        updatePower();
         GFXUpdate();
+        updatePower();
     }
 }
 
@@ -398,8 +443,8 @@ VAPhase.onfocusout = () =>
 {
     lastVAPhase = updatePhase(VAPhase, lastVAPhase, VASlider);
     deltaVUpdate("A");
-    updatePower();
     GFXUpdate();
+    updatePower();
 }
 
 VBPhase.onkeydown  = (event) =>
@@ -408,8 +453,8 @@ VBPhase.onkeydown  = (event) =>
     {
         lastVBPhase = updatePhase(VBPhase, lastVBPhase, VBSlider);
         deltaVUpdate("B");
-        updatePower();
         GFXUpdate();
+        updatePower();
     }
 }
 
@@ -417,8 +462,8 @@ VBPhase.onfocusout = () =>
 {
     lastVBPhase = updatePhase(VBPhase, lastVBPhase, VBSlider);
     deltaVUpdate("B");
-    updatePower();
     GFXUpdate();
+    updatePower();
 }
 
 VCPhase.onkeydown  = (event) =>
@@ -427,8 +472,8 @@ VCPhase.onkeydown  = (event) =>
     {
         lastVCPhase = updatePhase(VCPhase, lastVCPhase, VCSlider);
         deltaVUpdate("C");
-        updatePower();
         GFXUpdate();
+        updatePower();
     }
 }
 
@@ -436,8 +481,8 @@ VCPhase.onfocusout = () =>
 {
     lastVCPhase = updatePhase(VCPhase, lastVCPhase, VCSlider);
     deltaVUpdate("C");
-    updatePower();
     GFXUpdate();
+    updatePower();
 }
 
 //Add event listeners to current phase text boxes.
@@ -446,16 +491,16 @@ IAPhase.onkeydown  = (event) =>
     if(event.key === "Enter")
     {
         lastIAPhase = updatePhase(IAPhase, lastIAPhase, IASlider);
-        updatePower();
         GFXUpdate();
+        updatePower();
     }
 }
 
 IAPhase.onfocusout = () =>
 {
     lastIAPhase = updatePhase(IAPhase, lastIAPhase, IASlider);
-    updatePower();
     GFXUpdate();
+    updatePower();
 }
 
 IBPhase.onkeydown  = (event) =>
@@ -463,16 +508,16 @@ IBPhase.onkeydown  = (event) =>
     if(event.key === "Enter")
     {
         lastIBPhase = updatePhase(IBPhase, lastIBPhase, IBSlider);
-        updatePower();
         GFXUpdate();
+        updatePower();
     }
 }
 
 IBPhase.onfocusout = () =>
 {
     lastIBPhase = updatePhase(IBPhase, lastIBPhase, IBSlider);
-    updatePower();
     GFXUpdate();
+    updatePower();
 }
 
 ICPhase.onkeydown  = (event) =>
@@ -480,16 +525,16 @@ ICPhase.onkeydown  = (event) =>
     if(event.key === "Enter")
     {
         lastICPhase = updatePhase(ICPhase, lastICPhase, ICSlider);
-        updatePower();
         GFXUpdate();
+        updatePower();
     }
 }
 
 ICPhase.onfocusout = () =>
 {
     lastICPhase = updatePhase(ICPhase, lastICPhase, ICSlider);
-    updatePower();
     GFXUpdate();
+    updatePower();
 }
 
 //Add listener to cycles text box.
@@ -506,6 +551,41 @@ CycText.onfocusout = () =>
 {
     lastCycles = updateCycles(CycText, lastCycles);
     wf.updateCycles(lastCycles);
+}
+
+//Add listener to V0 text boxes.
+V0mag.onkeydown = (event) =>
+{
+    if(event.key === "Enter")
+    {
+        lastV0mag = updateV0Mag(V0mag, lastV0mag);
+        GFXUpdate();
+        updatePower();
+    }
+}
+
+V0mag.onfocusout = () =>
+{
+    lastV0mag = updateV0Mag(V0mag, lastV0mag);
+    GFXUpdate();
+    updatePower();
+}
+
+V0phs.onkeydown = (event) =>
+{
+    if(event.key === "Enter")
+    {
+        lastV0phs = updateV0Phs(V0phs, lastV0phs);
+            GFXUpdate();
+            updatePower();
+        }
+    }
+    
+V0phs.onfocusout = () =>
+{
+    lastV0phs = updateV0Phs(V0phs, lastV0phs);
+    GFXUpdate();
+    updatePower();
 }
 
 //Add event listeners to check boxes.
@@ -526,6 +606,10 @@ const GFXUpdate = () =>
     wf.updateCycles(parseFloat(CycText.value));
     phasor.updateShow(VAChk.checked, VBChk.checked, VCChk.checked, IAChk.checked, IBChk.checked, ICChk.checked,
         VABChk.checked, VBCChk.checked, VCAChk.checked, INChk.checked, DYStyle);
+
+    //Update V1V2 text.
+    V1V2Txt.innerHTML = "\xa0\xa0\xa0 V1: " + phasor.V1mag.toFixed(1) + "∠" + phasor.RtoD(phasor.V1phs).toFixed(1) + "°" +
+                        "\xa0\xa0\xa0 V2: " + phasor.V2mag.toFixed(1) + "∠" + phasor.RtoD(phasor.V2phs).toFixed(1) + "°";
 }
 
 //After a change is made to line voltage, the other line voltages need to be adjusted to keep
@@ -702,9 +786,6 @@ const deltaVUpdate = (lockedPhase) =>
         VBPhase.value  = VBCphs.toFixed(1);
         VBSlider.value = VBCphs;
     }
-        
-
-
 }
 
 //Update voltage/current text boxes.
@@ -739,6 +820,25 @@ const updateCycles = (e, last) =>
     return last;
 }
 
+//Update V0 magnitude text box.
+const updateV0Mag = (e, last) =>
+{
+    let num = parseFloat(e.value);
+    if(!isNaN(num) && num >= 0)last = num;
+    e.value = last;
+    return last;
+}
+
+//Update V0 angle text box.
+const updateV0Phs = (e, last) =>
+{
+    let num = parseFloat(e.value);
+    if(!isNaN(num) && num >= -180 && num <= 180)last = num;
+         
+    e.value = last;
+    return last;
+}
+
 //Update power calculations.
 const updatePower = () =>
 {
@@ -746,11 +846,11 @@ const updatePower = () =>
     if(DYStyle === "wye")
     {
         //Get the power factors.
-        let pfA = Math.cos(wf.DtoR(parseFloat(VAPhase.value) - parseFloat(IAPhase.value))).toFixed(3);
-        let pfB = Math.cos(wf.DtoR(parseFloat(VBPhase.value) - parseFloat(IBPhase.value))).toFixed(3);
-        let pfC = Math.cos(wf.DtoR(parseFloat(VCPhase.value) - parseFloat(ICPhase.value))).toFixed(3);
+        let pfA = Math.cos(wf.DtoR(parseFloat(VAPhase.value) - parseFloat(IAPhase.value))).toFixed(2);
+        let pfB = Math.cos(wf.DtoR(parseFloat(VBPhase.value) - parseFloat(IBPhase.value))).toFixed(2);
+        let pfC = Math.cos(wf.DtoR(parseFloat(VCPhase.value) - parseFloat(ICPhase.value))).toFixed(2);
     
-        //Calculate the absolute phase angles with respect to by rotating each voltage phase to 0 degrees.
+        //Calculate the phase angles between the current and their respective voltage phases.
         let iap = parseFloat(IAPhase.value) - parseFloat(VAPhase.value);
         let ibp = parseFloat(IBPhase.value) - parseFloat(VBPhase.value);
         let icp = parseFloat(ICPhase.value) - parseFloat(VCPhase.value);
@@ -776,9 +876,9 @@ const updatePower = () =>
         if((icp < 0 && icp > -90) || (icp >  90 && icp <  180)) leadLagC += " Lagging";
     
         //Calculate KVA.
-        let kvaA = (parseFloat(VAText.value) * parseFloat(IAText.value) / 1000).toFixed(2);
-        let kvaB = (parseFloat(VBText.value) * parseFloat(IBText.value) / 1000).toFixed(2);
-        let kvaC = (parseFloat(VCText.value) * parseFloat(ICText.value) / 1000).toFixed(2);
+        let kvaA = (parseFloat(VAText.value) * parseFloat(IAText.value) / 1000).toFixed(1);
+        let kvaB = (parseFloat(VBText.value) * parseFloat(IBText.value) / 1000).toFixed(1);
+        let kvaC = (parseFloat(VCText.value) * parseFloat(ICText.value) / 1000).toFixed(1);
     
         //Get KVA signs.
         kvaA = (pfA < 0) ? -kvaA : kvaA;
@@ -786,14 +886,14 @@ const updatePower = () =>
         kvaC = (pfC < 0) ? -kvaC : kvaC;
     
         //Calculate KW.
-        let kwA = (parseFloat(VAText.value) * parseFloat(IAText.value) * pfA / 1000).toFixed(2);
-        let kwB = (parseFloat(VBText.value) * parseFloat(IBText.value) * pfB / 1000).toFixed(2);
-        let kwC = (parseFloat(VCText.value) * parseFloat(ICText.value) * pfC / 1000).toFixed(2);
+        let kwA = (parseFloat(VAText.value) * parseFloat(IAText.value) * pfA / 1000).toFixed(1);
+        let kwB = (parseFloat(VBText.value) * parseFloat(IBText.value) * pfB / 1000).toFixed(1);
+        let kwC = (parseFloat(VCText.value) * parseFloat(ICText.value) * pfC / 1000).toFixed(1);
     
         //Calculate KVAR.
-        let kvarA = (kvaA * Math.sin(Math.PI * iap / 180)).toFixed(2);
-        let kvarB = (kvaB * Math.sin(Math.PI * ibp / 180)).toFixed(2);
-        let kvarC = (kvaC * Math.sin(Math.PI * icp / 180)).toFixed(2);
+        let kvarA = (kvaA * Math.sin(Math.PI * iap / 180)).toFixed(1);
+        let kvarB = (kvaB * Math.sin(Math.PI * ibp / 180)).toFixed(1);
+        let kvarC = (kvaC * Math.sin(Math.PI * icp / 180)).toFixed(1);
     
         //Calculate the phase to phase voltage vectors.
         let vax = (parseFloat(VAText.value) * Math.cos(parseFloat(Math.PI * VAPhase.value / 180)));
@@ -820,9 +920,9 @@ const updatePower = () =>
         cPower.innerHTML = "PF: " + pfC + leadLagC + "<br>KW: " + kwC + "<br>KVAR: " + kvarC + "<br>KVA: " + kvaC;
     
         //Calculate total power.
-        let kwTotal = (parseFloat(kwA) + parseFloat(kwB) + parseFloat(kwC)).toFixed(2);
-        let kvarTotal = (parseFloat(kvarA) + parseFloat(kvarB) + parseFloat(kvarC)).toFixed(2);
-        let kvaTotal = (parseFloat(kvaA) + parseFloat(kvaB) + parseFloat(kvaC)).toFixed(2);
+        let kwTotal = (parseFloat(kwA) + parseFloat(kwB) + parseFloat(kwC)).toFixed(1);
+        let kvarTotal = (parseFloat(kvarA) + parseFloat(kvarB) + parseFloat(kvarC)).toFixed(1);
+        let kvaTotal = (parseFloat(kvaA) + parseFloat(kvaB) + parseFloat(kvaC)).toFixed(1);
     
         //Calculate neutral current.
         let iax = parseFloat(IAText.value) * Math.cos(parseFloat(IAPhase.value) * Math.PI / 180);
@@ -834,40 +934,145 @@ const updatePower = () =>
     
         let ineutx = iax + ibx + icx;
         let ineuty = iay + iby + icy;
-        let ineut = Math.sqrt(ineutx**2 + ineuty**2).toFixed(2);
+        let ineut = Math.sqrt(ineutx**2 + ineuty**2).toFixed(1);
     
         //Update total power calculations on the display.
         tPower.innerHTML = "KW: " + kwTotal + "\xa0\xa0\xa0 KVAR: " + kvarTotal + "\xa0\xa0\xa0 KVA: " + kvaTotal;
     
         //Update derived values on the display.
-        derived.innerHTML= "VAB: " + vab + "\xa0\xa0\xa0 VBC: " + vbc + "\xa0\xa0\xa0 VCA: " + vca + "\xa0\xa0\xa0 IN: " + ineut;
+        let neutAngle = ineut === "0.0" ? "0.0" : phasor.RtoD(phasor.CtoP({r: -ineutx, i: -ineuty}).a).toFixed(1);
+        derived.innerHTML= "VAB: " + vab + "∠" + phasor.RtoD(phasor.CtoP({r: vabx, i: vaby}).a).toFixed(1) + "°" +
+              "\xa0\xa0\xa0 VBC: " + vbc + "∠" + phasor.RtoD(phasor.CtoP({r: vbcx, i: vbcy}).a).toFixed(1) + "°" +
+              "\xa0\xa0\xa0 VCA: " + vca + "∠" + phasor.RtoD(phasor.CtoP({r: vcax, i: vcay}).a).toFixed(1) + "°" +
+              "\xa0\xa0\xa0 IN: " + ineut + "∠" + neutAngle + "°";
     }
 
     //Delta calculations.
     else
     {
+        //Get calculated values from the phasor and convert to polar form.
+        let _va  = phasor.CtoP(phasor._va);
+        let _vb  = phasor.CtoP(phasor._vb);
+        let _vc  = phasor.CtoP(phasor._vc);
+        let _ia  = phasor.CtoP(phasor._ia);
+        let _ib  = phasor.CtoP(phasor._ib);
+        let _ic  = phasor.CtoP(phasor._ic);
+        let _ig  = phasor.CtoP(phasor._in);
 
+        //Get the power factors.
+        let pfA = Math.cos(_va.a - _ia.a).toFixed(2);
+        let pfB = Math.cos(_vb.a - _ib.a).toFixed(2);
+        let pfC = Math.cos(_vc.a - _ic.a).toFixed(2);
 
+        //Calculate the phase angles between the current and their respective voltage phases.
+        let iap = phasor.RtoD(_ia.a) - phasor.RtoD(_va.a);
+        let ibp = phasor.RtoD(_ib.a) - phasor.RtoD(_vb.a);
+        let icp = phasor.RtoD(_ic.a) - phasor.RtoD(_vc.a);
 
+        //Ensure results are between +/-180 degrees.
+        if(iap >  180)iap -= 360;
+        if(iap < -180)iap += 360;
+        if(ibp >  180)ibp -= 360;
+        if(ibp < -180)ibp += 360;
+        if(icp >  180)icp -= 360;
+        if(icp < -180)icp += 360;
 
+        //Determine if power is leading or lagging.
+        let leadLagA = "";
+        let leadLagB = "";
+        let leadLagC = "";
 
+        if((iap > 0 && iap <  90) || (iap < -90 && iap > -180)) leadLagA += " Leading";
+        if((iap < 0 && iap > -90) || (iap >  90 && iap <  180)) leadLagA += " Lagging";
+        if((ibp > 0 && ibp <  90) || (ibp < -90 && ibp > -180)) leadLagB += " Leading";
+        if((ibp < 0 && ibp > -90) || (ibp >  90 && ibp <  180)) leadLagB += " Lagging";
+        if((icp > 0 && icp <  90) || (icp < -90 && icp > -180)) leadLagC += " Leading";
+        if((icp < 0 && icp > -90) || (icp >  90 && icp <  180)) leadLagC += " Lagging";
+
+        //Clean up some corner cases.
+        if(pfA === "-0.00") pfA = "0.00";
+        if(pfA === "-1.00") pfA = "1.00";
+        if(pfA === "0.00" || pfA === "1.00") leadLagA = "";
+        if(pfB === "-0.00") pfB = "0.00";
+        if(pfB === "-1.00") pfB = "1.00";
+        if(pfB === "0.00" || pfB === "1.00") leadLagB = "";
+        if(pfC === "-0.00") pfC = "0.00";
+        if(pfC === "-1.00") pfC = "1.00";
+        if(pfC === "0.00" || pfC === "1.00") leadLagC = "";
+
+        //Calculate KVA.
+        let kvaA = (_va.m * _ia.m / 1000).toFixed(1);
+        let kvaB = (_vb.m * _ib.m / 1000).toFixed(1);
+        let kvaC = (_vc.m * _ic.m / 1000).toFixed(1);
+
+        //Clean up some corner cases.
+        if(kvaA === "-0.0") kvaA = "0.0";
+        if(kvaB === "-0.0") kvaB = "0.0";
+        if(kvaC === "-0.0") kvaC = "0.0";
+
+        //Get KVA signs.
+        kvaA = (pfA < 0) ? -kvaA : kvaA;
+        kvaB = (pfB < 0) ? -kvaB : kvaB;
+        kvaC = (pfC < 0) ? -kvaC : kvaC;
+
+        //Calculate KW.
+        let kwA = (_va.m * _ia.m * pfA / 1000).toFixed(1);
+        let kwB = (_vb.m * _ib.m * pfB / 1000).toFixed(1);
+        let kwC = (_vc.m * _ic.m * pfC / 1000).toFixed(1);
+
+        //Clean up some corner cases.
+        if(kwA === "-0.0") kwA = "0.0";
+        if(kwB === "-0.0") kwB = "0.0";
+        if(kwC === "-0.0") kwC = "0.0";
+
+        //Calculate KVAR.
+        let kvarA = (kvaA * Math.sin(Math.PI * iap / 180)).toFixed(1);
+        let kvarB = (kvaB * Math.sin(Math.PI * ibp / 180)).toFixed(1);
+        let kvarC = (kvaC * Math.sin(Math.PI * icp / 180)).toFixed(1);
+
+        //Clean up some corner cases.
+        if(kvarA === "-0.0") kvarA = "0.0";
+        if(kvarB === "-0.0") kvarB = "0.0";
+        if(kvarC === "-0.0") kvarC = "0.0";
 
         //Update power calculations on the display.
-        aPower.innerHTML = "PF: " + "<br>KW: " + "<br>KVAR: " + "<br>KVA: ";
-        bPower.innerHTML = "PF: " + "<br>KW: " + "<br>KVAR: " + "<br>KVA: ";
-        cPower.innerHTML = "PF: " + "<br>KW: " + "<br>KVAR: " + "<br>KVA: ";
+        aPower.innerHTML = "PF: " + pfA + leadLagA + "<br>KW: " + kwA + "<br>KVAR: " + kvarA + "<br>KVA: " + kvaA;
+        bPower.innerHTML = "PF: " + pfB + leadLagB + "<br>KW: " + kwB + "<br>KVAR: " + kvarB + "<br>KVA: " + kvaB;
+        cPower.innerHTML = "PF: " + pfC + leadLagC + "<br>KW: " + kwC + "<br>KVAR: " + kvarC + "<br>KVA: " + kvaC;
+
+        //Calculate total power.
+        let kwTotal = (parseFloat(kwA) + parseFloat(kwB) + parseFloat(kwC)).toFixed(1);
+        let kvarTotal = (parseFloat(kvarA) + parseFloat(kvarB) + parseFloat(kvarC)).toFixed(1);
+        let kvaTotal = (parseFloat(kvaA) + parseFloat(kvaB) + parseFloat(kvaC)).toFixed(1);
 
         //Update total power calculations on the display.
-        tPower.innerHTML = "KW: " + "\xa0\xa0\xa0 KVAR: " + "\xa0\xa0\xa0 KVA: ";
-    
+        tPower.innerHTML = "KW: " + kwTotal + "\xa0\xa0\xa0 KVAR: " + kvarTotal + "\xa0\xa0\xa0 KVA: " + kvaTotal;
+
         //Update derived values on the display.
-        derived.innerHTML= "VAG: " + "\xa0\xa0\xa0 VBG: " + "\xa0\xa0\xa0 VCG: " + "\xa0\xa0\xa0 IG: ";
+        let neutAngle = phasor.RtoD(_ig.m).toFixed(1) === "0.0" ? "0.0" : phasor.RtoD(_ig.a).toFixed(1);
+        derived.innerHTML= "VAG: " + _va.m.toFixed(1) + "∠" + phasor.RtoD(_va.a).toFixed(1) + "°" +
+              "\xa0\xa0\xa0 VBG: " + _vb.m.toFixed(1) + "∠" + phasor.RtoD(_vb.a).toFixed(1) + "°" +
+              "\xa0\xa0\xa0 VCG: " + _vc.m.toFixed(1) + "∠" + phasor.RtoD(_vc.a).toFixed(1) + "°" +
+              "\xa0\xa0\xa0 IG: " + _ig.m.toFixed(1) + "∠" + neutAngle + "°";
+    }
+}
+
+const resizeCanvasParents = () =>
+{
+    let rightWidth   = rightCol.clientWidth;
+    let computedStyle = getComputedStyle(rightCol);
+    rightWidth -= (parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight));
+    let rightHeight = window.innerHeight - phasorWindow.offsetTop - headerHeight - footerHeight -10;
     
-    
-    
-    
-    
-    
+    if(mainBody.clientWidth < 769)
+    {
+        phasorWindow.style.height = Math.max(rightHeight, rightWidth) + "px";
+        phasorWindow.style.width = Math.max(rightHeight, rightWidth)  + "px"; 
+    }
+    else
+    {
+        phasorWindow.style.height = Math.min(rightHeight, rightWidth) + "px";
+        phasorWindow.style.width = Math.min(rightHeight, rightWidth)  + "px"; 
     }
 }
 
@@ -879,21 +1084,5 @@ phasorWindow.style.height = window.innerHeight - phasor.offsetTop - headerHeight
 
 wf.resize();
 updatePower();
-
-let rightWidth   = rightCol.clientWidth;
-let computedStyle = getComputedStyle(rightCol);
-rightWidth -= (parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight));
-let rightHeight = window.innerHeight - phasorWindow.offsetTop - headerHeight - footerHeight -10;
-
-if(mainBody.clientWidth < 769)
-{
-    phasorWindow.style.height = Math.max(rightHeight, rightWidth) + "px";
-    phasorWindow.style.width = Math.max(rightHeight, rightWidth)  + "px"; 
-}
-else
-{
-    phasorWindow.style.height = Math.min(rightHeight, rightWidth) + "px";
-    phasorWindow.style.width = Math.min(rightHeight, rightWidth)  + "px"; 
-}
-
+resizeCanvasParents();
 phasor.resize();

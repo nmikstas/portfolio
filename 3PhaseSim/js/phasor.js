@@ -20,7 +20,7 @@ class Phasor
         IAtxt, IBtxt, ICtxt,
         VAphs, VBphs, VCphs,
         IAphs, IBphs, ICphs,
-        INeut,
+        V0mag, V0phs,
         {
             vaColor  = "#ff0000",
             vbColor  = "#00ff00",
@@ -61,8 +61,11 @@ class Phasor
         this.IAphs = IAphs;
         this.IBphs = IBphs;
         this.ICphs = ICphs;
-        this.INeut = INeut;
         this.type  = type;
+
+        //V0 symmetrical component variable.
+        this.V0mag = V0mag;
+        this.V0phs = V0phs;
 
         //Waveform colors.
         this.vaColor  = vaColor;
@@ -99,6 +102,24 @@ class Phasor
 
         //Drawing canvas.
         this.bodyCanvas = undefined;
+
+        //Storage space for calculated voltages and currents. Saved in complex form.
+        this._va;
+        this._vb;
+        this._vc;
+        this._vab;
+        this._vbc;
+        this._vca;
+        this._ia;
+        this._ib;
+        this._ic;
+        this._in;
+
+        //Saved values of V1 and V2 in polar form.
+        this.V1mag;
+        this.V1phs;
+        this.V2mag;
+        this.V2phs;
 
         //Only create level if the parent exists.
         if(this.parentDiv)this.init();
@@ -200,6 +221,12 @@ class Phasor
         let ineut  = Math.sqrt(ineutx**2 + ineuty**2).toFixed(2);
         let inp    = Math.atan2(-ineuty, -ineutx);
 
+        //Store current values.
+        this._ia = {r: iax, i: iay};
+        this._ib = {r: ibx, i: iby};
+        this._ic = {r: icx, i: icy};
+        this._in = {r: -ineutx, i: -ineuty};
+
         //Convert angles from degrees to radians.
         iap = this.DtoR(iap);
         ibp = this.DtoR(ibp);
@@ -246,6 +273,14 @@ class Phasor
             let vcax = vcx - vax;
             let vcay = vcy - vay;
 
+            //Store the voltages.
+            this._va = {r: vax, i: vay};
+            this._vb = {r: vbx, i: vby};
+            this._vc = {r: vcx, i: vcy};
+            this._vab = {r: vabx, i: vaby};
+            this._vbc = {r: vbcx, i: vbcy};
+            this._vca = {r: vcax, i: vcay};
+
             //Calculate the vector magnitudes.
             let vab = Math.sqrt(vabx**2 + vaby**2);
             let vbc = Math.sqrt(vbcx**2 + vbcy**2);
@@ -263,12 +298,12 @@ class Phasor
 
             //Find the maximum enabled voltage.
             let maxV = 0;
-            if(va    > maxV && this.showVA)  maxV = va;
-            if(vb    > maxV && this.showVB)  maxV = vb;
-            if(vc    > maxV && this.showVC)  maxV = vc;
-            if(vab   > maxV && this.showVAB) maxV = vab;
-            if(vbc   > maxV && this.showVBC) maxV = vbc;
-            if(vca   > maxV && this.showVCA) maxV = vca;
+            if(va  > maxV && this.showVA)  maxV = va;
+            if(vb  > maxV && this.showVB)  maxV = vb;
+            if(vc  > maxV && this.showVC)  maxV = vc;
+            if(vab > maxV && this.showVAB) maxV = vab;
+            if(vbc > maxV && this.showVBC) maxV = vbc;
+            if(vca > maxV && this.showVCA) maxV = vca;
 
             //Calculate the amplitudes of the voltages.
             let vaAmplitude  = this.yMiddle * va  * Phasor.VOLTS_PEAK / maxV;
@@ -360,6 +395,9 @@ class Phasor
             //    | .16667-j.09623  .16667+j.09623 | | Vab - Vbc | = | V1 |
             //    | .16667+j.09623  .16667-j.09623 | | Vbc - Vca |   | V2 |
             //
+            //The above solution assumes V0 = 0. A non-zero value of V0 can be added to each
+            //equation and produce a unique result. V0 can be any complex number value.
+            //There are an infinite number of solutions.
 
             //Create the inverse matrix above.
             let Ainv = [[{r: 0.166666666667, i: -0.09622786759}, {r: 0.166666666667, i:  0.09622786759}], 
@@ -374,9 +412,21 @@ class Phasor
             let Vab_Vbc = this.complexSub(Vab, Vbc);
             let Vbc_Vca = this.complexSub(Vbc, Vca);
 
+            //Get user value of V0;
+            let V0 = this.PtoC({m: parseFloat(this.V0mag.value), a: this.DtoR(parseFloat(this.V0phs.value))});
+
             //Calculate V1 and V2.
             let V1 = this.complexAdd(this.complexMult(Ainv[0][0], Vab_Vbc), this.complexMult(Ainv[0][1], Vbc_Vca));
             let V2 = this.complexAdd(this.complexMult(Ainv[1][0], Vab_Vbc), this.complexMult(Ainv[1][1], Vbc_Vca));
+
+            //Save values of V1 and V2.
+            this.V1mag = this.CtoP(V1).m;
+            this.V1phs = this.CtoP(V1).a;
+            this.V2mag = this.CtoP(V2).m;
+            this.V2phs = this.CtoP(V2).a;
+
+            //this.printPolarD(this.CtoP(V1));
+            //this.printPolarD(this.CtoP(V2));
 
             //We can now calculate the phase voltages with the formulas stated above (V0 removed below):
             //Va = V1 + V2, Vb = α^2V1 + αV2, Vc = αV1 + α^2V2.
@@ -386,9 +436,17 @@ class Phasor
             let alpha2 = this.PtoC({m: 1, a: this.DtoR(-120)});
 
             //Calculate phase voltages!
-            let phaseA = this.complexAdd(V1, V2);
-            let phaseB = this.complexAdd(this.complexMult(alpha2, V1), this.complexMult(alpha, V2));
-            let phaseC = this.complexAdd(this.complexMult(alpha, V1), this.complexMult(alpha2, V2));
+            let phaseA = this.complexAdd(V0, this.complexAdd(V1, V2));
+            let phaseB = this.complexAdd(V0, this.complexAdd(this.complexMult(alpha2, V1), this.complexMult(alpha, V2)));
+            let phaseC = this.complexAdd(V0, this.complexAdd(this.complexMult(alpha, V1), this.complexMult(alpha2, V2)));
+
+            //Store the voltages.
+            this._va = phaseA;
+            this._vb = phaseB;
+            this._vc = phaseC;
+            this._vab = Vab;
+            this._vbc = Vbc;
+            this._vca = Vca;
 
             //Put the line voltages in a polar form for graphing.
             let polarVab = {m: va, a: this.DtoR(vap)};

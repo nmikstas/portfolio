@@ -71,9 +71,12 @@
             <div class="col-md-6">
                 <div class="sec">
                     <input type="radio" id="wye" name="type" autocomplete="off" checked>
-                    <label for="wye">Wye</label>
+                    <label class="mb-0" for="wye">Wye</label>
                     <input type="radio" id="delta" name="type" autocomplete="off">
-                    <label for="delta">Delta</label>
+                    <label class="mb-0" for="delta">Delta</label>
+                    <span id="adv-span" class="sec" style="float: right;" hidden>
+                        <input type="checkbox" id="advanced" autocomplete="off"> Advanced
+                    </span>
                 </div>
 
                 <div class="full-span">
@@ -196,7 +199,19 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="sec">Derived Values</div>
-                        <div id="derived-values" class="desc pl-4 pb-2"></div>
+                        <div id="derived-values" class="desc pl-4"></div>
+                    </div>
+                </div>
+
+                <div id="comp-row" class="row pb-1" hidden>
+                    <div class="col-md-12">
+                        <div class="sec">Voltage Symmetrical Components</div>
+                        <span class="desc pl-4" style="display: inline-block;">V0: </span>
+                        <span><input autocomplete="off" type="text" style="width: 10%;" value="0.0" id="v0mag-text"></span>
+                        <span class="desc">∠</span>
+                        <span><input autocomplete="off" type="text" style="width: 10%;" value="0.0" id="v0phs-text"></span>
+                        <span class="desc">°</span>
+                        <span id="V1V2-text" class="desc">&nbsp&nbsp&nbspV1: 0.0∠0.0° &nbsp&nbsp&nbspV2: 0.0∠0.0°</span>
                     </div>
                 </div>
 

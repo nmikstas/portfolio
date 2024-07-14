@@ -140,12 +140,36 @@ class Waveform
         //Make sure the calculations can't go negative.
         if(this.bodyWidth < 5) return;
 
-        //Draw the center line.
+        //Draw graph lines.
         this.ctxwf.beginPath();
+        this.ctxwf.lineWidth = this.bodyHeight * .005;
         this.ctxwf.strokeStyle = "#00000010";
+
+        //Draw the center line.
         this.ctxwf.moveTo(0, this.yMiddle);
         this.ctxwf.lineTo(this.bodyWidth, this.yMiddle);
-        this.ctxwf.lineWidth = this.bodyHeight * .005;           
+
+        //Draw volts and amps limit lines.
+        this.ctxwf.moveTo(0, this.yMiddle - this.yMiddle * Waveform.VOLTS_PEAK);
+        this.ctxwf.lineTo(this.bodyWidth, this.yMiddle - this.yMiddle * Waveform.VOLTS_PEAK);
+        this.ctxwf.moveTo(0, this.yMiddle + this.yMiddle * Waveform.VOLTS_PEAK);
+        this.ctxwf.lineTo(this.bodyWidth, this.yMiddle + this.yMiddle * Waveform.VOLTS_PEAK);
+        this.ctxwf.moveTo(0, this.yMiddle - this.yMiddle * Waveform.AMPS_PEAK);
+        this.ctxwf.lineTo(this.bodyWidth, this.yMiddle - this.yMiddle * Waveform.AMPS_PEAK);
+        this.ctxwf.moveTo(0, this.yMiddle + this.yMiddle * Waveform.AMPS_PEAK);
+        this.ctxwf.lineTo(this.bodyWidth, this.yMiddle + this.yMiddle * Waveform.AMPS_PEAK);
+
+        //Draw vertical lines every 30 degrees.
+        let totalDegrees = this.cycles * 360;
+        let pixelsPerDegree = this.bodyWidth / totalDegrees;
+        let thisX = 0;
+
+        while(thisX < this.bodyWidth)
+        {
+            this.ctxwf.moveTo(thisX, 0);
+            this.ctxwf.lineTo(thisX, this.bodyHeight);
+            thisX += pixelsPerDegree * 30;
+        }
         this.ctxwf.stroke();
 
         //Get all the critical numbers for the graphing.
