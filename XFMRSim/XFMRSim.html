@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Delta-Wye Transformerr</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!--Reset Styling-->
+    <link rel="stylesheet" type="text/css" href="../assets/css/reset.css">
+    
+    <!--Bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    
+    <!--Generic Styling-->
+    <link rel="stylesheet" type="text/css" href="../assets/css/style.css">
+
+    <!--Custom Styling-->
+    <link rel="stylesheet" type="text/css" href="./css/style.css">
+</head>
+    
+<body class="d-flex flex-column" id="main-body">
+    
+    <!--Header-->
+    <header class="header-class" id="header">
+        <nav class="navbar navbar-dark navbar-expand-lg">
+            <a class="navbar-brand nav-title px-2" href="../index.html">Nick Mikstas Portfolio</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="container text-center">
+                <h1>Delta-Wye Transformer</h1>
+            </div>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../resume.html">Resume</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../web.html">Web</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../embedded.html">Embedded</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../fpga.html">FPGA</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../dsp.html">DSP</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../games.html">Games</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+        
+    <!--Main content body-->
+    <div class="mx-5" id="page-body">
+        <div class="row" style="height: 100%;">
+
+            <!--Left hand column-->
+            <div style="height: 100%;" class="col-md-6">
+                <div>
+                    <label class="desc pt-2" for="input-wiring">Input Wiring</label>
+                    <select name="in-wire" id="input-wiring" autocomplete="off">
+                        <option value="input1">Type 1</option>
+                        <option value="input2">Type 2</option>
+                        <option value="input3">Type 3</option>
+                        <option value="input4">Type 4</option>
+                        <option value="input5">Type 5</option>
+                        <option value="input6">Type 6</option>
+                    </select>
+    
+                    <label class="desc pt-2" for="phase">Coil Phase</label>
+                    <select name="coil" id="coil-phase" autocomplete="off">
+                        <option value="0">0°</option>
+                        <option value="180">180°</option>
+                    </select>
+    
+                    <label class="desc pt-2" for="output-wiring">Output Wiring</label>
+                    <select name="out-wire" id="output-wiring" autocomplete="off">
+                        <option value="output1">Type 1</option>
+                        <option value="output2">Type 2</option>
+                        <option value="output3">Type 3</option>
+                        <option value="output4">Type 4</option>
+                        <option value="output5">Type 5</option>
+                        <option value="output6">Type 6</option>
+                    </select>
+                </div>
+
+                <div id="img-container" style="position: relative;">
+                    <img id="img-body" src="./img/Body.png" style="position: absolute;"/>
+                    <img id="img-in1" src="./img/In1.png" style="position: absolute;"/>
+                    <img id="img-in2" src="./img/In2.png" style="position: absolute;" hidden />
+                    <img id="img-in3" src="./img/In3.png" style="position: absolute;" hidden />
+                    <img id="img-in4" src="./img/In4.png" style="position: absolute;" hidden />
+                    <img id="img-in5" src="./img/In5.png" style="position: absolute;" hidden />
+                    <img id="img-in6" src="./img/In6.png" style="position: absolute;" hidden />
+                    <img id="img-inphase" src="./img/In-Phase.png" style="position: absolute;"/>
+                    <img id="img-outofphase" src="./img/Out-of-Phase.png" style="position: absolute;" hidden />
+                    <img id="img-out1" src="./img/Out1.png" style="position: absolute;"/>
+                    <img id="img-out2" src="./img/Out2.png" style="position: absolute;" hidden />
+                    <img id="img-out3" src="./img/Out3.png" style="position: absolute;" hidden />
+                    <img id="img-out4" src="./img/Out4.png" style="position: absolute;" hidden />
+                    <img id="img-out5" src="./img/Out5.png" style="position: absolute;" hidden />
+                    <img id="img-out6" src="./img/Out6.png" style="position: absolute;" hidden />
+                </div>
+
+                <!--Equation div-->
+                <div id="Eq">
+                    <div class="desc">VθA = VAB = 480∠0°</div>
+                    <div class="desc">VθB = VBC = 480∠-120°</div>
+                    <div class="desc">VθC = VCA = 480∠120°</div>
+                    <div class="desc">Vθa = 1/4VθA = 120∠0°</div>
+                    <div class="desc">Vθb = 1/4VθB = 120∠-120°</div>
+                    <div class="desc">Vθc = 1/4VθB = 120∠120°</div>
+                </div>
+                
+                 
+            </div>
+        
+            <!--Right hand column-->
+            <div class="col-md-6" id="right-column">
+                
+                
+            </div>      
+        </div>
+    </div>
+        
+    <!--Footer-->
+    <footer id="sticky-footer" class="pt-4 pb-1">
+        <div class="container text-center">
+            <small>&copy;Nick Mikstas - nmikstas@alumni.scu.edu</small>
+        </div>
+    </footer>
+
+    <!--jQuery-->
+    <script src="./js/jquery.min.js"></script>
+        
+    <!--Bootstrap-->
+    <script src="./js/bootstrap.min.js"></script>
+
+    <!--Javascript-->
+    <script src="./js/phasor.js"></script>
+    <script src="./js/XFMRSim.js"></script>
+</body>      
+</html>

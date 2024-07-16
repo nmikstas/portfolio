@@ -608,8 +608,11 @@ const GFXUpdate = () =>
         VABChk.checked, VBCChk.checked, VCAChk.checked, INChk.checked, DYStyle);
 
     //Update V1V2 text.
-    V1V2Txt.innerHTML = "\xa0\xa0\xa0 V1: " + phasor.V1mag.toFixed(1) + "∠" + phasor.RtoD(phasor.V1phs).toFixed(1) + "°" +
-                        "\xa0\xa0\xa0 V2: " + phasor.V2mag.toFixed(1) + "∠" + phasor.RtoD(phasor.V2phs).toFixed(1) + "°";
+    if(DYStyle === "delta" && advanced.checked === true)
+    {
+        V1V2Txt.innerHTML = "\xa0\xa0\xa0 V1: " + phasor.V1mag.toFixed(1) + "∠" + phasor.RtoD(phasor.V1phs).toFixed(1) + "°" +
+                            "\xa0\xa0\xa0 V2: " + phasor.V2mag.toFixed(1) + "∠" + phasor.RtoD(phasor.V2phs).toFixed(1) + "°";
+    }
 }
 
 //After a change is made to line voltage, the other line voltages need to be adjusted to keep
