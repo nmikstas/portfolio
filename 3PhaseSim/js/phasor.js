@@ -219,13 +219,13 @@ class Phasor
         let ineutx = iax + ibx + icx;
         let ineuty = iay + iby + icy;
         let ineut  = Math.sqrt(ineutx**2 + ineuty**2).toFixed(2);
-        let inp    = Math.atan2(-ineuty, -ineutx);
+        let inp    = Math.atan2(ineuty, ineutx);
 
         //Store current values.
         this._ia = {r: iax, i: iay};
         this._ib = {r: ibx, i: iby};
         this._ic = {r: icx, i: icy};
-        this._in = {r: -ineutx, i: -ineuty};
+        this._in = {r: ineutx, i: ineuty};
 
         //Convert angles from degrees to radians.
         iap = this.DtoR(iap);

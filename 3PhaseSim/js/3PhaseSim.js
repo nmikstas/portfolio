@@ -388,6 +388,7 @@ IAText.onkeydown  = (event) =>
     {
         lastIA = updateIV(IAText, lastIA);
         GFXUpdate();
+        updatePower();
     }
 }
 
@@ -395,6 +396,7 @@ IAText.onfocusout = () =>
 {
     lastIA = updateIV(IAText, lastIA);
     GFXUpdate();
+    updatePower();
 }
 
 IBText.onkeydown  = (event) =>
@@ -403,6 +405,7 @@ IBText.onkeydown  = (event) =>
     {
         lastIB = updateIV(IBText, lastIB);
         GFXUpdate();
+        updatePower();
     }
 }
 
@@ -410,6 +413,7 @@ IBText.onfocusout = () =>
 {
     lastIB = updateIV(IBText, lastIB);
     GFXUpdate();
+    updatePower();
 }
 
 ICText.onkeydown  = (event) =>
@@ -418,6 +422,7 @@ ICText.onkeydown  = (event) =>
     {
         lastIC = updateIV(ICText, lastIC);
         GFXUpdate();
+        updatePower();
     }
 }
 
@@ -425,6 +430,7 @@ ICText.onfocusout = () =>
 {
     lastIC = updateIV(ICText, lastIC);
     GFXUpdate();
+    updatePower();
 }
 
 //Add event listeners to voltage phase text boxes.
@@ -576,10 +582,10 @@ V0phs.onkeydown = (event) =>
     if(event.key === "Enter")
     {
         lastV0phs = updateV0Phs(V0phs, lastV0phs);
-            GFXUpdate();
-            updatePower();
-        }
+        GFXUpdate();
+        updatePower();
     }
+}
     
 V0phs.onfocusout = () =>
 {
@@ -884,9 +890,9 @@ const updatePower = () =>
         let kvaC = (parseFloat(VCText.value) * parseFloat(ICText.value) / 1000).toFixed(1);
     
         //Get KVA signs.
-        kvaA = (pfA < 0) ? -kvaA : kvaA;
-        kvaB = (pfB < 0) ? -kvaB : kvaB;
-        kvaC = (pfC < 0) ? -kvaC : kvaC;
+        //kvaA = (pfA < 0) ? -kvaA : kvaA;
+        //kvaB = (pfB < 0) ? -kvaB : kvaB;
+        //kvaC = (pfC < 0) ? -kvaC : kvaC;
     
         //Calculate KW.
         let kwA = (parseFloat(VAText.value) * parseFloat(IAText.value) * pfA / 1000).toFixed(1);
@@ -894,9 +900,9 @@ const updatePower = () =>
         let kwC = (parseFloat(VCText.value) * parseFloat(ICText.value) * pfC / 1000).toFixed(1);
     
         //Calculate KVAR.
-        let kvarA = (kvaA * Math.sin(Math.PI * iap / 180)).toFixed(1);
-        let kvarB = (kvaB * Math.sin(Math.PI * ibp / 180)).toFixed(1);
-        let kvarC = (kvaC * Math.sin(Math.PI * icp / 180)).toFixed(1);
+        let kvarA = (-kvaA * Math.sin(Math.PI * iap / 180)).toFixed(1);
+        let kvarB = (-kvaB * Math.sin(Math.PI * ibp / 180)).toFixed(1);
+        let kvarC = (-kvaC * Math.sin(Math.PI * icp / 180)).toFixed(1);
     
         //Calculate the phase to phase voltage vectors.
         let vax = (parseFloat(VAText.value) * Math.cos(parseFloat(Math.PI * VAPhase.value / 180)));
@@ -943,7 +949,7 @@ const updatePower = () =>
         tPower.innerHTML = "KW: " + kwTotal + "\xa0\xa0\xa0 KVAR: " + kvarTotal + "\xa0\xa0\xa0 KVA: " + kvaTotal;
     
         //Update derived values on the display.
-        let neutAngle = ineut === "0.0" ? "0.0" : phasor.RtoD(phasor.CtoP({r: -ineutx, i: -ineuty}).a).toFixed(1);
+        let neutAngle = ineut === "0.0" ? "0.0" : phasor.RtoD(phasor.CtoP({r: ineutx, i: ineuty}).a).toFixed(1);
         derived.innerHTML= "VAB: " + vab + "∠" + phasor.RtoD(phasor.CtoP({r: vabx, i: vaby}).a).toFixed(1) + "°" +
               "\xa0\xa0\xa0 VBC: " + vbc + "∠" + phasor.RtoD(phasor.CtoP({r: vbcx, i: vbcy}).a).toFixed(1) + "°" +
               "\xa0\xa0\xa0 VCA: " + vca + "∠" + phasor.RtoD(phasor.CtoP({r: vcax, i: vcay}).a).toFixed(1) + "°" +
@@ -1014,9 +1020,9 @@ const updatePower = () =>
         if(kvaC === "-0.0") kvaC = "0.0";
 
         //Get KVA signs.
-        kvaA = (pfA < 0) ? -kvaA : kvaA;
-        kvaB = (pfB < 0) ? -kvaB : kvaB;
-        kvaC = (pfC < 0) ? -kvaC : kvaC;
+        //kvaA = (pfA < 0) ? -kvaA : kvaA;
+        //kvaB = (pfB < 0) ? -kvaB : kvaB;
+        //kvaC = (pfC < 0) ? -kvaC : kvaC;
 
         //Calculate KW.
         let kwA = (_va.m * _ia.m * pfA / 1000).toFixed(1);
@@ -1029,9 +1035,9 @@ const updatePower = () =>
         if(kwC === "-0.0") kwC = "0.0";
 
         //Calculate KVAR.
-        let kvarA = (kvaA * Math.sin(Math.PI * iap / 180)).toFixed(1);
-        let kvarB = (kvaB * Math.sin(Math.PI * ibp / 180)).toFixed(1);
-        let kvarC = (kvaC * Math.sin(Math.PI * icp / 180)).toFixed(1);
+        let kvarA = (-kvaA * Math.sin(Math.PI * iap / 180)).toFixed(1);
+        let kvarB = (-kvaB * Math.sin(Math.PI * ibp / 180)).toFixed(1);
+        let kvarC = (-kvaC * Math.sin(Math.PI * icp / 180)).toFixed(1);
 
         //Clean up some corner cases.
         if(kvarA === "-0.0") kvarA = "0.0";
