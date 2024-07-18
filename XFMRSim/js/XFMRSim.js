@@ -275,9 +275,9 @@ const updateImage = () =>
             Vab = phasor.phasorSub(Vpa, Vpb);
             Vbc = phasor.phasorSub(Vpb, Vpc);
             Vca = phasor.phasorSub(Vpc, Vpa);
-            eq07Txt = "Vab = Vθa - Vθb = " + phasor.printPolarD(Vpa) + "-" + phasor.printPolarD(Vpb);
-            eq08Txt = "Vbc = Vθb - Vθc = " + phasor.printPolarD(Vpb) + "-" + phasor.printPolarD(Vpc);
-            eq09Txt = "Vca = Vθc - Vθa = " + phasor.printPolarD(Vpc) + "-" + phasor.printPolarD(Vpa);
+            eq07Txt = "Vab = Vθa-Vθb = " + phasor.printPolarD(Vpa) + " - " + phasor.printPolarD(Vpb);
+            eq08Txt = "Vbc = Vθb-Vθc = " + phasor.printPolarD(Vpb) + " - " + phasor.printPolarD(Vpc);
+            eq09Txt = "Vca = Vθc-Vθa = " + phasor.printPolarD(Vpc) + " - " + phasor.printPolarD(Vpa);
             break;
         case "output2":
             ctx.drawImage(out2Img, 0, 0, img_container.clientWidth, img_container.clientHeight);
@@ -285,9 +285,9 @@ const updateImage = () =>
             Vab = phasor.phasorSub(Vpc, Vpa);
             Vbc = phasor.phasorSub(Vpa, Vpb);
             Vca = phasor.phasorSub(Vpb, Vpc);
-            eq07Txt = "Vab = Vθc - Vθa = " + phasor.printPolarD(Vpc) + "-" + phasor.printPolarD(Vpa);
-            eq08Txt = "Vbc = Vθa - Vθb = " + phasor.printPolarD(Vpa) + "-" + phasor.printPolarD(Vpb);
-            eq09Txt = "Vca = Vθb - Vθc = " + phasor.printPolarD(Vpb) + "-" + phasor.printPolarD(Vpc);
+            eq07Txt = "Vab = Vθc-Vθa = " + phasor.printPolarD(Vpc) + " - " + phasor.printPolarD(Vpa);
+            eq08Txt = "Vbc = Vθa-Vθb = " + phasor.printPolarD(Vpa) + " - " + phasor.printPolarD(Vpb);
+            eq09Txt = "Vca = Vθb-Vθc = " + phasor.printPolarD(Vpb) + " - " + phasor.printPolarD(Vpc);
         break;
         case "output3":
             ctx.drawImage(out3Img, 0, 0, img_container.clientWidth, img_container.clientHeight);
@@ -295,9 +295,9 @@ const updateImage = () =>
             Vab = phasor.phasorSub(Vpb, Vpc);
             Vbc = phasor.phasorSub(Vpc, Vpa);
             Vca = phasor.phasorSub(Vpa, Vpb);
-            eq07Txt = "Vab = Vθb - Vθc = " + phasor.printPolarD(Vpb) + "-" + phasor.printPolarD(Vpc);
-            eq08Txt = "Vbc = Vθc - Vθa = " + phasor.printPolarD(Vpc) + "-" + phasor.printPolarD(Vpa);
-            eq09Txt = "Vca = Vθa - Vθb = " + phasor.printPolarD(Vpa) + "-" + phasor.printPolarD(Vpb);
+            eq07Txt = "Vab = Vθb-Vθc = " + phasor.printPolarD(Vpb) + " - " + phasor.printPolarD(Vpc);
+            eq08Txt = "Vbc = Vθc-Vθa = " + phasor.printPolarD(Vpc) + " - " + phasor.printPolarD(Vpa);
+            eq09Txt = "Vca = Vθa-Vθb = " + phasor.printPolarD(Vpa) + " - " + phasor.printPolarD(Vpb);
         break;
         case "output4":
             ctx.drawImage(out4Img, 0, 0, img_container.clientWidth, img_container.clientHeight);
@@ -305,9 +305,9 @@ const updateImage = () =>
             Vab = phasor.phasorSub(Vpa, Vpc);
             Vbc = phasor.phasorSub(Vpc, Vpb);
             Vca = phasor.phasorSub(Vpb, Vpa);
-            eq07Txt = "Vab = Vθa - Vθc = " + phasor.printPolarD(Vpa) + "-" + phasor.printPolarD(Vpc);
-            eq08Txt = "Vbc = Vθc - Vθb = " + phasor.printPolarD(Vpc) + "-" + phasor.printPolarD(Vpb);
-            eq09Txt = "Vca = Vθb - Vθa = " + phasor.printPolarD(Vpb) + "-" + phasor.printPolarD(Vpa);
+            eq07Txt = "Vab = Vθa-Vθc = " + phasor.printPolarD(Vpa) + " - " + phasor.printPolarD(Vpc);
+            eq08Txt = "Vbc = Vθc-Vθb = " + phasor.printPolarD(Vpc) + " - " + phasor.printPolarD(Vpb);
+            eq09Txt = "Vca = Vθb-Vθa = " + phasor.printPolarD(Vpb) + " - " + phasor.printPolarD(Vpa);
         break;
         case "output5":
             ctx.drawImage(out5Img, 0, 0, img_container.clientWidth, img_container.clientHeight);
@@ -315,9 +315,9 @@ const updateImage = () =>
             Vab = phasor.phasorSub(Vpc, Vpb);
             Vbc = phasor.phasorSub(Vpb, Vpa);
             Vca = phasor.phasorSub(Vpa, Vpc);
-            eq07Txt = "Vab = Vθc - Vθb = " + phasor.printPolarD(Vpc) + "-" + phasor.printPolarD(Vpb);
-            eq08Txt = "Vbc = Vθb - Vθa = " + phasor.printPolarD(Vpb) + "-" + phasor.printPolarD(Vpa);
-            eq09Txt = "Vca = Vθa - Vθc = " + phasor.printPolarD(Vpa) + "-" + phasor.printPolarD(Vpc);
+            eq07Txt = "Vab = Vθc-Vθb = " + phasor.printPolarD(Vpc) + " - " + phasor.printPolarD(Vpb);
+            eq08Txt = "Vbc = Vθb-Vθa = " + phasor.printPolarD(Vpb) + " - " + phasor.printPolarD(Vpa);
+            eq09Txt = "Vca = Vθa-Vθc = " + phasor.printPolarD(Vpa) + " - " + phasor.printPolarD(Vpc);
         break;
         case "output6":
             ctx.drawImage(out6Img, 0, 0, img_container.clientWidth, img_container.clientHeight);
@@ -325,9 +325,9 @@ const updateImage = () =>
             Vab = phasor.phasorSub(Vpb, Vpa);
             Vbc = phasor.phasorSub(Vpa, Vpc);
             Vca = phasor.phasorSub(Vpc, Vpb);
-            eq07Txt = "Vab = Vθb - Vθa = " + phasor.printPolarD(Vpb) + "-" + phasor.printPolarD(Vpa);
-            eq08Txt = "Vbc = Vθa - Vθc = " + phasor.printPolarD(Vpa) + "-" + phasor.printPolarD(Vpc);
-            eq09Txt = "Vca = Vθc - Vθb = " + phasor.printPolarD(Vpc) + "-" + phasor.printPolarD(Vpb);
+            eq07Txt = "Vab = Vθb-Vθa = " + phasor.printPolarD(Vpb) + " - " + phasor.printPolarD(Vpa);
+            eq08Txt = "Vbc = Vθa-Vθc = " + phasor.printPolarD(Vpa) + " - " + phasor.printPolarD(Vpc);
+            eq09Txt = "Vca = Vθc-Vθb = " + phasor.printPolarD(Vpc) + " - " + phasor.printPolarD(Vpb);
         break;
         default:
         break;
