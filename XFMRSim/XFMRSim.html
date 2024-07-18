@@ -65,7 +65,7 @@
         
     <!--Main content body-->
     <div class="mx-5" id="page-body">
-        <div class="row" style="height: 100%;">
+        <div class="row" style="text-align: center;">
 
             <!--Left hand column-->
             <div id="left" style="height: 100%;" class="col-md-6">
@@ -102,21 +102,21 @@
                 <!--Equation div-->
                 <div id="eq" style="width: 100%">
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="desc">VθA = VAB = 480∠0°</div>
-                            <div class="desc">VθB = VBC = 480∠-120°</div>
-                            <div class="desc">VθC = VCA = 480∠120°</div>
-                            <div class="desc">Vθa = 1/4VθA = 120∠0°</div>
-                            <div class="desc">Vθb = 1/4VθB = 120∠-120°</div>
-                            <div class="desc">Vθc = 1/4VθB = 120∠120°</div>
+                        <div class="col-md-6" style="text-align: left;">
+                            <div id="eq01" class="equ"></div>
+                            <div id="eq02" class="equ"></div>
+                            <div id="eq03" class="equ"></div>
+                            <div id="eq04" class="equ"></div>
+                            <div id="eq05" class="equ"></div>
+                            <div id="eq06" class="equ"></div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="desc">Vab = Vθa - Vθb = 120∠0° - 120∠-120°</div>
-                            <div class="desc">Vbc = Vθb - Vθc = 120∠-120° - 120∠120°</div>
-                            <div class="desc">Vca = Vθc - Vθa = 120∠120° - 120∠0°</div>
-                            <div class="desc">Vab = 120∠30°</div>
-                            <div class="desc">Vbc = 120∠-90°</div>
-                            <div class="desc">Vca = 120∠150°</div>
+                        <div class="col-md-6" style="text-align: left;">
+                            <div id="eq07" class="equ"></div>
+                            <div id="eq08" class="equ"></div>
+                            <div id="eq09" class="equ"></div>
+                            <div id="eq10" class="equ"></div>
+                            <div id="eq11" class="equ"></div>
+                            <div id="eq12" class="equ"></div>
                         </div>
                     </div>
                 </div>
@@ -131,7 +131,7 @@
                 <span class="vBC" style="width: 12%; display: inline-block; text-align: center;">
                     <input type="checkbox" id="ch-vBC" autocomplete="off" checked><b> VBC</b>
                 </span>
-                <span class="vCA desc" style="width: 12%; display: inline-block; text-align: center;">
+                <span class="vCA" style="width: 12%; display: inline-block; text-align: center;">
                     <input type="checkbox" id="ch-vCA" autocomplete="off" checked><b> VCA</b>
                 </span>
                 <span class="vab" style="width: 12%; display: inline-block; text-align: center;">
@@ -144,26 +144,32 @@
                     <input type="checkbox" id="ch-vca" autocomplete="off" checked><b> Vca</b>
                 </span>
 
-                <div class="pb-1"></div>
+                <div id="div1" class="pb-1"></div>
 
                 <span class="vpA" style="width: 12%; display: inline-block; text-align: center;">
-                    <input type="checkbox" id="ch-vpA" autocomplete="off" checked><b> VθA</b>
+                    <input type="checkbox" id="ch-vpA" autocomplete="off"><b> VθA</b>
                 </span>
                 <span class="vpB" style="width: 12%; display: inline-block; text-align: center;">
-                    <input type="checkbox" id="ch-vpB" autocomplete="off" checked><b> VθB</b>
+                    <input type="checkbox" id="ch-vpB" autocomplete="off"><b> VθB</b>
                 </span>
                 <span class="vpC" style="width: 12%; display: inline-block; text-align: center;">
-                    <input type="checkbox" id="ch-vpC" autocomplete="off" checked><b> VθC</b>
+                    <input type="checkbox" id="ch-vpC" autocomplete="off"><b> VθC</b>
                 </span>
                 <span class="vpa" style="width: 12%; display: inline-block; text-align: center;">
-                    <input type="checkbox" id="ch-vpa" autocomplete="off" checked><b> Vθa</b>
+                    <input type="checkbox" id="ch-vpa" autocomplete="off"><b> Vθa</b>
                 </span>
                 <span class="vpb" style="width: 12%; display: inline-block; text-align: center;">
-                    <input type="checkbox" id="ch-vpb" autocomplete="off" checked><b> Vθb</b>
+                    <input type="checkbox" id="ch-vpb" autocomplete="off"><b> Vθb</b>
                 </span>
-                <span class="vpc desc" style="width: 12%; display: inline-block; text-align: center;">
-                    <input type="checkbox" id="ch-vpc" autocomplete="off" checked><b> Vθc</b>
-                </span>                
+                <span class="vpc" style="width: 12%; display: inline-block; text-align: center;">
+                    <input type="checkbox" id="ch-vpc" autocomplete="off"><b> Vθc</b>
+                </span>
+
+                <div id="div2" class="pb-1"></div>
+                
+                <!--Phasor canvas-->
+                <canvas id="phs-container"></canvas>
+
             </div>      
         </div>
     </div>
