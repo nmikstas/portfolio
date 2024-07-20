@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "Super_Logo", "Super_Logo\Super_Logo.cproj", "{22C4EC4B-32C9-443C-A6CB-5E163A0BACFC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{22C4EC4B-32C9-443C-A6CB-5E163A0BACFC}.Debug|AVR.ActiveCfg = Debug|AVR
+		{22C4EC4B-32C9-443C-A6CB-5E163A0BACFC}.Debug|AVR.Build.0 = Debug|AVR
+		{22C4EC4B-32C9-443C-A6CB-5E163A0BACFC}.Release|AVR.ActiveCfg = Release|AVR
+		{22C4EC4B-32C9-443C-A6CB-5E163A0BACFC}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
