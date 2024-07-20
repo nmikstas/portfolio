@@ -240,6 +240,12 @@ class Phasor
         return result;
     }
 
+    //Return the negative value of a phasor. Angles must be in radians.
+    phasorNeg(num)
+    {
+        return this.phasorMult(num, {m: 1, a: Math.PI});
+    }
+
     //Add 2 phasors. Angles must be in radians.
     phasorAdd(num1, num2)
     {

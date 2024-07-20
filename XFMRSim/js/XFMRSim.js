@@ -34,6 +34,7 @@ out6Img.src     = "./img/Out6.png";
 let header = document.getElementById("header");
 let footer = document.getElementById("sticky-footer");
 
+let phs_container  = document.getElementById("phs-container");
 let img_container  = document.getElementById("img-container");
 let img_body       = document.getElementById("img-body");
 let in1            = document.getElementById("img-in1");
@@ -50,8 +51,6 @@ let out3           = document.getElementById("img-out3");
 let out4           = document.getElementById("img-out4");
 let out5           = document.getElementById("img-out5");
 let out6           = document.getElementById("img-out6");
-
-let phs_container  = document.getElementById("phs-container");
 
 let input_wiring  = document.getElementById("input-wiring");
 let coil_phase    = document.getElementById("coil-phase");
@@ -148,13 +147,19 @@ ch_vpa.onclick = () => updateShow();
 ch_vpb.onclick = () => updateShow();
 ch_vpc.onclick = () => updateShow();
 
-
 const updateShow = () =>
 {
     phasor.updateShow(ch_vAB.checked, ch_vBC.checked, ch_vCA.checked,
                       ch_vpA.checked, ch_vpB.checked, ch_vpC.checked,
                       ch_vpa.checked, ch_vpb.checked, ch_vpc.checked,
                       ch_vab.checked, ch_vbc.checked, ch_vca.checked);                    
+}
+
+//Check if negative 0 will be the result of text converion. if so, remove negative.
+const negZero = (num) =>
+{
+    if(num.a.toFixed(0) === "-0") return {m: num.m, a: 0};
+    return num;
 }
 
 const updateImage = () =>
@@ -177,9 +182,9 @@ const updateImage = () =>
         case "input1":
             ctx.drawImage(in1Img, 0, 0, img_container.clientWidth, img_container.clientHeight);
             inWires = 1;
-            VpA = phasor.phasorMult({m: 1, a: 0}, VAB);
-            VpB = phasor.phasorMult({m: 1, a: 0}, VBC);
-            VpC = phasor.phasorMult({m: 1, a: 0}, VCA);
+            VpA = negZero(VAB);
+            VpB = negZero(VBC);
+            VpC = negZero(VCA);
             eq01Txt = "VθA = VAB = " + phasor.printPolarD(VpA);
             eq02Txt = "VθB = VBC = " + phasor.printPolarD(VpB);
             eq03Txt = "VθC = VCA = " + phasor.printPolarD(VpC);
@@ -187,9 +192,9 @@ const updateImage = () =>
         case "input2":
             ctx.drawImage(in2Img, 0, 0, img_container.clientWidth, img_container.clientHeight);
             inWires = 2;
-            VpA = phasor.phasorMult({m: 1, a: 0}, VCA);
-            VpB = phasor.phasorMult({m: 1, a: 0}, VAB);
-            VpC = phasor.phasorMult({m: 1, a: 0}, VBC);
+            VpA = negZero(VCA);
+            VpB = negZero(VAB);
+            VpC = negZero(VBC);
             eq01Txt = "VθA = VCA = " + phasor.printPolarD(VpA);
             eq02Txt = "VθB = VAB = " + phasor.printPolarD(VpB);
             eq03Txt = "VθC = VBC = " + phasor.printPolarD(VpC);
@@ -197,9 +202,9 @@ const updateImage = () =>
         case "input3":
             ctx.drawImage(in3Img, 0, 0, img_container.clientWidth, img_container.clientHeight);
             inWires = 3;
-            VpA = phasor.phasorMult({m: 1, a: 0}, VBC);
-            VpB = phasor.phasorMult({m: 1, a: 0}, VCA);
-            VpC = phasor.phasorMult({m: 1, a: 0}, VAB);
+            VpA = negZero(VBC);
+            VpB = negZero(VCA);
+            VpC = negZero(VAB);
             eq01Txt = "VθA = VBC = " + phasor.printPolarD(VpA);
             eq02Txt = "VθB = VCA = " + phasor.printPolarD(VpB);
             eq03Txt = "VθC = VAB = " + phasor.printPolarD(VpC);
@@ -207,9 +212,9 @@ const updateImage = () =>
         case "input4":
             ctx.drawImage(in4Img, 0, 0, img_container.clientWidth, img_container.clientHeight);
             inWires = 4;
-            VpA = phasor.phasorMult({m: 1, a: phasor.DtoR(180)}, VCA);
-            VpB = phasor.phasorMult({m: 1, a: phasor.DtoR(180)}, VBC);
-            VpC = phasor.phasorMult({m: 1, a: phasor.DtoR(180)}, VAB);
+            VpA = negZero(phasor.phasorNeg(VCA));
+            VpB = negZero(phasor.phasorNeg(VBC));
+            VpC = negZero(phasor.phasorNeg(VAB));
             eq01Txt = "VθA = VAC = " + phasor.printPolarD(VpA);
             eq02Txt = "VθB = VCB = " + phasor.printPolarD(VpB);
             eq03Txt = "VθC = VBA = " + phasor.printPolarD(VpC);
@@ -217,9 +222,9 @@ const updateImage = () =>
         case "input5":
             ctx.drawImage(in5Img, 0, 0, img_container.clientWidth, img_container.clientHeight);
             inWires = 5;
-            VpA = phasor.phasorMult({m: 1, a: phasor.DtoR(180)}, VBC);
-            VpB = phasor.phasorMult({m: 1, a: phasor.DtoR(180)}, VAB);
-            VpC = phasor.phasorMult({m: 1, a: phasor.DtoR(180)}, VCA);
+            VpA = negZero(phasor.phasorNeg(VBC));
+            VpB = negZero(phasor.phasorNeg(VAB));
+            VpC = negZero(phasor.phasorNeg(VCA));
             eq01Txt = "VθA = VCB = " + phasor.printPolarD(VpA);
             eq02Txt = "VθB = VBA = " + phasor.printPolarD(VpB);
             eq03Txt = "VθC = VAC = " + phasor.printPolarD(VpC);
@@ -227,9 +232,9 @@ const updateImage = () =>
         case "input6":
             ctx.drawImage(in6Img, 0, 0, img_container.clientWidth, img_container.clientHeight);
             inWires = 6;
-            VpA = phasor.phasorMult({m: 1, a: phasor.DtoR(180)}, VAB);
-            VpB = phasor.phasorMult({m: 1, a: phasor.DtoR(180)}, VCA);
-            VpC = phasor.phasorMult({m: 1, a: phasor.DtoR(180)}, VBC);
+            VpA = negZero(phasor.phasorNeg(VAB));
+            VpB = negZero(phasor.phasorNeg(VCA));
+            VpC = negZero(phasor.phasorNeg(VBC));
             eq01Txt = "VθA = VBA = " + phasor.printPolarD(VpA);
             eq02Txt = "VθB = VAC = " + phasor.printPolarD(VpB);
             eq03Txt = "VθC = VCB = " + phasor.printPolarD(VpC);
@@ -245,26 +250,27 @@ const updateImage = () =>
     //Set coil phase variable.
     coil_phase.value === "0" ? txPhase  = 0 : txPhase  = 1;
 
+    let phaseTxt = "";
+
     //Invert phasor.
     if(txPhase == 1)
     {
-        Vpa = phasor.phasorMult(VpA, inv);
-        Vpb = phasor.phasorMult(VpB, inv);
-        Vpc = phasor.phasorMult(VpC, inv);
-        eq04Txt = "Vθa = -1/4VθA = " + phasor.printPolarD(Vpa);
-        eq05Txt = "Vθb = -1/4VθB = " + phasor.printPolarD(Vpb);
-        eq06Txt = "Vθc = -1/4VθC = " + phasor.printPolarD(Vpc);
+        Vpa = negZero(phasor.phasorMult(VpA, inv));
+        Vpb = negZero(phasor.phasorMult(VpB, inv));
+        Vpc = negZero(phasor.phasorMult(VpC, inv));
+        phaseTxt = "-";
     }
     //Copy phasor and leave the same.
     else
     {
-        Vpa = phasor.phasorMult(VpA, one);
-        Vpb = phasor.phasorMult(VpB, one);
-        Vpc = phasor.phasorMult(VpC, one);
-        eq04Txt = "Vθa = 1/4VθA = " + phasor.printPolarD(Vpa);
-        eq05Txt = "Vθb = 1/4VθB = " + phasor.printPolarD(Vpb);
-        eq06Txt = "Vθc = 1/4VθC = " + phasor.printPolarD(Vpc);
+        Vpa = negZero(phasor.phasorMult(VpA, one));
+        Vpb = negZero(phasor.phasorMult(VpB, one));
+        Vpc = negZero(phasor.phasorMult(VpC, one));
     }
+
+    eq04Txt = "Vθa = " + phaseTxt + "1/4VθA = " + phasor.printPolarD(Vpa);
+    eq05Txt = "Vθb = " + phaseTxt + "1/4VθB = " + phasor.printPolarD(Vpb);
+    eq06Txt = "Vθc = " + phaseTxt + "1/4VθC = " + phasor.printPolarD(Vpc);
 
     //Draw the output wiring.
     switch(output_wiring.value)
@@ -278,7 +284,7 @@ const updateImage = () =>
             eq07Txt = "Vab = Vθa-Vθb = " + phasor.printPolarD(Vpa) + " - " + phasor.printPolarD(Vpb);
             eq08Txt = "Vbc = Vθb-Vθc = " + phasor.printPolarD(Vpb) + " - " + phasor.printPolarD(Vpc);
             eq09Txt = "Vca = Vθc-Vθa = " + phasor.printPolarD(Vpc) + " - " + phasor.printPolarD(Vpa);
-            break;
+        break;           
         case "output2":
             ctx.drawImage(out2Img, 0, 0, img_container.clientWidth, img_container.clientHeight);
             outWires = 2;
@@ -395,10 +401,7 @@ const resizeImage = () =>
     phasor.bodyDraw();
 }
 
-window.addEventListener("resize", () => 
-{
-    resizeImage();
-});
+window.addEventListener("resize", () => resizeImage());
 
 //First time load.
 bodyImg.onload    = () => resizeImage();
