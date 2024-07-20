@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>The Farmer, Fox, Chicken and Seeds</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!--Reset Styling-->
+    <link rel="stylesheet" type="text/css" href="assets/css/reset.css">
+    
+    <!--Bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    
+    <!--Personal Styling-->
+    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+</head>
+
+<body class="d-flex flex-column" onresize="updateImages()" onload="updateImages()">
+
+    <!--Header-->
+    <header class="header-class">
+        <nav class="navbar navbar-dark navbar-expand-lg">
+            <a class="navbar-brand nav-title px-2" href="https://nmikstas.github.io/portfolio/">Nick Mikstas Portfolio</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="container">
+                <h1>Farmer, Fox, Chicken and Seeds</h1>
+            </div>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://nmikstas.github.io/portfolio/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://nmikstas.github.io/portfolio/resume.html">Resume</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://nmikstas.github.io/portfolio/web.html">Web</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://nmikstas.github.io/portfolio/embedded.html">Embedded</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://nmikstas.github.io/portfolio/fpga.html">FPGA</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://nmikstas.github.io/portfolio/dsp.html">DSP</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://nmikstas.github.io/portfolio/games.html">Games</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div id="page-body">
+        <div class="container bg-white px-5 py-4 my-4">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 class="mb-4">Rules of the Game</h2>
+                    <p>
+                        A farmer approaches a river and needs to cross it. He has with him a fox, a chicken and a bag of
+                        seeds. There is a boat in the river that can carry the farmer and, at most, one of the items.
+                        The farmer cannot leave the fox alone with the chicken or the fox will eat the chicken. Also,
+                        the chicken will eat the seeds if the two are together without the farmer. Use the buttons below
+                        to safely move the farmer and all his objects back and forth across the river until the farmer
+                        and the items are all safe on the opposite river bank.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6">
+                    <div class="img-container" id="img-container">
+                        <img class="img-fluid img-item" src="assets/images/river.jpg" alt="game image" id="img-background">
+                        <img class="img-fluid img-item" src ="assets/images/farmer.png" alt ="farmer image" id="img-farmer">
+                        <img class="img-fluid img-item" src ="assets/images/seeds.png" alt ="seeds image" id="img-seeds">
+                        <img class="img-fluid img-item" src ="assets/images/fox.png" alt ="fox image" id="img-fox">
+                        <img class="img-fluid img-item" src ="assets/images/chicken.png" alt ="chicken image" id="img-chicken">
+                        <img class="img-fluid img-item" src ="assets/images/boat.png" alt ="boat image" id="img-boat">
+                   </div>     
+                </div>
+
+                <div class="col-md-6">
+                    <h2>Control and Status</h2>
+                    <input class="btn btn-primary select-btn" type="button" id="farmerOnlyBtn" value="Move Farmer Only" onclick="moveToState(0)">
+                    <input class="btn btn-primary select-btn" type="button" id="farmerAndSeedsBtn" value="Move Farmer and Seeds" onclick="moveToState(1)">
+                    <input class="btn btn-primary select-btn" type="button" id="farmerAndFoxBtn" value="Move Farmer and Fox" onclick="moveToState(2)">
+                    <input class="btn btn-primary select-btn" type="button" id="farmerAndChknBtn" value="Move Farmer and Chicken" onclick="moveToState(3)">
+
+                    <div class="game-status" id="game-status-text">
+                        <p>
+                            <b>Use the buttons above to select your next move</b>
+                        </p>
+                    </div>
+                    <input class="btn btn-danger select-btn" type="button" value="Reset Game" onclick="resetGame()">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="sticky-footer" class="pt-4 pb-1 text-white-50">
+        <div class="container text-center">
+            <small>&copy; Nick Mikstas - nmikstas@alumni.scu.edu</small>
+        </div>
+    </footer>
+
+    <!--jQuery-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        
+    <!--Bootstrap-->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <!--Javascript-->
+    <script src="assets/js/javascript.js"></script>
+</body>
+
+</html>
