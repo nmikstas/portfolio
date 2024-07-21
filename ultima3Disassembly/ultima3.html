@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Ultima 3 Disassembly</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!--Reset Styling-->
+    <link rel="stylesheet" type="text/css" href="../assets/css/reset.css">
+    
+    <!--Bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    
+    <!--Personal Styling-->
+    <link rel="stylesheet" type="text/css" href="../assets/css/style.css">
+</head>
+    
+<body class="d-flex flex-column" id="main-body">
+    
+    <!--Header-->
+    <header class="header-class">
+        <nav class="navbar navbar-dark navbar-expand-lg">
+            <a class="navbar-brand nav-title px-2" href="../index.html">Nick Mikstas Portfolio</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="container text-center">
+                <h1>Ultima 3 Disassembly</h1>
+            </div>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../resume.html">Resume</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../web.html">Web</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../embedded.html">Embedded</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../fpga.html">FPGA</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../dsp.html">DSP</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../games.html">Games</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+        
+    <!--Main content body-->
+    <div id="page-body">
+        <div class="container bg-white px-4 py-4 my-4">
+            <div class="project-title mb-4">Ultima 3 Disassembly</div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <p>
+                        Ultima 3 is another game I played when I was younger. The disassembly for this game is
+                        about 75% complete. During the disassembly process I created several helper programs
+                        including a map viewer that can be found <a href="https://nmikstas.github.io/portfolio/NesUltimaExodusMapViewer/Map_Viewer.html">here.</a>
+                        the game uses a 256KB ROM and links to the various ROM banks are below.
+                    </p>
+
+                    <a class="page-link indent" href="https://github.com/nmikstas/nes_ultima_3_disassembly/blob/main/Source_Files/Ultima_3_Defines.asm">
+                        Ultima 3 Defines
+                    </a>
+                    <a class="page-link indent" href="https://github.com/nmikstas/nes_ultima_3_disassembly/blob/main/Source_Files/Bank00.asm">
+                        Bank 0
+                    </a>
+                    <a class="page-link indent" href="https://github.com/nmikstas/nes_ultima_3_disassembly/blob/main/Source_Files/Bank01.asm">
+                        Bank 1
+                    </a>
+                    <a class="page-link indent" href="https://github.com/nmikstas/nes_ultima_3_disassembly/blob/main/Source_Files/Bank02.asm">
+                        Bank 2
+                    </a>
+                    <a class="page-link indent" href="https://github.com/nmikstas/nes_ultima_3_disassembly/blob/main/Source_Files/Bank03.asm">
+                        Bank 3
+                    </a>
+                    <a class="page-link indent" href="https://github.com/nmikstas/nes_ultima_3_disassembly/blob/main/Source_Files/Bank04.asm">
+                        Bank 4
+                    </a>
+                    <a class="page-link indent" href="https://github.com/nmikstas/nes_ultima_3_disassembly/blob/main/Source_Files/Bank05.asm">
+                        Bank 5
+                    </a>
+                    <a class="page-link indent" href="https://github.com/nmikstas/nes_ultima_3_disassembly/blob/main/Source_Files/Bank06.asm">
+                        Bank 6
+                    </a>
+                    <a class="page-link indent" href="https://github.com/nmikstas/nes_ultima_3_disassembly/blob/main/Source_Files/Bank07.asm">
+                        Bank 7
+                    </a>
+                    <a class="page-link indent" href="https://github.com/nmikstas/nes_ultima_3_disassembly/blob/main/Source_Files/Bank08.asm">
+                        Bank 8
+                    </a>
+                    <a class="page-link indent" href="https://github.com/nmikstas/nes_ultima_3_disassembly/blob/main/Source_Files/Bank09.asm">
+                        Bank 9
+                    </a>
+                    <a class="page-link indent" href="https://github.com/nmikstas/nes_ultima_3_disassembly/blob/main/Source_Files/Bank0A.asm">
+                        Bank A
+                    </a>
+                    <a class="page-link indent" href="https://github.com/nmikstas/nes_ultima_3_disassembly/blob/main/Source_Files/Bank0B.asm">
+                        Bank B
+                    </a>
+                    <a class="page-link indent" href="https://github.com/nmikstas/nes_ultima_3_disassembly/blob/main/Source_Files/Bank0C.asm">
+                        Bank C
+                    </a>
+                    <a class="page-link indent" href="https://github.com/nmikstas/nes_ultima_3_disassembly/blob/main/Source_Files/Bank0D.asm">
+                        Bank D
+                    </a>
+                    <a class="page-link indent" href="https://github.com/nmikstas/nes_ultima_3_disassembly/blob/main/Source_Files/Bank0E.asm">
+                        Bank E
+                    </a>
+                    <a class="page-link indent" href="https://github.com/nmikstas/nes_ultima_3_disassembly/blob/main/Source_Files/Bank0F.asm">
+                        Bank F
+                    </a>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/ultima3.jpg" alt="NES Ultima 3 Box Art">
+                        <div class="overlay overlay-text">NES Ultima 3 Box Art</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="divider"></div>
+                    <h4 class="indent">Ultima 3 Disassembly Completetion</h4>
+                    <p>
+                        The following picture shows the completion of the Ultima 3 disassembly. The sixteen columns represent the sixteen
+                        program banks. The hex values represent the addresses associated with each bank.  The green areas are code that
+                        have been fully disassembled.
+                    </p>
+                </div>
+            </div>
+        
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <div class="hov">
+                        <img class="img-fluid img-item" src="images/Ultima_Exodus.png" alt="Disassembly Completion">
+                        <div class="overlay overlay-text">Disassembly Completion</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Footer-->
+    <footer id="sticky-footer" class="pt-4 pb-1">
+        <div class="container text-center">
+            <small>&copy;Nick Mikstas - nmikstas@alumni.scu.edu</small>
+        </div>
+    </footer>
+        
+    <!--jQuery-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        
+    <!--Bootstrap-->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+        
+</html>
