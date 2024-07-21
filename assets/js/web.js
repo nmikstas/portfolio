@@ -337,6 +337,10 @@ var burger2Canv = document.getElementById("burger2-canv");
 var burger2A    = document.getElementById("burger2-a");
 
 //Client side projects.
+var xfmrCanv    = document.getElementById("xfmr-canv");
+var xfmrA       = document.getElementById("xfmr-a");
+var phaseCanv   = document.getElementById("3phase-canv");
+var phaseA      = document.getElementById("3phase-a");
 var beltCanv    = document.getElementById("belt-canv");
 var beltA       = document.getElementById("belt-a");
 var shaftCanv   = document.getElementById("shaft-canv");
@@ -368,6 +372,8 @@ new Target(googleCanv,  googleA,  .20, Target.ANIM_MOVE);
 new Target(burger2Canv, burger2A, .95, Target.ANIM_STATIC);
 
 //Client side projects.
+new Target(xfmrCanv,    xfmrA,    .20, Target.ANIM_MOVE);
+new Target(phaseCanv,   phaseA,   .95, Target.ANIM_STATIC);
 new Target(beltCanv,    beltA,    .20, Target.ANIM_MOVE);
 new Target(shaftCanv,   shaftA,   .95, Target.ANIM_STATIC);
 new Target(nt3dCanv,    nt3dA,    .20, Target.ANIM_MOVE);
