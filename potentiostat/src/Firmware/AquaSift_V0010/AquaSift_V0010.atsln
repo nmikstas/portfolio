@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "AquaSift_V0010", "AquaSift_V0010\AquaSift_V0010.cppproj", "{4D3504FE-5A17-4BEC-A04C-34586373C588}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4D3504FE-5A17-4BEC-A04C-34586373C588}.Debug|AVR.ActiveCfg = Debug|AVR
+		{4D3504FE-5A17-4BEC-A04C-34586373C588}.Debug|AVR.Build.0 = Debug|AVR
+		{4D3504FE-5A17-4BEC-A04C-34586373C588}.Release|AVR.ActiveCfg = Release|AVR
+		{4D3504FE-5A17-4BEC-A04C-34586373C588}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
