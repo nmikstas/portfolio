@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hangman</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!--Reset Styling-->
+    <link rel="stylesheet" type="text/css" href="assets/css/reset.css">
+    
+    <!--Bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    
+    <!--Personal Styling-->
+    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+</head>
+
+<body class="d-flex flex-column" onresize="resize()" onload="init()">
+
+    <!--Header-->
+    <header class="header-class">
+        <nav class="navbar navbar-dark navbar-expand-lg">
+            <a class="navbar-brand nav-title px-2" href="https://nmikstas.github.io/portfolio/">Nick Mikstas Portfolio</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="container">
+                <h1>Hangman</h1>
+            </div>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://nmikstas.github.io/portfolio/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://nmikstas.github.io/portfolio/resume.html">Resume</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://nmikstas.github.io/portfolio/web.html">Web</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://nmikstas.github.io/portfolio/embedded.html">Embedded</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://nmikstas.github.io/portfolio/fpga.html">FPGA</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://nmikstas.github.io/portfolio/dsp.html">DSP</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://nmikstas.github.io/portfolio/games.html">Games</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div id="page-body">
+        <div class="container bg-white px-4 py-4 my-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="img-container" id="img-container">
+                        <img class="img-fluid img-item" src="assets/images/hangman0.png" alt="game image" id="img-hangman0">
+                        <img class="img-fluid img-item" src="assets/images/hangman1.png" alt="game image" id="img-hangman1">
+                        <img class="img-fluid img-item" src="assets/images/hangman2.png" alt="game image" id="img-hangman2">
+                        <img class="img-fluid img-item" src="assets/images/hangman3.png" alt="game image" id="img-hangman3">
+                        <img class="img-fluid img-item" src="assets/images/hangman4.png" alt="game image" id="img-hangman4">
+                        <img class="img-fluid img-item" src="assets/images/hangman5.png" alt="game image" id="img-hangman5">
+                        <img class="img-fluid img-item" src="assets/images/hangman6.png" alt="game image" id="img-hangman6">
+                        <img class="img-fluid img-item" src="assets/images/hangman7.png" alt="game image" id="img-hangman7">
+                        <img class="img-fluid img-item" src="assets/images/hangman8.png" alt="game image" id="img-hangman8">
+                        <img class="img-fluid img-item" src="assets/images/hangman9.png" alt="game image" id="img-hangman9">
+                        <img class="img-fluid img-item" src="assets/images/hangman10.png" alt="game image" id="img-hangman10">
+                   </div>
+                </div>
+
+                <div class="col-md-6 d-flex flex-column">
+                    <h2 id="status"></h2>
+                    <div class="mb-2"><h2 id="phrase"></h2></div>
+                    <h5 id="used-letters">Letters used: </h5>
+                    <h5 id="guesses-left">Guesses left: 10</h5>
+
+                    <div class="row" id="right-col">
+                        <h4 class="col-md-6" id="wins">Wins: 0</h4>
+                        <h4 class="col-md-6" id="losses">Losses: 0</h4>
+
+                        <audio id="lose"> <source src="./assets/sounds/lose.mp3" type="audio/mp3"></audio>
+                        <audio id="win"> <source src="./assets/sounds/win.mp3" type="audio/mp3"></audio>
+                        <audio id="hit"> <source src="./assets/sounds/hit.mp3" type="audio/mp3"></audio>
+                        <audio id="miss"> <source src="./assets/sounds/miss.mp3" type="audio/mp3"></audio>
+                    </div>
+               
+                    <div class="row">
+                        <div class=col-md-12>
+                            <div id="file">
+                                <h6>Load a file of user defined phrases</h6>
+                                <input type='file' id="file-input" class="form-control-file my-2" accept='text/plain' onchange='openFile(event)'>
+                                <a href="phrases.txt">Example phrases file</a>
+                            </div>
+                            <input class="btn btn-danger select-btn" type="button" value="Reset Game" onclick="init()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="sticky-footer" class="pt-4 pb-1 text-white-50">
+        <div class="container text-center">
+            <small>&copy; Nick Mikstas - nmikstas@alumni.scu.edu</small>
+        </div>
+    </footer>
+
+    <!--jQuery-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        
+    <!--Bootstrap-->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    
+    <!--Javascript-->
+    <script src="assets/js/javascript.js"></script>
+</body>
+
+</html>

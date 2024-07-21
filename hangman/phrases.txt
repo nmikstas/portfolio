@@ -1,0 +1,31 @@
+// This file contains all the words and phrases
+// used in the game. all letters will be converted
+// to lowercase when loaded.  The only valid
+// characters are letters and spaces.  phrases
+// with other characters will be ignored.  Forward
+// slashes can be used to comment the file.
+// Entries are separated by new lines.  Also, new
+// lines can be used for formatting.  Leading
+// and trailing white spaces are removed.
+
+the cat is out of the bag
+one in the hand is worth two in the bush
+this is a phrase
+    this is also a phrase   
+      Leading and trailing white spaces ignored
+UPPERcase LETTERS ignored
+
+new line separation above
+simple phrase
+
+this is invalid.
+this-is-also-invalid
+ThIs Is VaLiD
+Tab makes	this invalid
+
+dolphin
+giraffe
+elephant
+kangaroo
+rabbit
+aardvark
