@@ -1,0 +1,45 @@
+Partlist
+
+Exported from USB_Charger.brd at 4/19/2016 1:48 PM
+
+EAGLE Version 7.5.0 Copyright (c) 1988-2015 CadSoft
+
+Assembly variant: 
+
+Part     Value             Package         Library     Position (inch)       Orientation
+
+C1       4.7uf             C0805           rcl         (0.5 0.63)            R180
+C2       4.7uf             C0805           rcl         (1.15 0.43)           R0
+C3       22uf              C0805           rcl         (1.66 0.86)           R0
+C4       1uf               C0805           rcl         (1.66 0.77)           R0
+C5       47uf              C1210           rcl         (1.73 1.09)           R270
+C6       47uf              C1210           rcl         (1.87 1.09)           R270
+D1       Orange            CHIP-LED0805    led         (0.71 0.24)           R270
+D2       Green             CHIP-LED0805    led         (0.71 0.11)           R90
+D3       6V                SMB             diode       (0.43 0.31)           R180
+D4       Schottky Diode 1A SMADIODE        adafruit    (0.61 0.86)           R90
+D5       Schottky Diode 1A SMADIODE        adafruit    (0.43 0.49)           R180
+D6       Green             CHIP-LED0805    led         (2 0.17)              R0
+J2       To Battery        JST-PH-2-THM-RA adafruit    (1.15 0.25)           R180
+J3       USB_TYPE_A        USB             con-amp     (2.64 0.67)           R90
+J4       2POS_TERM_BLOCK   2POS_5.08MM     USB_Charger (0.17 0.39)           R0
+J5       MICRO_USB         MICRO_USB       USB_Charger (0.19 0.91)           R0
+L1       IND_1.5UH_4.3A    IND_SMD         USB_Charger (1.47 0.62)           R90
+R1       470               R0805           rcl         (0.88 0.24)           R0
+R2       2k                R0805           rcl         (0.82 0.36)           R180
+R3       470               R0805           rcl         (0.88 0.11)           R0
+R4       100k              R0805           rcl         (1.66 0.68)           R180
+R5       51k               R0805           rcl         (1.5 1.06)            R90
+R6       5.6k              R0805           rcl         (1.61 1.06)           R270
+R7       680               R0805           rcl         (1.9 0.17)            R90
+R8       75k               R0805           rcl         (1.95 0.87)           R180
+R9       49.9k             R0805           rcl         (1.95 0.74)           R0
+R10      75k               R0805           rcl         (1.95 0.61)           R0
+R11      49.9k             R0805           rcl         (1.95 0.48)           R180
+SW1      DPDT_SWITCH       GF-126-0159     USB_Charger (1.05 0.93)           R90
+TP_BAT   TPB1,27           B1,27           testpad     (1.09 0.57)           R0
+TP_GND   TPB1,27           B1,27           testpad     (0.35 0.14)           R0
+TP_OUT   TPB1,27           B1,27           testpad     (1.98 1.16)           R0
+TP_USB   TPB1,27           B1,27           testpad     (0.75 1.14)           R90
+U1       MCP73831          SOT-23-5        USB_Charger (0.84 0.5)            R90
+U2       RT4812            TSOT-23-8       USB_Charger (1.48 0.83)           R180
