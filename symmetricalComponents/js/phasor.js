@@ -14,28 +14,30 @@ class Phasor
 
     constructor
     (
-        canvasDiv,
+        canvasDiv, callback, zoomCallback,
         {
             vec =
             [
                 //Unbalanced system.
-                {m: 1, a: 0,                color: "#ff0000", showText: true, isVisible: true},
-                {m: 1, a: 2 * Math.PI / 3,  color: "#00ff00", showText: true, isVisible: true},
-                {m: 1, a: -2 * Math.PI / 3, color: "#0000ff", showText: true, isVisible: true},
+                {m: 1, a: 0,                color: "#ff0000", isVisible: true},
+                {m: 1, a: -2 * Math.PI / 3, color: "#00ff00", isVisible: true},
+                {m: 1, a: 2 * Math.PI / 3,  color: "#0000ff", isVisible: true},
 
                 //Positive sequence.
-                {m: 1, a: 0,                color: "#800000", showText: false, isVisible: false},
-                {m: 1, a: 2 * Math.PI / 3,  color: "#008000", showText: false, isVisible: false},
-                {m: 1, a: -2 * Math.PI / 3, color: "#000080", showText: false, isVisible: false},
+                {m: 1, a: 0,                color: "#800000", isVisible: false},
+                {m: 1, a: -2 * Math.PI / 3, color: "#008000", isVisible: false},
+                {m: 1, a: 2 * Math.PI / 3,  color: "#000080", isVisible: false},
 
                 //Negative sequence.
-                {m: 1, a: 0, color: "#800080", showText: false, isVisible: false},
-                {m: 1, a: 0, color: "#808000", showText: false, isVisible: false},
-                {m: 1, a: 0, color: "#008080", showText: false, isVisible: false},
+                {m: 0, a: 0, color: "#800080", isVisible: false},
+                {m: 0, a: 0, color: "#608000", isVisible: false},
+                {m: 0, a: 0, color: "#008080", isVisible: false},
 
                 //Zero sequence.
-                {m: 1, a: 0, color: "808080", showText: false, isVisible: false}
-            ]
+                {m: 0, a: 0, color: "#404040", isVisible: false}
+            ],
+
+            showComp = false
         } = {}
     )
     {
@@ -61,15 +63,25 @@ class Phasor
         //Vector moving variables.
         this.isMoveable = false;
         this.moveableIndex = -1;
+        this.isGrabbed = false;
 
         //Drawing canvas.
         this.bodyCanvas = canvasDiv;
 
+        //Callback function for vector updates.
+        this.callback = callback;
+        this.zoomCallback = zoomCallback;
+
+        //Show component vectors.
+        this.showComp = showComp;
+
         //Mouse events.
-        canvasDiv.onmousemove  = (e) => this.mouseMove(e);
-        canvasDiv.ondblclick   = ()  => this.doubleClick();
-        canvasDiv.onwheel      = (e) => this.mouseWheel(e);
-        canvasDiv.onmouseleave = ()  => this.mouseLeave();
+        this.bodyCanvas.onmousemove  = (e) => this.mouseMove(e);
+        this.bodyCanvas.ondblclick   = ()  => this.doubleClick();
+        this.bodyCanvas.onwheel      = (e) => this.mouseWheel(e);
+        this.bodyCanvas.onmouseleave = ()  => this.mouseLeave();
+        this.bodyCanvas.onmousedown  = (e) => this.mouseDown(e);
+        this.bodyCanvas.onmouseup    = (e) => this.mouseUp(e);
 
         //Only create drawing if the canvas exists.
         if(this.bodyCanvas)this.init();
@@ -125,22 +137,43 @@ class Phasor
         this.ctxp.arc(this.xMiddle, this.yMiddle, this.bodyWidth / 2, 0, Math.PI * 2);
         this.ctxp.clip();
 
-        //Draw vectors.
-        for(let i = 0; i < this.vec.length; i++)
+        //Draw primary vectors.
+        for(let i = 0; i < 3; i++)
         {
             let mag = this.vec[i].m;
             let angle = this.RtoD(this.vec[i].a);
-            let text = mag.toFixed(1) + "∠" + angle.toFixed(1) + "°";
+            let magText = mag.toFixed(0);
 
-            //drawVector(angle, color, mag, text)
+            //Adjusrt the precision based on how big or small the magnitude is.
+            if(mag < 10) magText = mag.toFixed(1);
+            if(mag < 1)  magText = mag.toFixed(2);
+            if(mag < .1) magText = mag.toFixed(3);
+
+            //Remove any leading zeroes.
+            if(magText.charAt(0) === '0') magText = magText.slice(1);
+
+            let text = magText + "∠" + angle.toFixed(1) + "°";
+            let isBold = false;
+
             if(this.vec[i].isVisible)
             {
+                //Check if current vector is being hovered over by the mouse.
+                if(this.isMoveable && this.moveableIndex === i) isBold = true;
+                else isBold = false;
+
                 //Determine is phasor values need to be shown.
-                if(this.vec[i].m / this.maxMag < .5 || !this.vec[i].showText) text ="";
+                if(this.vec[i].m / this.maxMag < .50) text ="";
 
                 //Draw the phasor.
-                this.drawVector(this.vec[i].a, this.vec[i].color, this.vec[i].m / this.unitMag, text);
+                this.drawVector(this.vec[i].a, this.vec[i].color, this.vec[i].m / this.unitMag, text, isBold);
             }
+        }
+
+        if(this.showComp)
+        {
+            this.drawPhaseComps(3);
+            this.drawPhaseComps(4);
+            this.drawPhaseComps(5);
         }
 
         //Remove clipping.
@@ -158,6 +191,22 @@ class Phasor
             this.ctxp.font = "bold " + (this.yMiddle * .1) + "px Arial";
             this.ctxp.fillText(text, 0, this.bodyHeight);
         }
+
+        //Clear an area for the legend.
+        this.ctxp.beginPath();
+        this.ctxp.fillStyle = "#ffffff";
+        this.ctxp.fillRect(this.bodyWidth * .8, this.bodyWidth * .92, this.bodyWidth * .19, this.bodyWidth * .1)
+        this.ctxp.stroke();
+
+        //Setup the text size and color.
+        let textSize = this.bodyWidth * .08;
+        this.ctxp.font = "bold " + textSize + "px Arial";
+        this.ctxp.fillStyle = this.vec[0].color;
+        this.ctxp.fillText("A", this.bodyWidth - this.bodyWidth * .195, this.bodyWidth - this.bodyWidth * .01);
+        this.ctxp.fillStyle = this.vec[1].color;
+        this.ctxp.fillText("B", this.bodyWidth - this.bodyWidth * .135, this.bodyWidth - this.bodyWidth * .01);
+        this.ctxp.fillStyle = this.vec[2].color;
+        this.ctxp.fillText("C", this.bodyWidth - this.bodyWidth * .075, this.bodyWidth - this.bodyWidth * .01);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -268,25 +317,33 @@ class Phasor
     //                                     Graphing Functions                                    //
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    drawVector(angle, color, mag, text)
+    drawVector(angle, color, mag, text, isBold = false)
     {
+        //Set line width.
+        let lineWidth = isBold ? .015 : .010;
+
         //Draw the main portion of the vector.
-        this.drawLineAngle(angle, angle, color + "80", this.bodyWidth * .010, 0, mag);
+        this.drawLineAngle(angle, angle, color + "80", this.bodyWidth * lineWidth, 0, mag);
         this.drawTextAngle(angle, mag, text, color, 0.1, .94);     
 
         //Draw the head of the vector.
-        this.drawLineAngle(angle, angle - this.DtoR(5), color, this.bodyWidth * .010, mag, mag - this.bodyWidth * .020);
-        this.drawLineAngle(angle, angle + this.DtoR(5), color, this.bodyWidth * .010, mag, mag - this.bodyWidth * .020);
+        this.drawLineAngle(angle, angle - this.DtoR(5), color + "80", this.bodyWidth * lineWidth, mag, mag - this.bodyWidth * .020);
+        this.drawLineAngle(angle, angle + this.DtoR(5), color + "80", this.bodyWidth * lineWidth, mag, mag - this.bodyWidth * .020);
+    }
+
+    drawComp(angle, color, mag, offsetX, offsetY)
+    {
+        this.drawLineAngle(angle, angle, color + "80", this.bodyWidth * .007, 0, mag, offsetX, offsetY);
     }
 
     //Draw lines in polar coordinates.
-    drawLineAngle(angle1, angle2, color, width, rStart, rEnd)
+    drawLineAngle(angle1, angle2, color, width, rStart, rEnd, offsetX = 0, offsetY = 0)
     {
         this.ctxp.beginPath();
         this.ctxp.lineWidth = width;
         this.ctxp.strokeStyle = color;
-        this.ctxp.moveTo(this.xMiddle + rStart * Math.cos(angle1), this.yMiddle - rStart * Math.sin(angle1));
-        this.ctxp.lineTo(this.xMiddle + rEnd   * Math.cos(angle2), this.yMiddle - rEnd   * Math.sin(angle2));
+        this.ctxp.moveTo(this.xMiddle + offsetX + rStart * Math.cos(angle1), this.yMiddle - offsetY - rStart * Math.sin(angle1));
+        this.ctxp.lineTo(this.xMiddle + offsetX  + rEnd * Math.cos(angle2), this.yMiddle - offsetY - rEnd * Math.sin(angle2));
         this.ctxp.stroke();
     }
 
@@ -358,9 +415,46 @@ class Phasor
         
         //Convert cartesian coordinates to polar coordinates.
         let mag = this.unitMag * Math.sqrt(this.mouseX**2 + this.mouseY**2);
+        let ang = Math.atan2(this.mouseY, this.mouseX);
         
         //Determine if we should show the mouse position in polar coordinates.
         this.drawCoords = (mag <= this.maxMag) ? true : false;
+        if(this.isGrabbed && mag > this.maxMag)this.isGrabbed = false;
+
+        //Check if the cursor is near a vector. Only the first 3 vectors.
+        if(!this.isGrabbed)
+        {
+            for(let i = 0; i < 3; i++)
+            {
+                let vecMag = this.vec[i].m;
+                let vecAng = this.vec[i].a;
+        
+                let difAng = Math.abs(ang - vecAng);
+                if(mag <= vecMag && this.RtoD(difAng) <= 3)
+                {
+                    this.isMoveable = true;
+                    this.moveableIndex = i;
+                    this.bodyCanvas.style.cursor = "grab";
+                    break;
+                }
+                else
+                {
+                    this.isMoveable = false;
+                    this.moveableIndex = -1;
+                    this.bodyCanvas.style.cursor = "";
+                }
+            }
+        }
+        
+        //Update the vector if it is being dragged.
+        if(this.isGrabbed)
+        {
+            //console.log(this.moveableIndex)
+            this.vec[this.moveableIndex].a = ang;
+            this.vec[this.moveableIndex].m = mag;
+            this.callback(this.moveableIndex);
+        }
+
         this.bodyDraw();
     }
 
@@ -368,6 +462,7 @@ class Phasor
     {
         this.autoZoom();
         this.bodyDraw();
+        this.zoomCallback(this.maxMag);
     }
 
     mouseWheel(e)
@@ -383,12 +478,44 @@ class Phasor
         if(this.maxMag > Phasor.MAX_ZOOM) this.maxMag = Phasor.MAX_ZOOM;
         if(this.maxMag < Phasor.MIN_ZOOM) this.maxMag = Phasor.MIN_ZOOM;
         this.bodyDraw();
+        this.zoomCallback(this.maxMag);
     }
 
     mouseLeave()
     {
         this.drawCoords = false;
+        this.isGrabbed = false;
         this.bodyDraw();
+    }
+
+    mouseDown(e)
+    {
+        if(e.buttons !== 1)  return;
+        if(!this.isMoveable) return;
+        
+        this.bodyCanvas.style.cursor = "grabbing";
+        this.isGrabbed = true;
+
+        //Get coordinates of mouse with respect to graph middle.
+        let rect = e.target.getBoundingClientRect();
+        this.mouseX = e.clientX - rect.left - this.xMiddle;
+        this.mouseY = -(e.clientY - rect.top - this.yMiddle);
+        
+        //Convert cartesian coordinates to polar coordinates.
+        let mag = this.unitMag * Math.sqrt(this.mouseX**2 + this.mouseY**2);
+        let ang = Math.atan2(this.mouseY, this.mouseX);
+
+        this.vec[this.moveableIndex].a = ang;
+        this.vec[this.moveableIndex].m = mag;
+        this.callback(this.moveableIndex);
+
+        this.bodyDraw();
+    }
+
+    mouseUp(e)
+    {
+        if(this.bodyCanvas.style.cursor === "grabbing")this.bodyCanvas.style.cursor = "grab";
+        this.isGrabbed = false;
     }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -400,10 +527,20 @@ class Phasor
     {
         let maxV = Phasor.MIN_ZOOM;
 
-        //Find largest vector.
+        //Find largest primary vector.
         for(let i = 0; i < this.vec.length; i++)
         {
             if(this.vec[i].m > maxV && this.vec[i].isVisible) maxV = this.vec[i].m;
+        }
+
+        //magnitude of positive and negative sequences added together can be geater than any single vector.
+        if(this.showComp)
+        {
+            for(let i = 3; i < 6; i++)
+            {
+                let offset = this.phasorAdd(this.vec[i], this.vec[i+3]).m;
+                if(offset > maxV) maxV = offset;
+            }
         }
 
         //Limit the zoom size.
@@ -412,21 +549,38 @@ class Phasor
         this.bodyDraw();
     }
 
-    //Update which waveforms should be drawn.
-    updateShow()
+    //Draw the component vectors.
+    drawPhaseComps(index)
     {
-    
-     this.bodyDraw();
+        let offsetX = 0;
+        let offsetY = 0;
+        this.drawComp(this.vec[index].a, this.vec[index].color, this.vec[index].m / this.unitMag, offsetX, offsetY);
+        offsetX = this.vec[index].m / this.unitMag * Math.cos(this.vec[index].a);
+        offsetY = this.vec[index].m / this.unitMag * Math.sin(this.vec[index].a);
+        this.drawComp(this.vec[index+3].a, this.vec[index+3].color, this.vec[index+3].m / this.unitMag, offsetX, offsetY);
+        offsetX += this.vec[index+3].m / this.unitMag * Math.cos(this.vec[index+3].a);
+        offsetY += this.vec[index+3].m / this.unitMag * Math.sin(this.vec[index+3].a);
+        this.drawComp(this.vec[9].a, this.vec[9].color, this.vec[9].m / this.unitMag, offsetX, offsetY);
     }
 
-    updateVectors()
+    //Hide/show component vectors.
+    setShowComp(isShown)
     {
-    
-     this.bodyDraw();
-    }
-
-    updateZoom()
-    {
-    
+        if(isShown)
+        {
+            this.showComp = true;
+            for(let i = 3; i < this.vec.length; i++)
+            {
+                this.vec[i].isVisible = true;
+            }
+        }
+        else
+        {
+            this.showComp = false;
+            for(let i = 3; i < this.vec.length; i++)
+            {
+                this.vec[i].isVisible = false;
+            }
+        }
     }
 }
