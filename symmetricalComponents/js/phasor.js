@@ -430,7 +430,7 @@ class Phasor
                 let vecAng = this.vec[i].a;
         
                 let difAng = Math.abs(ang - vecAng);
-                if(mag <= vecMag && this.RtoD(difAng) <= 3)
+                if(mag <= vecMag && this.RtoD(difAng) <= 3 && this.vec[i].isVisible)
                 {
                     this.isMoveable = true;
                     this.moveableIndex = i;
