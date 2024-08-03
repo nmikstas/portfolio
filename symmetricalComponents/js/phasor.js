@@ -368,9 +368,22 @@ class Phasor
 
         //Save original orientation.
         this.ctxp.save();
+
+        //Get X and Y components of angle.
+        let xComp = Math.cos(angle);
+        let yComp = Math.sin(angle);
  
-        //Move to the center fo the canvas.
-        this.ctxp.translate(this.xMiddle, this.yMiddle);
+        //Move to the center of the canvas. Add slight offset so text doesn't overlap lines.
+        if(angle > Math.PI / 2 || angle < -Math.PI / 2)
+        {
+            this.ctxp.translate(this.xMiddle + (this.bodyWidth * 0.01 * yComp), 
+                                this.yMiddle + (this.bodyWidth * 0.01 * xComp));
+        }
+        else
+        {
+            this.ctxp.translate(this.xMiddle - (this.bodyWidth * 0.01 * yComp), 
+                                this.yMiddle - (this.bodyWidth * 0.01 * xComp));
+        }
         
         //Calculate the X and Y components of the vector.
         let x = mag * Math.cos(angle);
