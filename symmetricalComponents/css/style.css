@@ -23,3 +23,20 @@ h1
     color: #ffffff;
     font-size: 1.0rem;
 }
+
+#chk-row
+{
+    visibility: hidden;
+    display: inline-block;
+    text-align: center;
+    width: 100%
+}
+
+.chk-div
+{
+    width: 6%;
+    display: inline-block;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+}

@@ -24,16 +24,18 @@ class Phasor
                 {m: 1, a: 2 * Math.PI / 3,  color: "#0000ff", isVisible: true},
 
                 //Positive sequence.
-                {m: 1, a: 0,                color: "#800000", isVisible: false},
-                {m: 1, a: -2 * Math.PI / 3, color: "#008000", isVisible: false},
-                {m: 1, a: 2 * Math.PI / 3,  color: "#000080", isVisible: false},
+                {m: 1, a: 0,                color: "#ff0080", isVisible: false},
+                {m: 1, a: -2 * Math.PI / 3, color: "#00ffa0", isVisible: false},
+                {m: 1, a: 2 * Math.PI / 3,  color: "#8000ff", isVisible: false},
 
                 //Negative sequence.
-                {m: 0, a: 0, color: "#800080", isVisible: false},
-                {m: 0, a: 0, color: "#608000", isVisible: false},
-                {m: 0, a: 0, color: "#008080", isVisible: false},
+                {m: 0, a: 0, color: "#ff8000", isVisible: false},
+                {m: 0, a: 0, color: "#80a000", isVisible: false},
+                {m: 0, a: 0, color: "#0080ff", isVisible: false},
 
                 //Zero sequence.
+                {m: 0, a: 0, color: "#404040", isVisible: false},
+                {m: 0, a: 0, color: "#404040", isVisible: false},
                 {m: 0, a: 0, color: "#404040", isVisible: false}
             ],
 
@@ -144,7 +146,7 @@ class Phasor
             let angle = this.RtoD(this.vec[i].a);
             let magText = mag.toFixed(0);
 
-            //Adjusrt the precision based on how big or small the magnitude is.
+            //Adjust the precision based on how big or small the magnitude is.
             if(mag < 10) magText = mag.toFixed(1);
             if(mag < 1)  magText = mag.toFixed(2);
             if(mag < .1) magText = mag.toFixed(3);
@@ -161,11 +163,11 @@ class Phasor
                 if(this.isMoveable && this.moveableIndex === i) isBold = true;
                 else isBold = false;
 
-                //Determine is phasor values need to be shown.
-                if(this.vec[i].m / this.maxMag < .50) text ="";
+                //Calculate text size. 
+                let txtRatio = this.vec[i].m / this.maxMag / 12;
 
                 //Draw the phasor.
-                this.drawVector(this.vec[i].a, this.vec[i].color, this.vec[i].m / this.unitMag, text, isBold);
+                this.drawVector(this.vec[i].a, this.vec[i].color, this.vec[i].m / this.unitMag, text, isBold, txtRatio);
             }
         }
 
@@ -317,14 +319,14 @@ class Phasor
     //                                     Graphing Functions                                    //
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    drawVector(angle, color, mag, text, isBold = false)
+    drawVector(angle, color, mag, text, isBold = false, txtRatio = 0.05)
     {
         //Set line width.
         let lineWidth = isBold ? .015 : .010;
 
         //Draw the main portion of the vector.
         this.drawLineAngle(angle, angle, color + "80", this.bodyWidth * lineWidth, 0, mag);
-        this.drawTextAngle(angle, mag, text, color, 0.1, .94);     
+        this.drawTextAngle(angle, mag, text, color, txtRatio, .94);     
 
         //Draw the head of the vector.
         this.drawLineAngle(angle, angle - this.DtoR(5), color + "80", this.bodyWidth * lineWidth, mag, mag - this.bodyWidth * .020);
@@ -361,8 +363,15 @@ class Phasor
     //Draw text in polar coordinates.
     drawTextAngle(angle, mag, text, color, ratio, textRadius)
     {
+        //Keep ratio value capped and valid.
+        if(ratio > .05 || ratio < 0)ratio = 0.05;
+
+        //Remove text on very small vectors.
+        if(ratio < 0.0005) text = "";
+        
         //Setup the text size and color.
-        let textSize = this.yMiddle * ratio;
+        let modRatio = (ratio < .05 && ratio >= .037) ? ratio : 0.05;
+        let textSize = this.bodyHeight * modRatio;
         this.ctxp.font = "bold " + textSize + "px Arial";
         this.ctxp.fillStyle = color;
 
@@ -372,26 +381,30 @@ class Phasor
         //Get X and Y components of angle.
         let xComp = Math.cos(angle);
         let yComp = Math.sin(angle);
+
+        //Calculatethe X and Y components of the magnitude of the text.
+        let textX = this.ctxp.measureText(text).width * Math.cos(angle);
+        let textY = this.ctxp.measureText(text).width * Math.sin(angle);
+
+        //Move text to head of vector if vector is less than half graph width.
+        let smallXOffset = (ratio < 0.037) ? textX : 0;
+        let smallYOffset = (ratio < 0.037) ? textY : 0;
  
         //Move to the center of the canvas. Add slight offset so text doesn't overlap lines.
         if(angle > Math.PI / 2 || angle < -Math.PI / 2)
         {
-            this.ctxp.translate(this.xMiddle + (this.bodyWidth * 0.01 * yComp), 
-                                this.yMiddle + (this.bodyWidth * 0.01 * xComp));
+            this.ctxp.translate(this.xMiddle + (this.bodyWidth * 0.01 * yComp) + smallXOffset * 1.05, 
+                                this.yMiddle + (this.bodyWidth * 0.01 * xComp) - smallYOffset * 1.05);
         }
         else
         {
-            this.ctxp.translate(this.xMiddle - (this.bodyWidth * 0.01 * yComp), 
-                                this.yMiddle - (this.bodyWidth * 0.01 * xComp));
+            this.ctxp.translate(this.xMiddle - (this.bodyWidth * 0.01 * yComp) + smallXOffset * 1.05, 
+                                this.yMiddle - (this.bodyWidth * 0.01 * xComp) - smallYOffset * 1.05);
         }
         
         //Calculate the X and Y components of the vector.
         let x = mag * Math.cos(angle);
         let y = mag * Math.sin(angle);
-
-        //Calculatethe X and Y components of the magnitude of the text.
-        let textX = this.ctxp.measureText(text).width * Math.cos(angle);
-        let textY = this.ctxp.measureText(text).width * Math.sin(angle);
 
         //Only take account text length in 1st and 3rd quadrants.
         if(angle > Math.PI/2 || angle < -Math.PI/2)
@@ -541,7 +554,7 @@ class Phasor
         let maxV = Phasor.MIN_ZOOM;
 
         //Find largest primary vector.
-        for(let i = 0; i < this.vec.length; i++)
+        for(let i = 0; i < 6; i++)
         {
             if(this.vec[i].m > maxV && this.vec[i].isVisible) maxV = this.vec[i].m;
         }
@@ -551,8 +564,11 @@ class Phasor
         {
             for(let i = 3; i < 6; i++)
             {
-                let offset = this.phasorAdd(this.vec[i], this.vec[i+3]).m;
-                if(offset > maxV) maxV = offset;
+                if(this.vec[i+3].isVisible)
+                {
+                    let offset = this.phasorAdd(this.vec[i], this.vec[i+3]).m;
+                    if(offset > maxV) maxV = offset;
+                }
             }
         }
 
@@ -567,13 +583,26 @@ class Phasor
     {
         let offsetX = 0;
         let offsetY = 0;
-        this.drawComp(this.vec[index].a, this.vec[index].color, this.vec[index].m / this.unitMag, offsetX, offsetY);
+        if(this.vec[index].isVisible)
+        {
+            this.drawComp(this.vec[index].a, this.vec[index].color, this.vec[index].m / this.unitMag, offsetX, offsetY);
+        }
+
         offsetX = this.vec[index].m / this.unitMag * Math.cos(this.vec[index].a);
         offsetY = this.vec[index].m / this.unitMag * Math.sin(this.vec[index].a);
-        this.drawComp(this.vec[index+3].a, this.vec[index+3].color, this.vec[index+3].m / this.unitMag, offsetX, offsetY);
+
+        if(this.vec[index + 3].isVisible)
+        {
+            this.drawComp(this.vec[index+3].a, this.vec[index+3].color, this.vec[index+3].m / this.unitMag, offsetX, offsetY);
+        }
+
         offsetX += this.vec[index+3].m / this.unitMag * Math.cos(this.vec[index+3].a);
         offsetY += this.vec[index+3].m / this.unitMag * Math.sin(this.vec[index+3].a);
-        this.drawComp(this.vec[9].a, this.vec[9].color, this.vec[9].m / this.unitMag, offsetX, offsetY);
+
+        if(this.vec[index + 6].isVisible)
+        {
+            this.drawComp(this.vec[index+6].a, this.vec[index+6].color, this.vec[index+6].m / this.unitMag, offsetX, offsetY);
+        }
     }
 
     //Hide/show component vectors.
@@ -582,7 +611,7 @@ class Phasor
         if(isShown)
         {
             this.showComp = true;
-            for(let i = 3; i < this.vec.length; i++)
+            for(let i = 0; i < this.vec.length; i++)
             {
                 this.vec[i].isVisible = true;
             }
@@ -590,6 +619,11 @@ class Phasor
         else
         {
             this.showComp = false;
+            for(let i = 0; i < 3; i++)
+            {
+                this.vec[i].isVisible = true;
+            }
+
             for(let i = 3; i < this.vec.length; i++)
             {
                 this.vec[i].isVisible = false;

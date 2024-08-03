@@ -22,6 +22,22 @@ let btn3 = document.getElementById("btn-3");
 let btn4 = document.getElementById("btn-4");
 let btn5 = document.getElementById("btn-5");
 
+//Component checkboxes.
+let chkRow = document.getElementById("chk-row");
+
+let chk = 
+[
+    document.getElementById("ch-ua"), document.getElementById("ch-ub"), document.getElementById("ch-uc"),
+    document.getElementById("ch-pa"), document.getElementById("ch-pb"), document.getElementById("ch-pc"),
+    document.getElementById("ch-na"), document.getElementById("ch-nb"), document.getElementById("ch-nc"),
+    document.getElementById("ch-za"), document.getElementById("ch-zb"), document.getElementById("ch-zc")
+];
+
+for(let i = 0; i < chk.length; i++)
+{
+    chk[i].onclick = () => chClick();
+}
+
 btn1.onclick = () => btn1Click();
 btn2.onclick = () => btn2Click();
 btn3.onclick = () => btn3Click();
@@ -160,13 +176,24 @@ const unbalCallback = (index) =>
     zero.vec[0].m = v0.m;
 
     //Update component vectors.
-    unbalanced.vec[3] = positive.vec[0];
-    unbalanced.vec[4] = positive.vec[1];
-    unbalanced.vec[5] = positive.vec[2];
-    unbalanced.vec[6] = negative.vec[0];
-    unbalanced.vec[7] = negative.vec[1];
-    unbalanced.vec[8] = negative.vec[2];
-    unbalanced.vec[9] = zero.vec[0];
+    unbalanced.vec[3].a  = positive.vec[0].a;
+    unbalanced.vec[3].m  = positive.vec[0].m;
+    unbalanced.vec[4].a  = positive.vec[1].a;
+    unbalanced.vec[4].m  = positive.vec[1].m;
+    unbalanced.vec[5].a  = positive.vec[2].a;
+    unbalanced.vec[5].m  = positive.vec[2].m;
+    unbalanced.vec[6].a  = negative.vec[0].a;
+    unbalanced.vec[6].m  = negative.vec[0].m;
+    unbalanced.vec[7].a  = negative.vec[1].a;
+    unbalanced.vec[7].m  = negative.vec[1].m;
+    unbalanced.vec[8].a  = negative.vec[2].a;
+    unbalanced.vec[8].m  = negative.vec[2].m;
+    unbalanced.vec[9].a  = zero.vec[0].a;
+    unbalanced.vec[9].m  = zero.vec[0].m;
+    unbalanced.vec[10].a = zero.vec[0].a;
+    unbalanced.vec[10].m = zero.vec[0].m;
+    unbalanced.vec[11].a = zero.vec[0].a;
+    unbalanced.vec[11].m = zero.vec[0].m;
 
     //Reset the zero offset button, if necessary.
     if(unbalanced.vec[9].m >= 0.01)
@@ -275,13 +302,24 @@ const updateUnbalanced = () =>
     unbalanced.vec[2].m = vc.m;
     unbalanced.vec[2].a = vc.a;
 
-    unbalanced.vec[3] = positive.vec[0];
-    unbalanced.vec[4] = positive.vec[1];
-    unbalanced.vec[5] = positive.vec[2];
-    unbalanced.vec[6] = negative.vec[0];
-    unbalanced.vec[7] = negative.vec[1];
-    unbalanced.vec[8] = negative.vec[2];
-    unbalanced.vec[9] = zero.vec[0];
+    unbalanced.vec[3].a  = positive.vec[0].a;
+    unbalanced.vec[3].m  = positive.vec[0].m;
+    unbalanced.vec[4].a  = positive.vec[1].a;
+    unbalanced.vec[4].m  = positive.vec[1].m;
+    unbalanced.vec[5].a  = positive.vec[2].a;
+    unbalanced.vec[5].m  = positive.vec[2].m;
+    unbalanced.vec[6].a  = negative.vec[0].a;
+    unbalanced.vec[6].m  = negative.vec[0].m;
+    unbalanced.vec[7].a  = negative.vec[1].a;
+    unbalanced.vec[7].m  = negative.vec[1].m;
+    unbalanced.vec[8].a  = negative.vec[2].a;
+    unbalanced.vec[8].m  = negative.vec[2].m;
+    unbalanced.vec[9].a  = zero.vec[0].a;
+    unbalanced.vec[9].m  = zero.vec[0].m;
+    unbalanced.vec[10].a = zero.vec[0].a;
+    unbalanced.vec[10].m = zero.vec[0].m;
+    unbalanced.vec[11].a = zero.vec[0].a;
+    unbalanced.vec[11].m = zero.vec[0].m;
 
     //Redraw the graph.
     unbalanced.bodyDraw();
@@ -313,7 +351,23 @@ const zoomCallback = (zoom) =>
 const btn1Click = () =>
 {
     unbalanced.showComp = !unbalanced.showComp;
-    btn1.innerHTML = unbalanced.showComp ? "Hide Components" : "Show Components";
+    if(unbalanced.showComp)
+    {
+        unbalanced.setShowComp(true);
+        btn1.innerHTML = "Hide Components";
+        chkRow.style.visibility = "visible";
+        for(let i = 0; i < chk.length; i++)
+        {
+            chk[i].checked = true;
+        }
+    }
+    else
+    {
+        unbalanced.setShowComp(false);
+        btn1.innerHTML = "Show Components";
+        chkRow.style.visibility = "hidden";
+    }
+    
     unbalanced.bodyDraw();
 }
 
@@ -382,6 +436,23 @@ const btn5Click = () =>
     unbalCallback(0);
     unbalanced.doubleClick();
 }
+
+const chClick = () =>
+{
+    for(let i = 0; i < chk.length; i++)
+    {
+        if(chk[i].checked)
+        {
+            unbalanced.vec[i].isVisible = true;
+        }
+        else
+        {
+            unbalanced.vec[i].isVisible = false;
+        }
+    }
+
+    unbalanced.bodyDraw();
+} 
 
 window.addEventListener("resize", () => resize());
 resize();
