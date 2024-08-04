@@ -337,6 +337,8 @@ var burger2Canv = document.getElementById("burger2-canv");
 var burger2A    = document.getElementById("burger2-a");
 
 //Client side projects.
+var symCompCanv = document.getElementById("symcomp-canv");
+var symCompA    = document.getElementById("symcomp-a");
 var xfmrCanv    = document.getElementById("xfmr-canv");
 var xfmrA       = document.getElementById("xfmr-a");
 var phaseCanv   = document.getElementById("3phase-canv");
@@ -372,6 +374,7 @@ new Target(googleCanv,  googleA,  .20, Target.ANIM_MOVE);
 new Target(burger2Canv, burger2A, .95, Target.ANIM_STATIC);
 
 //Client side projects.
+new Target(symCompCanv, symCompA, .95, Target.ANIM_STATIC);
 new Target(xfmrCanv,    xfmrA,    .20, Target.ANIM_MOVE);
 new Target(phaseCanv,   phaseA,   .95, Target.ANIM_STATIC);
 new Target(beltCanv,    beltA,    .20, Target.ANIM_MOVE);
