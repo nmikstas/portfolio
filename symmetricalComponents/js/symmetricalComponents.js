@@ -387,6 +387,31 @@ const btn2Click = () =>
         unbalanced.vec[2] = {m: 1, a: -2 * Math.PI / 3, color: "#0000ff", isVisible: true};
     }
 
+    //Always show the first 3 vectors.
+    for(let i = 0; i < 3; i++)
+    {
+        chk[i].checked = true;
+    }
+
+    //Show all components if showing them is enabled.
+    if(unbalanced.showComp)
+    {
+        for(let i = 3; i < unbalanced.vec.length; i++)
+        {
+            unbalanced.vec[i].isVisible = true;
+            chk[i].checked = true;
+        }
+    }
+
+    //Hide all components if they are disabled.
+    else
+    {
+        for(let i = 3; i < unbalanced.vec.length; i++)
+        {
+            unbalanced.vec[i].isVisible = false;
+        }
+    }
+    
     zeroOffset = false;
     btn4.innerHTML = "Add Zero Seq Offset";
 
